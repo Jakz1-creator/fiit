@@ -762,6 +762,8 @@ function vidUrl(id,name){
 // RFT LEVEL - independent from THOR/ANATOLY phases
 var RFT_LEVEL = parseInt(localStorage.getItem('jz_rft_level')||'1');
 var RFT_NAMES = {1:'DEBUTANT', 2:'INTERMEDIAIRE', 3:'EXPERT'};
+// RFT exercise countdown timer
+var RFT_EX_TMR = null;
 
 function getExosForSession(s, w) {
   if(s.rftCircuit) {
@@ -1468,7 +1470,7 @@ function buildCircuitSession(){
   // Header
   var header=div({position:'sticky',top:'0',zIndex:'100',background:'#0a0a0a',borderBottom:'1px solid #181818',padding:'14px 16px 10px'});
   var hr=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'10px'});
-  hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){SUBVIEW='home';OPEN=null;stopTimer();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
+  hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}SUBVIEW='home';OPEN=null;stopTimer();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
   var tb=div({flex:'1'});
   tb.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'22px',color:ph.color,letterSpacing:'3px',lineHeight:'1'},s.name));
   var chrEl=document.createElement('span');chrEl.id='chrono';
@@ -1570,7 +1572,6 @@ function buildCircuitSession(){
       bh.appendChild(bhInfo);
       blocCard.appendChild(bh);
 
-      // Exercises
       if(isActive||isDone){
         var exList=div({padding:'0 12px 12px',display:'flex',flexDirection:'column',gap:'6px'});
         bl.forEach(function(ex,i){
@@ -1578,63 +1579,145 @@ function buildCircuitSession(){
           var logCurr=ST.logs[lkCurr];
           var doneCurr=isDone||(logCurr&&logCurr.done);
           var ac='#a78bfa';
+          // Is this exercise currently being timed?
+          var isTimingThis=RFT_EX_TMR&&RFT_EX_TMR.exId===ex.id&&RFT_EX_TMR.round===curRound&&RFT_EX_TMR.sKey===sKey;
+
           var exCard=div({
-            background:doneCurr?'rgba(167,139,250,.06)':'rgba(255,255,255,.02)',
-            border:'1px solid '+(doneCurr?'#a78bfa30':'#1e1e1e'),
+            background:isTimingThis?'rgba(167,139,250,.12)':doneCurr?'rgba(167,139,250,.06)':'rgba(255,255,255,.02)',
+            border:'1px solid '+(isTimingThis?'#a78bfa60':doneCurr?'#a78bfa30':'#1e1e1e'),
             borderRadius:'10px',padding:'11px 14px',
-            display:'flex',alignItems:'center',gap:'10px',
-            opacity:isLocked?'0.4':'1'
+            display:'flex',flexDirection:'column',gap:'8px',
+            opacity:isLocked?'0.4':'1',
+            transition:'all .2s'
           });
-          // Number
-          exCard.appendChild(div({width:'28px',height:'28px',borderRadius:'50%',flexShrink:'0',
-            background:doneCurr?ac:'#1e1e1e',display:'flex',alignItems:'center',
-            justifyContent:'center',fontSize:'12px',color:doneCurr?'#000':'#555',
-            fontFamily:'Bebas Neue,cursive'},String(i+1)));
+
+          // Top row: number + info + buttons
+          var topRow=div({display:'flex',alignItems:'center',gap:'10px'});
+
+          // Number / status
+          var numEl=div({width:'28px',height:'28px',borderRadius:'50%',flexShrink:'0',
+            background:isTimingThis?ac:doneCurr?ac:'#1e1e1e',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            fontSize:'12px',color:isTimingThis||doneCurr?'#000':'#555',
+            fontFamily:'Bebas Neue,cursive'});
+          numEl.textContent=doneCurr?'v':String(i+1);
+          topRow.appendChild(numEl);
+
           // Info
           var exInfo=div({flex:'1',minWidth:'0'});
           exInfo.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'16px',
-            color:doneCurr?ac:'#ddd',letterSpacing:'1px',lineHeight:'1'},ex.name));
-          exInfo.appendChild(div({fontSize:'10px',color:'#555',marginTop:'2px'},
-            ex.reps+'s - '+ex.notes));
-          exCard.appendChild(exInfo);
+            color:isTimingThis?ac:doneCurr?ac:'#ddd',letterSpacing:'1px',lineHeight:'1'},ex.name));
+
+          // Timer display or notes
+          if(isTimingThis){
+            var remSecs=RFT_EX_TMR.rem;
+            var timerSpan=document.createElement('span');
+            timerSpan.id='rft-ex-t-'+ex.id;
+            timerSpan.style.cssText='font-family:Bebas Neue,cursive;font-size:13px;color:'+ac+';letter-spacing:2px';
+            timerSpan.textContent=String(remSecs)+'s';
+            exInfo.appendChild(timerSpan);
+          }else{
+            exInfo.appendChild(div({fontSize:'10px',color:'#555',marginTop:'2px'},ex.reps+'s - '+ex.notes));
+          }
+          topRow.appendChild(exInfo);
+
           // Video btn
           var vb=document.createElement('button');vb.innerHTML='&#9654;';
           Object.assign(vb.style,{width:'28px',height:'28px',borderRadius:'7px',
             background:ac+'15',border:'1px solid '+ac+'40',color:ac,
             fontSize:'10px',cursor:'pointer',flexShrink:'0'});
           vb.addEventListener('click',function(e){e.stopPropagation();window.open(vidUrl(ex.id,ex.name),'_blank');});
-          exCard.appendChild(vb);
-          // Done button (only for active bloc)
+          topRow.appendChild(vb);
+
+          // Action button
           if(isActive&&!isDone){
-            var db=document.createElement('button');db.innerHTML='&#10003;';
-            Object.assign(db.style,{width:'40px',height:'34px',borderRadius:'8px',
-              cursor:'pointer',flexShrink:'0',
-              background:doneCurr?ac:'#1a1a1a',
-              border:'2px solid '+(doneCurr?ac:'#2a2a2a'),
-              color:doneCurr?'#000':'#333',fontSize:'14px',fontWeight:'700',
-              display:'flex',alignItems:'center',justifyContent:'center'});
-            (function(exRef,lkRef,iRef,doneCurrRef){
-              db.addEventListener('click',function(){
-                vib([20]);
-                var nl=Object.assign({},ST.logs);
-                nl[lkRef]={done:!doneCurrRef,reps:exRef.reps};
-                ST=Object.assign({},ST,{logs:nl});saveS(ST);
-                if(!doneCurrRef){
-                  var isLastEx=iRef===bl.length-1;
-                  var isLastRound=curRound===rounds-1;
-                  var restSecs=isLastEx?(isLastRound?0:30):10;
-                  var nextLabel=isLastEx?(isLastRound?'Bloc suivant':'Repos inter-rounds'):'Suivant: '+bl[iRef+1].name;
-                  var nextName=isLastEx?(isLastRound?(mainBlocs[bi+1]?'BLOC '+(bi+2):'Finisher'):'Round '+(curRound+2)):bl[iRef+1].name;
-                  if(restSecs>0)startTimer(restSecs,nextLabel,nextName);
-                  else stopTimer();
-                }else{stopTimer();}
+            if(isTimingThis){
+              // Stop button
+              var stopBtn=document.createElement('button');
+              stopBtn.textContent='STOP';
+              Object.assign(stopBtn.style,{width:'52px',height:'34px',borderRadius:'8px',
+                cursor:'pointer',flexShrink:'0',background:'#e85e1a20',
+                border:'2px solid #e85e1a60',color:'#e85e1a',
+                fontSize:'10px',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px'});
+              stopBtn.addEventListener('click',function(){
+                if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}
                 safeR();
               });
-            })(ex,lkCurr,i,doneCurr);
-            exCard.appendChild(db);
+              topRow.appendChild(stopBtn);
+            }else if(!doneCurr){
+              // Start button
+              var startBtn=document.createElement('button');
+              startBtn.textContent='GO';
+              Object.assign(startBtn.style,{width:'52px',height:'34px',borderRadius:'8px',
+                cursor:'pointer',flexShrink:'0',background:ac+'20',
+                border:'2px solid '+ac+'60',color:ac,
+                fontSize:'14px',fontFamily:'Bebas Neue,cursive',letterSpacing:'2px',
+                fontWeight:'700'});
+              (function(exRef,lkRef,iRef,biRef){
+                startBtn.addEventListener('click',function(){
+                  vib([20]);
+                  // Stop any existing ex timer
+                  if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}
+                  // Start exercise countdown
+                  var totalSecs=exRef.reps;
+                  RFT_EX_TMR={exId:exRef.id,round:curRound,sKey:sKey,rem:totalSecs,secs:totalSecs,iv:null};
+                  RFT_EX_TMR.iv=setInterval(function(){
+                    if(!RFT_EX_TMR)return;
+                    RFT_EX_TMR.rem--;
+                    // Alert at 10s
+                    if(RFT_EX_TMR.rem===10){playAlert();vib([100,50,100]);}
+                    // Update inline display
+                    var tEl=document.getElementById('rft-ex-t-'+exRef.id);
+                    if(tEl)tEl.textContent=String(RFT_EX_TMR.rem)+'s';
+                    // Update progress bar
+                    var pbEl=document.getElementById('rft-ex-pb-'+exRef.id);
+                    if(pbEl)pbEl.style.width=Math.round((1-RFT_EX_TMR.rem/RFT_EX_TMR.secs)*100)+'%';
+                    if(RFT_EX_TMR.rem<=0){
+                      // Time's up - auto validate
+                      clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;
+                      playDone();vib([200,50,200]);
+                      var nl=Object.assign({},ST.logs);
+                      nl[lkRef]={done:true,reps:exRef.reps};
+                      ST=Object.assign({},ST,{logs:nl});saveS(ST);
+                      // Start rest timer
+                      var isLastEx=iRef===bl.length-1;
+                      var isLastRound=curRound===rounds-1;
+                      var restSecs=isLastEx?(isLastRound?0:30):10;
+                      var nextLabel=isLastEx?(isLastRound?'Bloc suivant':'Repos inter-rounds'):'Suivant: '+bl[iRef+1].name;
+                      var nextName=isLastEx?(isLastRound?(mainBlocs[biRef+1]?'BLOC '+(biRef+2):'Finisher'):'Round '+(curRound+2)):bl[iRef+1].name;
+                      if(restSecs>0)startTimer(restSecs,nextLabel,nextName);
+                      safeR();
+                    }
+                  },1000);
+                  safeR();
+                });
+              })(ex,lkCurr,i,bi);
+              topRow.appendChild(startBtn);
+            }else{
+              // Done checkmark
+              var doneEl=div({width:'52px',height:'34px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',color:ac,flexShrink:'0'});
+              doneEl.innerHTML='&#10003;';
+              topRow.appendChild(doneEl);
+            }
           }else if(isDone){
-            exCard.appendChild(div({width:'40px',height:'34px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',color:ph.color,flexShrink:'0'},'&#10003;'));
+            var doneEl2=div({width:'52px',height:'34px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'18px',color:ph.color,flexShrink:'0'});
+            doneEl2.innerHTML='&#10003;';
+            topRow.appendChild(doneEl2);
           }
+
+          exCard.appendChild(topRow);
+
+          // Progress bar (shown while timing)
+          if(isTimingThis){
+            var pbWrap=div({height:'3px',background:'#1e1e1e',borderRadius:'2px',overflow:'hidden'});
+            var pbFill=div({height:'100%',background:ac,
+              width:Math.round((1-RFT_EX_TMR.rem/RFT_EX_TMR.secs)*100)+'%',
+              borderRadius:'2px',transition:'width 1s linear'});
+            pbFill.id='rft-ex-pb-'+ex.id;
+            pbWrap.appendChild(pbFill);
+            exCard.appendChild(pbWrap);
+          }
+
           exList.appendChild(exCard);
         });
         blocCard.appendChild(exList);
