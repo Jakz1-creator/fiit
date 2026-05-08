@@ -771,6 +771,101 @@ function getExosForSession(s, w) {
   }
   return getExos(s, w);
 }
+// CITATIONS
+var QUOTES=[
+  {text:"Le corps accomplit ce que l'esprit croit possible.",author:'Da Rulk'},
+  {text:'La douleur est temporaire. La gloire est eternelle.',author:'Anatoly'},
+  {text:'Chaque serie compte. Chaque rep compte.',author:'Da Rulk'},
+  {text:'La force ne vient pas du corps. Elle vient de la volonte indomptable.',author:'Anatoly'},
+  {text:"La ceinture, c'est pour les pantalons.",author:'Anatoly'},
+  {text:'Le mouvement est medicine.',author:'Da Rulk'},
+  {text:"Ne souhaite pas que ce soit plus facile. Souhaite etre meilleur.",author:'Da Rulk'},
+  {text:"Les champions s'entrainent quand ils n'en ont pas envie.",author:'Anatoly'},
+  {text:'La regularite bat l\'intensite sur le long terme.',author:'Da Rulk'},
+  {text:"Ton seul concurrent c'est toi d'hier.",author:'Anatoly'},
+  {text:'Le Raw Functional Training c\'est etre fort pour la vraie vie.',author:'Da Rulk'},
+  {text:'Garde les abdos forts, la ceinture reste au vestiaire.',author:'Anatoly'}
+];
+function getDailyQuote(){var day=Math.floor(Date.now()/(24*3600*1000));return QUOTES[day%QUOTES.length];}
+
+// MUSCLE RECOVERY
+var RECOVERY_H={chest:48,back:48,shoulders:48,quads:72,hamstrings:72,glutes:72,biceps:36,triceps:36,core:24,calves:24};
+function getMuscleRecovery(){
+  var now=Date.now();
+  var lastHit={};
+  var dates=ST.dates||[];
+  var lastDate=dates.length?new Date(dates[dates.length-1]).getTime():0;
+  Object.keys(ST.logs).forEach(function(k){
+    var l=ST.logs[k];if(!l||!l.done)return;
+    var parts=k.split('_');if(parts.length<3)return;
+    var exId=parts[2];
+    var ex=null;
+    SESSIONS.forEach(function(s){Object.keys(s.phaseExercises).forEach(function(p){s.phaseExercises[p].forEach(function(e){if(e.id===exId)ex=e;});});});
+    if(!ex||!ex.mus)return;
+    if(!lastHit[ex.mus]||lastDate>lastHit[ex.mus])lastHit[ex.mus]=lastDate;
+  });
+  var result={};
+  Object.keys(RECOVERY_H).forEach(function(mus){
+    var req=RECOVERY_H[mus]*3600*1000;
+    if(!lastHit[mus]){result[mus]=1;return;}
+    result[mus]=Math.min(1,(now-lastHit[mus])/req);
+  });
+  return result;
+}
+
+// EXERCISE SUBSTITUTIONS
+var SUBS={
+  p1bp:['Dumbbell Bench Press','Push-up Leste','Machine Chest Press'],
+  p1dip:['Bench Dips','Push-up etroit','Cable Crossover'],
+  p1ohp:['Barbell OHP','Arnold Press','Machine Shoulder Press'],
+  q1dl:['Romanian DL','Trap Bar DL','Hip Thrust Leste'],
+  q1lpd:['Tractions','Seated Cable Row','Machine Pulldown'],
+  l1sq:['Goblet Squat','Hack Squat','Leg Press'],
+  l1rdl:['Leg Curl','Nordic Curl','Good Morning'],
+  u1pu:['Lat Pulldown','Seated Row','Australian Pull-up'],
+  p1llr:['Cable Lateral Raise','Machine Lateral','DB Face Pull'],
+  q1cur:['Preacher Curl','Incline DB Curl','Cable Curl'],
+  p2dip:['Bench Dips','Close Grip Push-up','Cable Crossover'],
+  q2pu:['Lat Pulldown','Assisted Pull-up','Inverted Row'],
+  l2bsq:['Lunges DB','Step-up','Pistol Assist'],
+  u2pu:['Lat Pulldown','Seated Row','Australian Pull-up']
+};
+
+// SESSION SHARE
+function shareSessionImage(sessName,doneSets,elapsed,prCount,phColor){
+  try{
+    var canvas=document.createElement('canvas');canvas.width=800;canvas.height=800;
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#080808';ctx.fillRect(0,0,800,800);
+    ctx.strokeStyle=phColor;ctx.lineWidth=4;ctx.strokeRect(16,16,768,768);
+    ctx.strokeStyle=phColor+'40';ctx.lineWidth=1;ctx.strokeRect(28,28,744,744);
+    ctx.fillStyle=phColor;ctx.font='bold 26px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText('JACOBZ - SEANCE COMPLETE',400,75);
+    ctx.fillStyle='#fff';ctx.font='bold 68px Georgia,serif';
+    ctx.fillText(sessName.toUpperCase(),400,170);
+    ctx.strokeStyle=phColor+'60';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(80,200);ctx.lineTo(720,200);ctx.stroke();
+    [{l:'SERIES',v:String(doneSets)},{l:'DUREE',v:elapsed},{l:'RECORDS',v:String(prCount)}].forEach(function(st,i){
+      var x=155+i*245;
+      ctx.fillStyle=phColor;ctx.font='bold 56px Georgia,serif';ctx.textAlign='center';ctx.fillText(st.v,x,300);
+      ctx.fillStyle='#666';ctx.font='18px Georgia,serif';ctx.fillText(st.l,x,332);
+    });
+    ctx.beginPath();ctx.moveTo(80,365);ctx.lineTo(720,365);ctx.stroke();
+    ctx.fillStyle=phColor+'80';ctx.font='20px Georgia,serif';ctx.textAlign='center';
+    ctx.fillText('THOR x ANATOLY  -  '+new Date().toLocaleDateString('fr-FR'),400,740);
+    if(navigator.share){
+      canvas.toBlob(function(blob){
+        var file=new File([blob],'jacobz.png',{type:'image/png'});
+        navigator.share({title:'JACOBZ - '+sessName,files:[file]}).catch(function(){
+          var a=document.createElement('a');a.download='jacobz-'+sessName+'.png';a.href=canvas.toDataURL();a.click();
+        });
+      });
+    }else{
+      var a=document.createElement('a');a.download='jacobz-'+sessName+'.png';a.href=canvas.toDataURL();a.click();
+    }
+  }catch(e){alert('Partage non disponible sur ce navigateur');}
+}
+
 var PM={1:1.0,2:1.065,3:1.125,4:1.175};
 function getPhase(w){return PHASES.find(function(p){return p.weeks.indexOf(w)>=0;})||PHASES[0];}
 function getWIP(w){var p=getPhase(w);return p.weeks.indexOf(w)+1;}
@@ -946,45 +1041,96 @@ function buildTimer(){
   var Rr=54,ci=2*Math.PI*Rr;
   var urgent=t.rem<=10;
   var c=urgent?'#e85e1a':t.rem<=30?'#e07c2a':ph.color;
-  var overlay=div({position:'fixed',inset:'0',zIndex:'2000',display:'flex',alignItems:'flex-end',justifyContent:'center',background:'rgba(0,0,0,0.88)',backdropFilter:'blur(12px)'});
-  var box=div({background:'#0d0d0d',borderRadius:'24px 24px 0 0',border:'2px solid '+c,borderBottom:'none',padding:'24px 28px 52px',width:'100%',maxWidth:'480px'});
-  box.appendChild(div({textAlign:'center',marginBottom:'14px'},'<div style="font-size:9px;color:#555;letter-spacing:5px;margin-bottom:4px;font-family:Bebas Neue,cursive">REPOS</div><div style="font-size:13px;color:#888">'+(t.label||'')+'</div>'));
-  var rw=div({position:'relative',width:'148px',height:'148px',margin:'0 auto 14px'});
+
+  var overlay=div({position:'fixed',inset:'0',zIndex:'2000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(6,6,6,0.97)',backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)'});
+
+  // Top label
+  var topLbl=div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#444',letterSpacing:'6px',marginBottom:'20px'},'REPOS');
+  overlay.appendChild(topLbl);
+
+  // Big countdown ring
+  var rw=div({position:'relative',width:'220px',height:'220px',marginBottom:'28px'});
   var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('width','148');svg.setAttribute('height','148');svg.style.transform='rotate(-90deg)';
-  function mkC(stroke,sw,da,off,id2){
+  svg.setAttribute('width','220');svg.setAttribute('height','220');
+  svg.style.transform='rotate(-90deg)';
+  var bigR=98;var bigCI=2*Math.PI*bigR;
+  function mkCBig(stroke,sw,da,off,id2){
     var c2=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c2.setAttribute('cx','74');c2.setAttribute('cy','74');c2.setAttribute('r',String(Rr));
+    c2.setAttribute('cx','110');c2.setAttribute('cy','110');c2.setAttribute('r',String(bigR));
     c2.setAttribute('fill','none');c2.setAttribute('stroke',stroke);c2.setAttribute('stroke-width',sw);
     if(da){c2.setAttribute('stroke-dasharray',String(da));c2.setAttribute('stroke-dashoffset',String(off));c2.setAttribute('stroke-linecap','round');}
     if(id2){c2.id=id2;c2.style.transition='stroke-dashoffset 1s linear,stroke .4s';}
     return c2;
   }
-  svg.appendChild(mkC('#1a1a1a','7',0,0,''));
-  svg.appendChild(mkC(c,'7',ci,ci*pct,'tcircle'));
+  svg.appendChild(mkCBig('#111','12',0,0,''));
+  svg.appendChild(mkCBig('#1a1a1a','12',bigCI,0,''));
+  var fgCirc=mkCBig(c,'10',bigCI,bigCI*pct,'tcircle');
+  fgCirc.style.filter='drop-shadow(0 0 8px '+c+'80)';
+  svg.appendChild(fgCirc);
   rw.appendChild(svg);
-  var cdN=div({fontFamily:'Bebas Neue,cursive',fontSize:m>0?'44px':'56px',lineHeight:'1',letterSpacing:'2px',color:urgent?'#e85e1a':'#fff'},m>0?(m+':'+(s<10?'0':'')+s):String(s));
-  cdN.id='tcd';
-  var cdU=div({fontSize:'9px',color:'#555',letterSpacing:'4px'},m>0?'MIN':'SEC');
-  cdU.id='tcu';
+
+  // Countdown text center
   var center=div({position:'absolute',inset:'0',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'});
+  var cdN=div({fontFamily:'Bebas Neue,cursive',fontSize:m>0?'72px':'88px',lineHeight:'1',letterSpacing:'-2px',color:urgent?'#e85e1a':'#fff'});
+  cdN.id='tcd';cdN.textContent=m>0?(m+':'+(s<10?'0':'')+s):String(s);
+  var cdU=div({fontSize:'10px',color:'#555',letterSpacing:'5px',marginTop:'4px'});
+  cdU.id='tcu';cdU.textContent=m>0?'MIN':'SEC';
   center.appendChild(cdN);center.appendChild(cdU);
-  rw.appendChild(center);box.appendChild(rw);
-  var pbw=div({width:'100%',height:'3px',background:'#1a1a1a',borderRadius:'3px',overflow:'hidden',marginBottom:'14px'});
-  var pb=div({height:'100%',background:c,width:(pct*100)+'%',borderRadius:'3px',transition:'width 1s linear,background .4s'});
-  pb.id='tbar';pbw.appendChild(pb);box.appendChild(pbw);
+  rw.appendChild(center);
+  overlay.appendChild(rw);
+
+  // Progress bar thin
+  var pbw=div({width:'180px',height:'2px',background:'#1a1a1a',borderRadius:'2px',overflow:'hidden',marginBottom:'32px'});
+  var pb=div({height:'100%',background:c,width:(pct*100)+'%',borderRadius:'2px',transition:'width 1s linear,background .4s',boxShadow:'0 0 8px '+c});
+  pb.id='tbar';pbw.appendChild(pb);
+  overlay.appendChild(pbw);
+
+  // Next exercise — prominent
   if(TNEXT){
-    box.appendChild(div({background:'rgba(255,255,255,0.04)',border:'1px solid #2a2a2a',borderRadius:'10px',padding:'10px 14px',marginBottom:'12px'},'<span style="font-size:9px;color:#555;letter-spacing:3px;font-family:Bebas Neue,cursive">SUIVANT </span><span style="font-size:14px;color:#ccc;font-family:Bebas Neue,cursive;letter-spacing:1px">'+TNEXT+'</span>'));
+    var nxtBox=div({textAlign:'center',marginBottom:'32px'});
+    nxtBox.appendChild(div({fontSize:'9px',color:'#444',letterSpacing:'5px',marginBottom:'8px',fontFamily:'Bebas Neue,cursive'},'PROCHAIN'));
+    nxtBox.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'26px',color:'#ccc',letterSpacing:'2px',lineHeight:'1'},TNEXT));
+    overlay.appendChild(nxtBox);
   }
-  var btns=div({display:'flex',gap:'10px'});
-  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:'#1a1a1a',border:'1px solid #2a2a2a',color:'#aaa',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},t.paused?'REPRENDRE':'PAUSE',function(){
+
+  // Alert
+  if(urgent){
+    var alertDiv=div({background:'rgba(232,94,26,0.15)',border:'1px solid #e85e1a50',borderRadius:'12px',padding:'10px 20px',marginBottom:'24px',fontFamily:'Bebas Neue,cursive',fontSize:'13px',color:'#e85e1a',letterSpacing:'3px'});
+    alertDiv.innerHTML='&#9889; PREPARE-TOI !';
+    overlay.appendChild(alertDiv);
+  }
+
+  // Buttons
+  var btns=div({display:'flex',gap:'12px',width:'100%',maxWidth:'320px',padding:'0 20px'});
+  btns.appendChild(btn({flex:'1',padding:'16px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid #2a2a2a',color:'#888',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},t.paused?'REPRENDRE':'PAUSE',function(){
     TMR.paused=!TMR.paused;
     if(TMR.paused){clearInterval(TMR.iv);cancelNotif();}
     else{timerGo();scheduleNotif(TMR.rem,'JACOBZ - Repos termine',TNEXT?('Prochain : '+TNEXT):"C'est parti !");}
     safeR();
   }));
-  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:c+'18',border:'1px solid '+c+'60',color:c,fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'SKIP',function(){stopTimer();safeR();}));
-  box.appendChild(btns);overlay.appendChild(box);
+
+  // Customizable rest time +/- buttons
+  var adjCol='rgba(255,255,255,0.06)';
+  var adjBtn=div({display:'flex',flexDirection:'column',gap:'4px'});
+  var plus=document.createElement('button');plus.textContent='+15';
+  Object.assign(plus.style,{padding:'7px 12px',borderRadius:'8px',background:adjCol,border:'1px solid #2a2a2a',color:'#666',fontSize:'11px',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px',cursor:'pointer'});
+  plus.addEventListener('click',function(){
+    TMR.rem=Math.min(TMR.rem+15,TMR.secs+60);TMR.secs=Math.max(TMR.secs,TMR.rem);
+    cancelNotif();scheduleNotif(TMR.rem,'JACOBZ - Repos termine',TNEXT?('Prochain : '+TNEXT):"C'est parti !");
+    safeR();
+  });
+  var minus=document.createElement('button');minus.textContent='-15';
+  Object.assign(minus.style,{padding:'7px 12px',borderRadius:'8px',background:adjCol,border:'1px solid #2a2a2a',color:'#666',fontSize:'11px',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px',cursor:'pointer'});
+  minus.addEventListener('click',function(){
+    TMR.rem=Math.max(5,TMR.rem-15);
+    cancelNotif();scheduleNotif(TMR.rem,'JACOBZ - Repos termine',TNEXT?('Prochain : '+TNEXT):"C'est parti !");
+    safeR();
+  });
+  adjBtn.appendChild(plus);adjBtn.appendChild(minus);
+
+  btns.appendChild(adjBtn);
+  btns.appendChild(btn({flex:'1',padding:'16px',borderRadius:'14px',background:c+'20',border:'1px solid '+c+'60',color:c,fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'SKIP',function(){stopTimer();safeR();}));
+  overlay.appendChild(btns);
   return overlay;
 }
 function startTimer(secs,label,next){
@@ -1008,12 +1154,12 @@ function timerGo(){
 function stopTimer(){if(TMR)clearInterval(TMR.iv);TMR=null;TNEXT=null;TALERTED=false;cancelNotif();}
 function tickUI(){
   if(!TMR)return;
-  var Rr=54,ci=2*Math.PI*Rr,pct=(TMR.secs-TMR.rem)/TMR.secs;
+  var bigR=98,bigCI=2*Math.PI*bigR,pct=(TMR.secs-TMR.rem)/TMR.secs;
   var m=Math.floor(TMR.rem/60),s=TMR.rem%60;
   var c=TMR.rem<=10?'#e85e1a':TMR.rem<=30?'#e07c2a':getPhase(ST.week).color;
   var tc=document.getElementById('tcircle'),tb=document.getElementById('tbar');
   var tcd=document.getElementById('tcd'),tcu=document.getElementById('tcu');
-  if(tc){tc.setAttribute('stroke-dashoffset',String(ci*pct));tc.setAttribute('stroke',c);}
+  if(tc){tc.setAttribute('stroke-dashoffset',String(bigCI*pct));tc.setAttribute('stroke',c);}
   if(tb){tb.style.width=(pct*100)+'%';tb.style.background=c;}
   if(tcd){tcd.textContent=m>0?(m+':'+(s<10?'0':'')+s):String(s);tcd.style.color=TMR.rem<=10?'#e85e1a':'#fff';}
   if(tcu)tcu.textContent=m>0?'MIN':'SEC';
@@ -1154,8 +1300,13 @@ function buildExCard(ex,sKey,ph,wip,ssLetters,isSSA,isSSB,nextName){
   var sugKg=(!isBW&&ex.baseKg)?calcKg(ex.baseKg,ph.id,wip,ex.incr):0;
   var isOpen=OPEN===ex.id;
   var ac=isCond?'#64b4ff':isTimed?'#a78bfa':isBW?'#9aeebb':ph.color;
-  var card=div({background:'#0f0f0f',borderRadius:'14px',marginBottom:isSSB?'10px':'6px',border:'1px solid '+(allDone?ac+'55':isOpen?'#2a2a2a':'#181818'),overflow:'hidden'});
-  var ch=div({display:'flex',alignItems:'center',gap:'10px',padding:'14px 16px',cursor:'pointer',background:allDone?(isCond?'rgba(100,180,255,.04)':isBW?'rgba(154,238,187,.04)':'#0f0d08'):'transparent'});
+  var musColors={chest:'#e8856a',back:'#6a9ee8',shoulders:'#e8c96a',quads:'#6ae8a0',hamstrings:'#a06ae8',glutes:'#e86aa0',biceps:'#6ae8e8',triceps:'#e8a06a',core:'#e8e86a',calves:'#a0e86a'};
+  var musCol=ex.mus&&musColors[ex.mus]?musColors[ex.mus]:ph.color;
+  var card=div({background:'#0f0f0f',borderRadius:'14px',marginBottom:isSSB?'10px':'6px',border:'1px solid '+(allDone?ac+'55':isOpen?'#2a2a2a':'#181818'),overflow:'hidden',position:'relative'});
+  // Muscle group color bar on left
+  var musBar=div({position:'absolute',left:'0',top:'0',bottom:'0',width:'3px',background:musCol,borderRadius:'3px 0 0 3px'});
+  card.appendChild(musBar);
+  var ch=div({display:'flex',alignItems:'center',gap:'10px',padding:'14px 16px 14px 20px',cursor:'pointer',background:allDone?(isCond?'rgba(100,180,255,.04)':isBW?'rgba(154,238,187,.04)':'#0f0d08'):'transparent'});
   var ib=div({flex:'1',minWidth:'0'});
   if(ex.ss&&ex.ssPos==='a'&&ssLetters[ex.ss])ib.appendChild(div({display:'inline-flex',background:'#1a1200',border:'1px solid #c8a45a40',borderRadius:'5px',padding:'2px 7px',fontSize:'9px',color:'#c8a45a',letterSpacing:'3px',marginBottom:'5px',fontFamily:'Bebas Neue,cursive'},'SS '+ssLetters[ex.ss]));
   if(isSSB)ib.appendChild(div({display:'inline-flex',background:'#1a1200',border:'1px solid #c8a45a40',borderRadius:'5px',padding:'2px 7px',fontSize:'9px',color:'#c8a45a90',letterSpacing:'3px',marginBottom:'5px',fontFamily:'Bebas Neue,cursive'},'SUITE SS'));
@@ -1200,6 +1351,39 @@ function buildExCard(ex,sKey,ph,wip,ssLetters,isSSA,isSSB,nextName){
     var sw=div({padding:'0 12px 14px',display:'flex',flexDirection:'column',gap:'6px'});
     if(ex.ss&&ex.ssPos==='a')sw.appendChild(div({background:'#150f00',border:'1px solid #c8a45a25',borderRadius:'8px',padding:'8px 12px',fontSize:'11px',color:'#c8a45a80'},'Enchaine SANS REPOS avec exercice suivant'));
     if(ex.ss&&ex.ssPos==='b')sw.appendChild(div({background:'#150f00',border:'1px solid #c8a45a25',borderRadius:'8px',padding:'8px 12px',fontSize:'11px',color:'#c8a45a80'},'Suite SS - repos '+ex.rest+'s apres'));
+    // Tempo display
+    if(ex.tempo){
+      var tempoRow=div({background:'#111',border:'1px solid #1e1e1e',borderRadius:'8px',padding:'8px 12px',display:'flex',alignItems:'center',gap:'12px',marginBottom:'4px'});
+      tempoRow.appendChild(div({fontSize:'9px',color:'#555',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive',flexShrink:'0'},'TEMPO'));
+      var tParts=[{l:'DESCENTE',v:ex.tempo[0]+'s'},{l:'PAUSE BAS',v:ex.tempo[1]+'s'},{l:'MONTEE',v:ex.tempo[2]+'s'}];
+      tParts.forEach(function(tp){
+        var tc=div({textAlign:'center',flex:'1'});
+        tc.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:20px;color:'+ph.color+';letter-spacing:1px">'+tp.v+'</div><div style="font-size:8px;color:#444;letter-spacing:1px;margin-top:2px">'+tp.l+'</div>';
+        tempoRow.appendChild(tc);
+      });
+      sw.appendChild(tempoRow);
+    }
+    // Substitution button
+    if(SUBS[ex.id]){
+      var subBtn=document.createElement('button');
+      subBtn.textContent='SUBSTITUTIONS';
+      Object.assign(subBtn.style,{width:'100%',padding:'8px',borderRadius:'8px',background:'#111',border:'1px solid #252525',color:'#555',fontSize:'10px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',marginBottom:'4px',textAlign:'left'});
+      var subList=div({display:'none',background:'#0d0d0d',border:'1px solid #1e1e1e',borderRadius:'8px',padding:'8px 12px',marginBottom:'4px'});
+      SUBS[ex.id].forEach(function(sub){
+        var si=div({padding:'5px 0',borderBottom:'1px solid #181818',fontSize:'12px',color:'#888',display:'flex',alignItems:'center',gap:'8px'});
+        si.innerHTML='<span style="color:'+ph.color+';font-size:12px">&#10143;</span> '+sub;
+        subList.appendChild(si);
+      });
+      var subOpen=false;
+      subBtn.addEventListener('click',function(e){
+        e.stopPropagation();
+        subOpen=!subOpen;
+        subList.style.display=subOpen?'block':'none';
+        subBtn.style.color=subOpen?ph.color:'#555';
+      });
+      sw.appendChild(subBtn);
+      sw.appendChild(subList);
+    }
     for(var ii=0;ii<ex.sets;ii++)sw.appendChild(buildSetRow(ii,ex,logs[ii],sKey,ph,wip,nextName));
     card.appendChild(sw);
   }
@@ -1546,11 +1730,16 @@ function buildSession(){
 
   if(allDone){
     var elapsed=T0?Math.floor((Date.now()-T0)/1000):0;
+    var prThisSess=exos.filter(function(ex){return ST.prs[ex.id];}).length;
     var ds=div({padding:'30px 20px',textAlign:'center'});
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'64px',color:ph.color,lineHeight:'1',letterSpacing:'4px',marginBottom:'8px'},'GG'));
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'20px',color:'#aaa',letterSpacing:'3px',marginBottom:'6px'},s.name+' COMPLETE'));
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'14px',color:'#555',letterSpacing:'3px',marginBottom:'20px'},'Duree: '+fmtTime(elapsed)));
-    ds.appendChild(btn({display:'block',width:'100%',padding:'16px',borderRadius:'14px',fontSize:'16px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive',background:ph.color,border:'none',color:'#000',cursor:'pointer'},'RETOUR ACCUEIL',function(){SUBVIEW='home';relWL();OPEN=null;ANIM='back';safeR();}));
+    // Share button
+    var shareRow=div({display:'flex',gap:'10px',marginBottom:'12px'});
+    shareRow.appendChild(btn({flex:'1',padding:'14px',borderRadius:'14px',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',background:ph.color+'20',border:'1px solid '+ph.color+'60',color:ph.color,cursor:'pointer'},'PARTAGER',function(){shareSessionImage(s.name,totalSets,fmtTime(elapsed),prThisSess,ph.color);}));
+    shareRow.appendChild(btn({flex:'1',padding:'14px',borderRadius:'14px',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',background:ph.color,border:'none',color:'#000',cursor:'pointer'},'ACCUEIL',function(){SUBVIEW='home';relWL();OPEN=null;ANIM='back';safeR();}));
+    ds.appendChild(shareRow);
     root.appendChild(ds);
   }else{
     var el2=div({padding:'14px 14px 0'});
@@ -1670,12 +1859,15 @@ function buildHome(){
   var completed=SESSIONS.filter(function(s){var st=sesStats(s);return st.done===st.total&&st.total>0;}).length;
   var strk=calcStreak(),prs=Object.keys(ST.prs).length,weeksLeft=17-ST.week;
   var root=div({minHeight:'100vh',background:'#080808',paddingBottom:'80px'});
-  var hero=div({background:'linear-gradient(175deg,#100c03,#080808)',borderBottom:'1px solid '+ph.color+'20',padding:'28px 20px 20px'});
-  var jacobzLogo=div({fontFamily:'Bebas Neue,cursive',fontSize:'34px',letterSpacing:'5px',color:ph.color,lineHeight:'1'},'JACOBZ');
+  var hero=div({background:'linear-gradient(165deg,#120e04 0%,#0d0a02 40%,#080808 100%)',borderBottom:'1px solid '+ph.color+'25',padding:'32px 20px 24px',position:'relative',overflow:'hidden'});
+  // Subtle glow orb behind logo
+  var orb=div({position:'absolute',top:'-40px',right:'-40px',width:'200px',height:'200px',borderRadius:'50%',background:'radial-gradient(circle,'+ph.color+'12 0%,transparent 70%)',pointerEvents:'none'});
+  hero.appendChild(orb);
+  var jacobzLogo=div({fontFamily:'Bebas Neue,cursive',fontSize:'42px',letterSpacing:'6px',color:ph.color,lineHeight:'1',position:'relative',zIndex:'1'},'JACOBZ');
   jacobzLogo.className='pulse-logo';
   hero.appendChild(jacobzLogo);
-  hero.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'16px',letterSpacing:'4px',color:'#3a3a3a',marginTop:'2px'},'THOR x ANATOLY'));
-  hero.appendChild(div({fontSize:'9px',color:'#444',letterSpacing:'4px',marginTop:'2px'},'16-WEEK HYBRID PROGRAM'));
+  hero.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'13px',letterSpacing:'6px',color:ph.color+'50',marginTop:'2px',position:'relative',zIndex:'1'},'THOR x ANATOLY'));
+  hero.appendChild(div({fontSize:'9px',color:'#333',letterSpacing:'4px',marginTop:'2px',position:'relative',zIndex:'1'},'16-WEEK HYBRID PROGRAM'));
   var badge=div({display:'flex',alignItems:'center',gap:'10px',background:ph.dim,border:'1px solid '+ph.color+'40',borderRadius:'12px',padding:'11px 14px',marginTop:'14px'});
   badge.appendChild(div({width:'8px',height:'8px',borderRadius:'50%',background:ph.color,boxShadow:'0 0 10px '+ph.color,flexShrink:'0'}));
   var badgeInfo=div({flex:'1'});
@@ -1722,7 +1914,11 @@ function buildHome(){
   });
   content.appendChild(sg);
 
-  // SMART INSIGHTS
+  // Daily quote
+  var quote=getDailyQuote();
+  var qBox=div({background:'linear-gradient(135deg,'+ph.color+'10,transparent)',border:'1px solid '+ph.color+'25',borderRadius:'14px',padding:'14px 18px',marginBottom:'14px',position:'relative'});
+  qBox.innerHTML='<div style="font-size:9px;color:'+ph.color+'80;letter-spacing:4px;font-family:Bebas Neue,cursive;margin-bottom:6px">CITATION DU JOUR</div><div style="font-size:13px;color:#ccc;line-height:1.5;font-style:italic">"'+quote.text+'"</div><div style="font-size:10px;color:'+ph.color+';margin-top:8px;font-family:Bebas Neue,cursive;letter-spacing:2px">- '+quote.author+'</div>';
+  content.appendChild(qBox);
   var alerts=getSmartAlerts();
   if(alerts.length>0){
     content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'10px'},'INSIGHTS'));
@@ -1884,6 +2080,25 @@ function buildStats(){
   content.appendChild(sg);
 
   // Heatmap
+  // Muscle recovery
+  content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'12px'},'RECUPERATION MUSCULAIRE'));
+  var recov=getMuscleRecovery();
+  var recovBox=div({background:'#0f0f0f',borderRadius:'14px',padding:'16px',marginBottom:'16px',border:'1px solid #181818'});
+  var recovMuscles=[{k:'chest',n:'Pectoraux'},{k:'back',n:'Dos'},{k:'shoulders',n:'Epaules'},{k:'quads',n:'Quadriceps'},{k:'hamstrings',n:'Ischio'},{k:'glutes',n:'Fessiers'},{k:'biceps',n:'Biceps'},{k:'triceps',n:'Triceps'},{k:'core',n:'Core'},{k:'calves',n:'Mollets'}];
+  recovMuscles.forEach(function(m){
+    var val=recov[m.k]||0;
+    var col=val>=0.9?'#9aeebb':val>=0.6?ph.color:val>=0.3?'#e07c2a':'#e85e1a';
+    var label=val>=0.9?'OK':val>=0.6?'BIENTOT':val>=0.3?'FATIGUE':'AU REPOS';
+    var row=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'8px'});
+    row.appendChild(div({fontSize:'11px',color:'#777',width:'100px',flexShrink:'0'},m.n));
+    var barWrap=div({flex:'1',height:'5px',background:'#1a1a1a',borderRadius:'3px',overflow:'hidden'});
+    barWrap.appendChild(div({height:'100%',background:col,width:Math.round(val*100)+'%',borderRadius:'3px',transition:'width .6s ease'}));
+    row.appendChild(barWrap);
+    row.appendChild(div({fontSize:'9px',color:col,width:'54px',textAlign:'right',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px'},label));
+    recovBox.appendChild(row);
+  });
+  content.appendChild(recovBox);
+
   content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'12px'},'HEATMAP MUSCULAIRE - SEMAINE EN COURS'));
   var load=getMuscleLoad();
   var hmBox=div({background:'#0f0f0f',borderRadius:'14px',padding:'16px',marginBottom:'20px',border:'1px solid #181818'});
@@ -2021,6 +2236,10 @@ function buildAgenda(){
 // BOOT
 R();
 requestNotifPermission();
+// Service Worker for offline mode
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
 if(!sessionStorage.getItem('jacobz_intro')){
   sessionStorage.setItem('jacobz_intro','1');
   showIntro();
