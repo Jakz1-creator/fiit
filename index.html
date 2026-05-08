@@ -503,84 +503,181 @@ var SESSIONS=[
     {id:'sg3sh',name:'Shrimp Squat Strict',sets:4,reps:5,rest:120,notes:'Full ROM, 5/jambe',bwOnly:true,mus:'quads'},
     {id:'sg3nd',name:'Nordic Curl Full',sets:4,reps:5,rest:150,notes:'Amplitude complete',bwOnly:true,mus:'hamstrings'},
     {id:'sg3pl',name:'Plyo Pistol',sets:4,reps:5,rest:150,notes:'Pistol explosif, saut',bwOnly:true,mus:'quads'},
-    {id:'sg3dr',name:'Dragon Flag Strict',sets:4,reps:8,rest:120,notes:'Lent et contrôlé',bwOnly:true,mus:'core'},
+    {id:'sg3dr',name:'Dragon Flag Strict',sets:4,reps:8,rest:120,notes:'Lent et controle',bwOnly:true,mus:'core'},
     {id:'sg3hf',name:'Human Flag Tuck',sets:3,reps:10,rest:90,notes:'10s tenue tuck',bwOnly:true,mus:'core'}
   ]
 }},
-{id:'rftA',name:'RFT A',sub:'Raw Functional Training - Ground & Flow',tag:'RFT',wu:'rft',phaseExercises:{
+{id:'rftA',name:'RFT A',sub:'3 Blocs - 3 rounds - 30 a 45s',tag:'RFT',wu:'rft',rftCircuit:true,phaseExercises:{
   1:[
-    {id:'r1fc',name:'Forward/Reverse Crawl',sets:5,reps:35,rest:45,notes:'10+10. Genoux a 2cm sol, max lenteur',bwOnly:true,timed:true,mus:'core'},
-    {id:'r1sc',name:'Side Crawl',sets:5,reps:35,rest:45,notes:'10+10. Parfait alignement epaules/hanches',bwOnly:true,timed:true,mus:'core'},
-    {id:'r1st',name:'Sit-Thru',sets:4,reps:40,rest:45,notes:'8+8. Extension complete, hanches au max',bwOnly:true,timed:true,mus:'core'},
-    {id:'r1sg',name:'Side Gorilla',sets:4,reps:40,rest:60,notes:'8+8. Amplitude maximale, atterrissage soft',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r1hs',name:'5-Jump Hostage',sets:4,reps:45,rest:60,notes:'5 sauts par rep. Squat bas strict',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r1hp',name:'Hopscotch Explosif',sets:4,reps:40,rest:45,notes:'10+10. Puissance max chaque jump',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r1sw',name:'Switch Rapide',sets:5,reps:45,rest:45,notes:'Full speed, rotation hanches complete',bwOnly:true,timed:true,mus:'core'}
+    {id:'ra1_b1_1',name:'Side Crawl',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Dos plat, hanches stables'},
+    {id:'ra1_b1_2',name:'Switch',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Rotation explosive des hanches'},
+    {id:'ra1_b1_3',name:'Push-up',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'chest',notes:'Full ROM controle'},
+    {id:'ra1_b2_1',name:'Vertical Jump',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Max hauteur, atterrissage soft'},
+    {id:'ra1_b2_2',name:'Mountain Climbers',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Genoux au maximum'},
+    {id:'ra1_b2_3',name:'Hostages',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Position basse stricte'},
+    {id:'ra1_b2_4',name:'Crawl Hold',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Statique, core brule'},
+    {id:'ra1_b3_1',name:'Forward Lunge + Reverse Crawl',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Fente avant puis crawl'},
+    {id:'ra1_b3_2',name:'Gorilla',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Amplitude maximale'},
+    {id:'ra1_b3_3',name:'Lateral Lunge',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Fente laterale alternee'},
+    {id:'ra1_b3_4',name:'Sit-Thru',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Extension complete'},
+    {id:'ra1_fin',name:'Side Gorilla',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Finisher - amplitude max'}
   ],
   2:[
-    {id:'r2fc',name:'Crawl + Rotation',sets:5,reps:40,rest:45,notes:'Ajoute rotation tronc a chaque pas',bwOnly:true,timed:true,mus:'core'},
-    {id:'r2sc',name:'Side Crawl Deficit',sets:5,reps:40,rest:45,notes:'Mains sur sureleve 5cm. Plus d amplitude',bwOnly:true,timed:true,mus:'core'},
-    {id:'r2st',name:'Sit-Thru Tempo',sets:5,reps:45,rest:45,notes:'10+10. 2s pause en extension basse',bwOnly:true,timed:true,mus:'core'},
-    {id:'r2sg',name:'Side Gorilla Explo',sets:5,reps:45,rest:60,notes:'10+10. Jump lateral puissant',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r2hs',name:'Hostage Sprint 10m',sets:5,reps:50,rest:60,notes:'10m position hostage non-stop',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r2cc',name:'Crawl > Sit-Thru > Switch',sets:4,reps:45,rest:60,notes:'3 de chaque enchaine. Zero pause',bwOnly:true,timed:true,mus:'core'},
-    {id:'r2rf',name:'RFT Flow Sequence',sets:4,reps:45,rest:90,notes:'Crawl+SitThru+Gorilla+Switch+Hopscotch',bwOnly:true,timed:true,mus:'core'}
+    {id:'ra2_b1_1',name:'Side Crawl + Sit-Thru',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Combo enchaine'},
+    {id:'ra2_b1_2',name:'Push-up + Gorilla',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'chest',notes:'Push-up puis gorilla'},
+    {id:'ra2_b1_3',name:'Side Gorilla + Vertical Jump',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Gorilla puis saut'},
+    {id:'ra2_b2_1',name:'Squat to Switches',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Squat bas puis switch'},
+    {id:'ra2_b2_2',name:'Reverse Lunge',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Fente arriere alternee'},
+    {id:'ra2_b2_3',name:'Ballistic Pulses',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Pulses explosifs'},
+    {id:'ra2_b2_4',name:'Rolling Gorilla',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Gorilla avec roulade'},
+    {id:'ra2_b3_1',name:'Mountain Climbers',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Genoux au max'},
+    {id:'ra2_b3_2',name:'Plank to Knee Drop',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Planche puis drop'},
+    {id:'ra2_b3_3',name:'Push-up',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'chest',notes:'Full ROM'},
+    {id:'ra2_b3_4',name:'Jumping Jacks',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Full amplitude'},
+    {id:'ra2_fin',name:'Sit-Thru',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Finisher - extension complete'}
   ],
   3:[
-    {id:'r3fc',name:'Crawl Complex',sets:6,reps:45,rest:30,notes:'15 fwd+15 side. Core isometrique',bwOnly:true,timed:true,mus:'core'},
-    {id:'r3st',name:'Sit-Thru Explosif',sets:5,reps:45,rest:30,notes:'12+12. Vitesse + amplitude',bwOnly:true,timed:true,mus:'core'},
-    {id:'r3sg',name:'Gorilla + Sit-Thru Combo',sets:5,reps:50,rest:45,notes:'6+6 gorilla > 6+6 sit-thru enchaine',bwOnly:true,timed:true,mus:'core'},
-    {id:'r3hs',name:'Hostage AMRAP',sets:4,reps:50,rest:60,notes:'40 reps position basse. No rise.',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r3hp',name:'Hopscotch Complex',sets:5,reps:45,rest:45,notes:'12+12 + rotation torso au landing',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r3rf',name:'RFT L1 Sequence',sets:5,reps:45,rest:90,notes:'Full 9 mouvements. Time chaque tour',bwOnly:true,timed:true,mus:'core'},
-    {id:'r3cb',name:'Ground Flow Burnout',sets:3,reps:45,rest:30,notes:'Crawl 5+SitThru 5+Gorilla 5+Switch 5+Drop 5',bwOnly:true,timed:true,mus:'core'}
+    {id:'ra3_b1_1',name:'Sit-Thru + Push-up',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Sit-thru puis push-up'},
+    {id:'ra3_b1_2',name:'Jumping Jacks',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Full amplitude'},
+    {id:'ra3_b1_3',name:'Gorilla + Vertical Jump',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Gorilla puis saut'},
+    {id:'ra3_b2_1',name:'Bear Crawl + Vertical Jump',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Crawl puis saut'},
+    {id:'ra3_b2_2',name:'Switch',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Full speed'},
+    {id:'ra3_b2_3',name:'Hostages',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Position basse'},
+    {id:'ra3_b2_4',name:'Spiderman Push-up',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'chest',notes:'Genou coude simultane'},
+    {id:'ra3_b3_1',name:'Mountain Climbers',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Max vitesse'},
+    {id:'ra3_b3_2',name:'Tuck Jumps',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Genoux hauts'},
+    {id:'ra3_b3_3',name:'Rocking Chair',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Roulade avant arriere'},
+    {id:'ra3_b3_4',name:'Run',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Sprint ou course sur place'},
+    {id:'ra3_fin',name:'Ballistic Pulses',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Finisher - max intensite'}
   ],
   4:[
-    {id:'r4fc',name:'Crawl Under Pressure',sets:6,reps:50,rest:30,notes:'20+20. Position maximalement basse',bwOnly:true,timed:true,mus:'core'},
-    {id:'r4st',name:'Sit-Thru Max Speed',sets:6,reps:50,rest:30,notes:'15+15. Vitesse absolue, pas de triche',bwOnly:true,timed:true,mus:'core'},
-    {id:'r4sg',name:'Gorilla Power Peak',sets:6,reps:50,rest:45,notes:'12+12. Jump max, atterrissage squat',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r4hs',name:'Hostage Combo Peak',sets:5,reps:50,rest:60,notes:'5-jump x10. Non-stop',bwOnly:true,timed:true,mus:'quads'},
-    {id:'r4rf',name:'RFT L1 PR Attempt',sets:6,reps:50,rest:90,notes:'Beat your best time. Chaque tour compte',bwOnly:true,timed:true,mus:'core'},
-    {id:'r4cb',name:'Full CNS Burnout',sets:4,reps:50,rest:30,notes:'Crawl 6+SitThru 6+Gorilla 6+Switch 6+Drop 6+Hop 6',bwOnly:true,timed:true,mus:'core'},
-    {id:'r4mx',name:'RFT Max Density',sets:3,reps:50,rest:60,notes:'20 min AMRAP full sequence. Record tes tours',bwOnly:true,timed:true,mus:'core'}
+    {id:'ra4_b1_1',name:'Crawl + Sit-Thru + Push-up',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Triple combo enchaine'},
+    {id:'ra4_b1_2',name:'Burpee',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Full burpee explosif'},
+    {id:'ra4_b1_3',name:'Gorilla + Jump + Switch',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple enchainement'},
+    {id:'ra4_b2_1',name:'Bear Crawl + Switch + Jump',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Triple combo explosive'},
+    {id:'ra4_b2_2',name:'Spiderman Push-up + Gorilla',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Combo force'},
+    {id:'ra4_b2_3',name:'Tuck Jump + Burpee',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Combo explosif'},
+    {id:'ra4_b2_4',name:'Mountain Climbers',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Max vitesse'},
+    {id:'ra4_b3_1',name:'Rocking Chair + Jump',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Roulade puis saut'},
+    {id:'ra4_b3_2',name:'Lunge + Gorilla + Sit-Thru',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple fonctionnel'},
+    {id:'ra4_b3_3',name:'Run + Switch',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Sprint puis switch'},
+    {id:'ra4_b3_4',name:'Burpee + Push-up',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Burpee avec push-up'},
+    {id:'ra4_fin',name:'Ballistic Pulses',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Finisher - peak intensity'}
   ]
 }},
-{id:'rftB',name:'RFT B',sub:'Raw Functional Training - Power & CNS',tag:'RFT',wu:'rft',phaseExercises:{
+{id:'rftB',name:'RFT B',sub:'3 Blocs - 3 rounds - 30 a 45s',tag:'RFT',wu:'rft',rftCircuit:true,phaseExercises:{
   1:[
-    {id:'s1td',name:'3-Step Drop',sets:5,reps:40,rest:60,notes:'Squat>jump parallele>squat>saut avant. Full power',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s1bc',name:'Bear Crawl Sprint',sets:5,reps:40,rest:45,notes:'10m A/R en sprint crawl. Max vitesse',bwOnly:true,timed:true,mus:'core'},
-    {id:'s1sw',name:'Switch Complex',sets:5,reps:45,rest:45,notes:'Alternance speed/control. Hanches full rotation',bwOnly:true,timed:true,mus:'core'},
-    {id:'s1cc',name:'Crawl > Switch > Drop',sets:4,reps:45,rest:75,notes:'3 de chaque enchaine. Sequencing RFT',bwOnly:true,timed:true,mus:'core'},
-    {id:'s1sg',name:'Gorilla Circuit Lateral',sets:4,reps:40,rest:60,notes:'10+10. Jump lateral max amplitude',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s1gb',name:'Gorilla to Sit-Thru',sets:4,reps:40,rest:60,notes:'6+6 combo. Fluidite totale',bwOnly:true,timed:true,mus:'core'},
-    {id:'s1rf',name:'RFT Sequence',sets:4,reps:45,rest:90,notes:'1 tour des 9 mouvements x4. Timer',bwOnly:true,timed:true,mus:'core'}
+    {id:'rb1_b1_1',name:'Bear Crawl',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Genoux a 2cm sol'},
+    {id:'rb1_b1_2',name:'Burpee',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Full mouvement'},
+    {id:'rb1_b1_3',name:'Side Gorilla',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Amplitude maximale'},
+    {id:'rb1_b2_1',name:'Push-up',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'chest',notes:'Controle, full ROM'},
+    {id:'rb1_b2_2',name:'Jumping Jacks',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Full amplitude'},
+    {id:'rb1_b2_3',name:'Switch',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Rotation hanches'},
+    {id:'rb1_b2_4',name:'Squat Jump',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Squat bas puis saut'},
+    {id:'rb1_b3_1',name:'Gorilla',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Lateral max'},
+    {id:'rb1_b3_2',name:'Mountain Climbers',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Explosif'},
+    {id:'rb1_b3_3',name:'Reverse Lunge',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Alternee controle'},
+    {id:'rb1_b3_4',name:'Sit-Thru',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Extension complete'},
+    {id:'rb1_fin',name:'Burpee',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Finisher - max reps'}
   ],
   2:[
-    {id:'s2td',name:'3-Step Drop Explosif',sets:6,reps:45,rest:60,notes:'Chaque saut a hauteur max',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s2bc',name:'Bear Crawl AMRAP',sets:5,reps:45,rest:45,notes:'30s max distance. Chronometrer',bwOnly:true,timed:true,mus:'core'},
-    {id:'s2sw',name:'Switch Max Power',sets:5,reps:50,rest:45,notes:'Full speed. CNS activation',bwOnly:true,timed:true,mus:'core'},
-    {id:'s2cc',name:'Full RFT Complex',sets:5,reps:45,rest:75,notes:'Crawl+Switch+SitThru+Gorilla+Drop. No pause',bwOnly:true,timed:true,mus:'core'},
-    {id:'s2hs',name:'5-Jump Hostage AMRAP',sets:5,reps:50,rest:75,notes:'30 reps. Position ultra-basse strict',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s2hp',name:'Hopscotch to Switch',sets:5,reps:45,rest:60,notes:'10+10 hopscotch > 20 switch. Combo',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s2rf',name:'RFT L1 Speed Round',sets:5,reps:45,rest:90,notes:'Bats ton record precedent. Sprint',bwOnly:true,timed:true,mus:'core'}
+    {id:'rb2_b1_1',name:'Bear Crawl + Switch',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Crawl puis switch'},
+    {id:'rb2_b1_2',name:'Burpee + Gorilla',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Burpee puis gorilla'},
+    {id:'rb2_b1_3',name:'Side Gorilla + Jump',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Gorilla puis saut'},
+    {id:'rb2_b2_1',name:'Push-up + Mountain Climbers',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'chest',notes:'Push-up puis climbers'},
+    {id:'rb2_b2_2',name:'Jumping Jacks + Switch',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Combo cardio'},
+    {id:'rb2_b2_3',name:'Squat + Jump + Switch',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Triple enchaine'},
+    {id:'rb2_b3_1',name:'Reverse Lunge + Gorilla',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Lunge puis gorilla'},
+    {id:'rb2_b3_2',name:'Sit-Thru + Push-up',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Rotation puis push-up'},
+    {id:'rb2_b3_3',name:'Lateral Lunge + Jump',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Fente puis saut'},
+    {id:'rb2_b3_4',name:'Plank to Knee Drop',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Planche dynamique'},
+    {id:'rb2_fin',name:'Ballistic Pulses',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Finisher explosif'}
   ],
   3:[
-    {id:'s3td',name:'3-Step Drop Max',sets:6,reps:50,rest:60,notes:'Peak puissance. Amortis pas les sauts',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s3bc',name:'Bear Crawl + Switch',sets:6,reps:50,rest:30,notes:'12 crawl > 12 switch enchaines. No stop',bwOnly:true,timed:true,mus:'core'},
-    {id:'s3cc',name:'RFT Combat Circuit',sets:5,reps:50,rest:60,notes:'Drop+Gorilla+Switch+SitThru+Crawl x3',bwOnly:true,timed:true,mus:'core'},
-    {id:'s3hs',name:'Hostage Peak',sets:6,reps:50,rest:75,notes:'Pas un seul ratchet. Position parfaite',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s3cb',name:'CNS Burnout Elite',sets:4,reps:45,rest:30,notes:'6 de chaque mouvement. Non-stop',bwOnly:true,timed:true,mus:'core'},
-    {id:'s3rf',name:'RFT L1 PR',sets:6,reps:50,rest:90,notes:'Meilleur temps. Chaque rep parfaite',bwOnly:true,timed:true,mus:'core'},
-    {id:'s3mx',name:'20min AMRAP RFT',sets:1,reps:50,rest:0,notes:'20 minutes AMRAP sequence complete. Compte tes tours',bwOnly:true,timed:true,mus:'core'}
+    {id:'rb3_b1_1',name:'Bear Crawl + Burpee',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Crawl puis burpee'},
+    {id:'rb3_b1_2',name:'Side Gorilla + Sit-Thru',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Lateral puis rotation'},
+    {id:'rb3_b1_3',name:'Switch + Jump',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Switch puis saut'},
+    {id:'rb3_b2_1',name:'Spiderman Push-up',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'chest',notes:'Genou coude simultane'},
+    {id:'rb3_b2_2',name:'Tuck Jumps',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Genoux hauts explosif'},
+    {id:'rb3_b2_3',name:'Mountain Climbers',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Max vitesse'},
+    {id:'rb3_b2_4',name:'Rolling Gorilla',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Gorilla avec roulade'},
+    {id:'rb3_b3_1',name:'Rocking Chair',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Roulade avant arriere'},
+    {id:'rb3_b3_2',name:'Burpee + Push-up',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'chest',notes:'Burpee avec push-up'},
+    {id:'rb3_b3_3',name:'Lateral Lunge + Gorilla',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Combo fonctionnel'},
+    {id:'rb3_b3_4',name:'Run',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Sprint max'},
+    {id:'rb3_fin',name:'Burpee',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Finisher - beast mode'}
   ],
   4:[
-    {id:'s4td',name:'3-Step Drop Beast',sets:6,reps:50,rest:45,notes:'Peak phase. Chaque saut = PR',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s4bc',name:'Sprint Crawl Complex',sets:6,reps:50,rest:30,notes:'15m sprint A/R + 15 switch. No mercy',bwOnly:true,timed:true,mus:'core'},
-    {id:'s4cc',name:'RFT L2 Prep',sets:6,reps:50,rest:60,notes:'Sequence avancee. Ajoute variations',bwOnly:true,timed:true,mus:'core'},
-    {id:'s4hs',name:'Hostage + Drop Combo',sets:6,reps:50,rest:60,notes:'20 hostage > 20 drop. Transition instantanee',bwOnly:true,timed:true,mus:'quads'},
-    {id:'s4cb',name:'Ultimate CNS Burnout',sets:5,reps:50,rest:30,notes:'Crawl 9+Switch 9+Drop 9+Gorilla 9+SitThru 9',bwOnly:true,timed:true,mus:'core'},
-    {id:'s4rf',name:'RFT L1 Peak Time',sets:6,reps:50,rest:90,notes:'Record absolu. 8 tours. Beat it.',bwOnly:true,timed:true,mus:'core'},
-    {id:'s4fx',name:'30min RFT AMRAP Final',sets:1,reps:50,rest:0,notes:'30 minutes. Compte tes tours. Ton benchmark.',bwOnly:true,timed:true,mus:'core'}
+    {id:'rb4_b1_1',name:'Bear Crawl + Burpee + Switch',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Triple combo elite'},
+    {id:'rb4_b1_2',name:'Gorilla + Jump + Sit-Thru',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple enchaine'},
+    {id:'rb4_b1_3',name:'Spiderman Push-up + Gorilla',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Force combo'},
+    {id:'rb4_b2_1',name:'Tuck Jump + Burpee',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Explosif max'},
+    {id:'rb4_b2_2',name:'Mountain Climbers + Push-up',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Cardio force'},
+    {id:'rb4_b2_3',name:'Rolling Gorilla + Jump',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Roulade puis saut'},
+    {id:'rb4_b2_4',name:'Switch + Tuck Jump',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'CNS activation'},
+    {id:'rb4_b3_1',name:'Rocking Chair + Burpee',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Combo intense'},
+    {id:'rb4_b3_2',name:'Lateral Lunge + Gorilla + Jump',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple leg combo'},
+    {id:'rb4_b3_3',name:'Run + Switch',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Sprint puis rotation'},
+    {id:'rb4_b3_4',name:'Push-up + Mountain Climbers',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Force puis cardio'},
+    {id:'rb4_fin',name:'Burpee',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Finisher - beast mode'}
+  ]
+}},
+{id:'rftC',name:'RFT C',sub:'3 Blocs - 3 rounds - 30 a 45s',tag:'RFT',wu:'rft',rftCircuit:true,phaseExercises:{
+  1:[
+    {id:'rc1_b1_1',name:'Hopscotch',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Balance et controle'},
+    {id:'rc1_b1_2',name:'Push-up',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'chest',notes:'Full ROM'},
+    {id:'rc1_b1_3',name:'Side Crawl',bloc:0,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Dos plat'},
+    {id:'rc1_b2_1',name:'Squat Jump',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Explosif'},
+    {id:'rc1_b2_2',name:'Switch',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Rotation hanches'},
+    {id:'rc1_b2_3',name:'Plank Hold',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Gainage strict'},
+    {id:'rc1_b2_4',name:'Mountain Climbers',bloc:1,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Explosif'},
+    {id:'rc1_b3_1',name:'Lateral Lunge',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Alternee'},
+    {id:'rc1_b3_2',name:'Gorilla',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'quads',notes:'Lateral max'},
+    {id:'rc1_b3_3',name:'Rocking Chair',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Roulade controle'},
+    {id:'rc1_b3_4',name:'Sit-Thru',bloc:2,sets:3,reps:30,timed:true,bwOnly:true,mus:'core',notes:'Extension complete'},
+    {id:'rc1_fin',name:'Side Gorilla',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Finisher lateral'}
+  ],
+  2:[
+    {id:'rc2_b1_1',name:'Hopscotch + Switch',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Balance puis rotation'},
+    {id:'rc2_b1_2',name:'Push-up + Sit-Thru',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'chest',notes:'Push-up puis rotation'},
+    {id:'rc2_b1_3',name:'Side Crawl + Gorilla',bloc:0,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Crawl puis gorilla'},
+    {id:'rc2_b2_1',name:'Squat Jump + Switch',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Saut puis rotation'},
+    {id:'rc2_b2_2',name:'Plank to Knee Drop',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Planche dynamique'},
+    {id:'rc2_b2_3',name:'Mountain Climbers',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Max vitesse'},
+    {id:'rc2_b2_4',name:'Burpee',bloc:1,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Full mouvement'},
+    {id:'rc2_b3_1',name:'Lateral Lunge + Gorilla',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'quads',notes:'Combo leg'},
+    {id:'rc2_b3_2',name:'Rocking Chair + Jump',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Roulade puis saut'},
+    {id:'rc2_b3_3',name:'Sit-Thru + Push-up',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Rotation puis push-up'},
+    {id:'rc2_b3_4',name:'Switch',bloc:2,sets:3,reps:35,timed:true,bwOnly:true,mus:'core',notes:'Full speed'},
+    {id:'rc2_fin',name:'Ballistic Pulses',bloc:3,finisher:true,sets:1,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Finisher explosif'}
+  ],
+  3:[
+    {id:'rc3_b1_1',name:'Hopscotch + Gorilla',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Balance puis lateral'},
+    {id:'rc3_b1_2',name:'Spiderman Push-up + Sit-Thru',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'chest',notes:'Force puis rotation'},
+    {id:'rc3_b1_3',name:'Bear Crawl + Switch',bloc:0,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Crawl puis rotation'},
+    {id:'rc3_b2_1',name:'Tuck Jump + Switch',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Saut puis rotation'},
+    {id:'rc3_b2_2',name:'Mountain Climbers + Push-up',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Cardio puis force'},
+    {id:'rc3_b2_3',name:'Rolling Gorilla',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Gorilla avec roulade'},
+    {id:'rc3_b2_4',name:'Burpee',bloc:1,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Full effort'},
+    {id:'rc3_b3_1',name:'Lateral Lunge + Jump',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Lunge puis saut'},
+    {id:'rc3_b3_2',name:'Rocking Chair + Gorilla',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Roulade puis lateral'},
+    {id:'rc3_b3_3',name:'Run',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'quads',notes:'Sprint max'},
+    {id:'rc3_b3_4',name:'Sit-Thru + Jump',bloc:2,sets:3,reps:40,timed:true,bwOnly:true,mus:'core',notes:'Rotation puis saut'},
+    {id:'rc3_fin',name:'Burpee',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Finisher beast mode'}
+  ],
+  4:[
+    {id:'rc4_b1_1',name:'Hopscotch + Gorilla + Switch',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple combo'},
+    {id:'rc4_b1_2',name:'Spiderman Push-up + Burpee',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Force combo'},
+    {id:'rc4_b1_3',name:'Bear Crawl + Sit-Thru + Jump',bloc:0,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Triple enchaine'},
+    {id:'rc4_b2_1',name:'Tuck Jump + Burpee + Switch',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple explosive'},
+    {id:'rc4_b2_2',name:'Mountain Climbers + Push-up',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Cardio force'},
+    {id:'rc4_b2_3',name:'Rolling Gorilla + Jump',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Gorilla puis saut'},
+    {id:'rc4_b2_4',name:'Run + Switch',bloc:1,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Sprint puis rotation'},
+    {id:'rc4_b3_1',name:'Lateral Lunge + Gorilla + Jump',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Triple leg power'},
+    {id:'rc4_b3_2',name:'Rocking Chair + Burpee',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Roulade puis burpee'},
+    {id:'rc4_b3_3',name:'Sit-Thru + Push-up + Jump',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'core',notes:'Triple enchaine'},
+    {id:'rc4_b3_4',name:'Push-up + Mountain Climbers',bloc:2,sets:3,reps:45,timed:true,bwOnly:true,mus:'chest',notes:'Force cardio'},
+    {id:'rc4_fin',name:'Ballistic Pulses',bloc:3,finisher:true,sets:1,reps:45,timed:true,bwOnly:true,mus:'quads',notes:'Finisher peak'}
   ]
 }}
 ];
@@ -632,7 +729,18 @@ function vidUrl(id,name){
   return 'https://www.youtube.com/results?search_query='+q;
 }
 
-// HELPERS
+// RFT LEVEL - independent from THOR/ANATOLY phases
+var RFT_LEVEL = parseInt(localStorage.getItem('jz_rft_level')||'1');
+var RFT_NAMES = {1:'DEBUTANT', 2:'INTERMEDIAIRE', 3:'EXPERT'};
+
+function getExosForSession(s, w) {
+  if(s.rftCircuit) {
+    // RFT uses its own level, not the 16-week phase
+    var lvl = RFT_LEVEL;
+    return s.phaseExercises[lvl] || s.phaseExercises[3] || s.phaseExercises[2] || s.phaseExercises[1] || [];
+  }
+  return getExos(s, w);
+}
 var PM={1:1.0,2:1.065,3:1.125,4:1.175};
 function getPhase(w){return PHASES.find(function(p){return p.weeks.indexOf(w)>=0;})||PHASES[0];}
 function getWIP(w){var p=getPhase(w);return p.weeks.indexOf(w)+1;}
@@ -701,12 +809,14 @@ function lastPerf(exId,sId,setIdx,w){
   return null;
 }
 function sesStats(s){
-  var exos=getExos(s);
+  var exos=s.rftCircuit?getExosForSession(s):getExos(s);
   var total=0;exos.forEach(function(e){total+=e.sets;});
   var done=0;
+  var prefix=s.rftCircuit?(ST.week+'_'+s.id+'_lvl'+RFT_LEVEL):ST.week;
   exos.forEach(function(ex){
     for(var i=0;i<ex.sets;i++){
-      var l=ST.logs[ST.week+'_'+s.id+'_'+ex.id+'_'+i];
+      var k=s.rftCircuit?(prefix+'_'+ex.id+'_'+i):(ST.week+'_'+s.id+'_'+ex.id+'_'+i);
+      var l=ST.logs[k];
       if(l&&l.done)done++;
     }
   });
@@ -779,7 +889,7 @@ function R(){
 }
 function safeR(){setTimeout(R,0);}
 function build(){
-  if(SUBVIEW==='session')return buildSession();
+  if(SUBVIEW==='session')return SESS&&SESS.rftCircuit?buildCircuitSession():buildSession();
   if(SUBVIEW==='warmup')return buildWarmup();
   if(VIEW===1)return buildStats();
   if(VIEW===2)return buildAgenda();
@@ -1092,6 +1202,275 @@ function buildWarmup(){
 }
 
 // SESSION
+// CIRCUIT SESSION (RFT format)
+function buildCircuitSession(){
+  var s=SESS,ph=getPhase(ST.week),sKey=ST.week+'_'+s.id+'_lvl'+RFT_LEVEL;
+  var allExos=getExosForSession(s);
+
+  // Group by bloc
+  var blocs=[];
+  allExos.forEach(function(ex){
+    var bi=ex.bloc||0;
+    if(!blocs[bi])blocs[bi]=[];
+    blocs[bi].push(ex);
+  });
+  var mainBlocs=blocs.slice(0,4).filter(Boolean);
+  var finExos=blocs[3]&&blocs[3][0]&&blocs[3][0].finisher?blocs[3]:[];
+  // If bloc 3 is finisher, main blocs are 0,1,2 only
+  if(finExos.length>0) mainBlocs=blocs.slice(0,3).filter(Boolean);
+  var rounds=3;
+
+  // Calculate state for each bloc
+  function getBlocState(b){
+    var bl=mainBlocs[b];
+    if(!bl) return {curRound:0,done:false};
+    for(var r=0;r<rounds;r++){
+      var rDone=bl.every(function(ex){var l=ST.logs[sKey+'_'+ex.id+'_'+r];return l&&l.done;});
+      if(!rDone) return {curRound:r,done:false};
+    }
+    return {curRound:rounds,done:true};
+  }
+
+  // Find current active bloc
+  var activBloc=mainBlocs.length;
+  for(var b=0;b<mainBlocs.length;b++){
+    if(!getBlocState(b).done){activBloc=b;break;}
+  }
+  var allBlocsDone=activBloc>=mainBlocs.length;
+  var allFinDone=finExos.length===0||finExos.every(function(ex){var l=ST.logs[sKey+'_'+ex.id+'_0'];return l&&l.done;});
+  var allDone=allBlocsDone&&allFinDone;
+  if(allDone){markToday();clearInterval(CRONIV);}
+
+  var root=div({position:'fixed',top:'0',left:'0',right:'0',bottom:'0',background:'#080808',overflowY:'auto',WebkitOverflowScrolling:'touch',zIndex:'10',paddingTop:'env(safe-area-inset-top)',paddingBottom:'env(safe-area-inset-bottom)'});
+
+  // Header
+  var header=div({position:'sticky',top:'0',zIndex:'100',background:'#0a0a0a',borderBottom:'1px solid #181818',padding:'14px 16px 10px'});
+  var hr=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'10px'});
+  hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){SUBVIEW='home';OPEN=null;stopTimer();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
+  var tb=div({flex:'1'});
+  tb.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'22px',color:ph.color,letterSpacing:'3px',lineHeight:'1'},s.name));
+  var chrEl=document.createElement('span');chrEl.id='chrono';
+  chrEl.style.cssText='font-size:10px;color:'+ph.color+';font-family:Bebas Neue,cursive;margin-top:2px;display:block';chrEl.textContent='0:00';
+  tb.appendChild(chrEl);hr.appendChild(tb);
+  if(allDone)hr.appendChild(div({background:ph.dim,border:'1px solid '+ph.color,borderRadius:'8px',padding:'4px 10px',fontSize:'10px',color:ph.color,letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'DONE'));
+  header.appendChild(hr);
+
+  // Level selector
+  var lvlRow=div({display:'flex',gap:'6px',marginBottom:'8px'});
+  [{v:1,l:'DEBUTANT'},{v:2,l:'INTERMEDIAIRE'},{v:3,l:'EXPERT'}].forEach(function(lv){
+    var isAct=RFT_LEVEL===lv.v;
+    var lb=document.createElement('button');
+    lb.textContent=lv.l;
+    Object.assign(lb.style,{flex:'1',padding:'6px 4px',borderRadius:'8px',fontFamily:'Bebas Neue,cursive',fontSize:'10px',letterSpacing:'1px',cursor:'pointer',background:isAct?ph.color:'#1a1a1a',border:'1px solid '+(isAct?ph.color:'#2a2a2a'),color:isAct?'#000':'#555'});
+    lb.addEventListener('click',function(){RFT_LEVEL=lv.v;localStorage.setItem('jz_rft_level',String(lv.v));safeR();});
+    lvlRow.appendChild(lb);
+  });
+  header.appendChild(lvlRow);
+
+  // Format pills
+  var pills=div({display:'flex',gap:'6px',flexWrap:'wrap'});
+  [{t:'3 ROUNDS',c:ph.color},{t:'10s ENTRE EXO',c:'#555'},{t:'30s ENTRE ROUNDS',c:'#555'}].forEach(function(it){
+    pills.appendChild(div({background:it.c+'15',border:'1px solid '+it.c+'30',borderRadius:'20px',padding:'3px 10px',fontSize:'9px',color:it.c,letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',whiteSpace:'nowrap'},it.t));
+  });
+  header.appendChild(pills);
+  root.appendChild(header);
+
+  if(allDone){
+    // GG screen
+    var elapsed=T0?Math.floor((Date.now()-T0)/1000):0;
+    var ds=div({padding:'30px 20px',textAlign:'center'});
+    ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'64px',color:ph.color,lineHeight:'1',letterSpacing:'4px',marginBottom:'8px'},'GG'));
+    ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'20px',color:'#aaa',letterSpacing:'3px',marginBottom:'6px'},s.name+' COMPLETE'));
+    ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'14px',color:'#555',letterSpacing:'3px',marginBottom:'20px'},'Duree: '+fmtTime(elapsed)));
+    var sg=div({background:'#0f0f0f',border:'1px solid '+ph.color+'30',borderRadius:'16px',padding:'20px',marginBottom:'16px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'});
+    [{v:String(mainBlocs.length),l:'BLOCS'},{v:String(rounds),l:'ROUNDS'},{v:String(calcStreak()),l:'STREAK'}].forEach(function(it){
+      var c2=div({textAlign:'center'});
+      c2.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'26px',color:ph.color,letterSpacing:'2px'},it.v));
+      c2.appendChild(div({fontSize:'9px',color:'#555',letterSpacing:'2px',marginTop:'3px'},it.l));
+      sg.appendChild(c2);
+    });
+    ds.appendChild(sg);
+    ds.appendChild(btn({display:'block',width:'100%',padding:'16px',borderRadius:'14px',fontSize:'16px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive',background:ph.color,border:'none',color:'#000',cursor:'pointer'},'RETOUR ACCUEIL',function(){SUBVIEW='home';relWL();OPEN=null;ANIM='back';safeR();}));
+    root.appendChild(ds);
+  } else {
+    var content=div({padding:'12px 14px 20px'});
+
+    // Show ALL blocs
+    mainBlocs.forEach(function(bl,bi){
+      var bState=getBlocState(bi);
+      var isActive=bi===activBloc;
+      var isDone=bState.done;
+      var isLocked=bi>activBloc;
+      var curRound=bState.curRound;
+
+      // Bloc card
+      var blocCard=div({background:isDone?'#0a0f0a':isActive?'#0d0d0d':'#0a0a0a',
+        border:'1px solid '+(isDone?ph.color+'50':isActive?ph.color+'40':'#181818'),
+        borderRadius:'14px',marginBottom:'12px',overflow:'hidden'});
+
+      // Bloc header
+      var bh=div({padding:'12px 16px',display:'flex',alignItems:'center',gap:'10px',
+        background:isDone?ph.color+'10':isActive?ph.color+'08':'transparent'});
+
+      // Bloc number badge
+      var badge=div({width:'36px',height:'36px',borderRadius:'10px',flexShrink:'0',
+        background:isDone?ph.color:isActive?ph.color+'25':'#1a1a1a',
+        border:'1px solid '+(isDone?ph.color:isActive?ph.color+'60':'#2a2a2a'),
+        display:'flex',alignItems:'center',justifyContent:'center',
+        fontFamily:'Bebas Neue,cursive',fontSize:'16px',
+        color:isDone?'#000':isActive?ph.color:'#444'});
+      badge.innerHTML=isDone?'&#10003;':String(bi+1);
+      bh.appendChild(badge);
+
+      var bhInfo=div({flex:'1'});
+      bhInfo.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'15px',
+        color:isDone?ph.color:isActive?'#fff':'#555',letterSpacing:'2px'},
+        'BLOC '+(bi+1)+' - '+bl.length+' EXERCICES'));
+
+      // Round dots for active bloc
+      if(isActive&&!isDone){
+        var rdots=div({display:'flex',gap:'4px',marginTop:'6px'});
+        for(var rr=0;rr<rounds;rr++){
+          var rDone=rr<curRound;
+          var rCurr=rr===curRound;
+          rdots.appendChild(div({width:rCurr?'20px':'8px',height:'8px',borderRadius:'4px',
+            background:rDone?ph.color:rCurr?ph.color+'80':'#2a2a2a',
+            transition:'all .3s'}));
+        }
+        rdots.appendChild(div({fontSize:'10px',color:ph.color,marginLeft:'6px',
+          fontFamily:'Bebas Neue,cursive',letterSpacing:'1px'},'ROUND '+(curRound+1)+'/'+rounds));
+        bhInfo.appendChild(rdots);
+      }else if(isDone){
+        bhInfo.appendChild(div({fontSize:'10px',color:ph.color,marginTop:'3px',letterSpacing:'1px'},rounds+' rounds completes'));
+      }else{
+        bhInfo.appendChild(div({fontSize:'10px',color:'#444',marginTop:'3px',letterSpacing:'1px'},'En attente...'));
+      }
+      bh.appendChild(bhInfo);
+      blocCard.appendChild(bh);
+
+      // Exercises
+      if(isActive||isDone){
+        var exList=div({padding:'0 12px 12px',display:'flex',flexDirection:'column',gap:'6px'});
+        bl.forEach(function(ex,i){
+          var lkCurr=sKey+'_'+ex.id+'_'+curRound;
+          var logCurr=ST.logs[lkCurr];
+          var doneCurr=isDone||(logCurr&&logCurr.done);
+          var ac='#a78bfa';
+          var exCard=div({
+            background:doneCurr?'rgba(167,139,250,.06)':'rgba(255,255,255,.02)',
+            border:'1px solid '+(doneCurr?'#a78bfa30':'#1e1e1e'),
+            borderRadius:'10px',padding:'11px 14px',
+            display:'flex',alignItems:'center',gap:'10px',
+            opacity:isLocked?'0.4':'1'
+          });
+          // Number
+          exCard.appendChild(div({width:'28px',height:'28px',borderRadius:'50%',flexShrink:'0',
+            background:doneCurr?ac:'#1e1e1e',display:'flex',alignItems:'center',
+            justifyContent:'center',fontSize:'12px',color:doneCurr?'#000':'#555',
+            fontFamily:'Bebas Neue,cursive'},String(i+1)));
+          // Info
+          var exInfo=div({flex:'1',minWidth:'0'});
+          exInfo.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'16px',
+            color:doneCurr?ac:'#ddd',letterSpacing:'1px',lineHeight:'1'},ex.name));
+          exInfo.appendChild(div({fontSize:'10px',color:'#555',marginTop:'2px'},
+            ex.reps+'s - '+ex.notes));
+          exCard.appendChild(exInfo);
+          // Video btn
+          var vb=document.createElement('button');vb.innerHTML='&#9654;';
+          Object.assign(vb.style,{width:'28px',height:'28px',borderRadius:'7px',
+            background:ac+'15',border:'1px solid '+ac+'40',color:ac,
+            fontSize:'10px',cursor:'pointer',flexShrink:'0'});
+          vb.addEventListener('click',function(e){e.stopPropagation();window.open(vidUrl(ex.id,ex.name),'_blank');});
+          exCard.appendChild(vb);
+          // Done button (only for active bloc)
+          if(isActive&&!isDone){
+            var db=document.createElement('button');db.innerHTML='&#10003;';
+            Object.assign(db.style,{width:'40px',height:'34px',borderRadius:'8px',
+              cursor:'pointer',flexShrink:'0',
+              background:doneCurr?ac:'#1a1a1a',
+              border:'2px solid '+(doneCurr?ac:'#2a2a2a'),
+              color:doneCurr?'#000':'#333',fontSize:'14px',fontWeight:'700',
+              display:'flex',alignItems:'center',justifyContent:'center'});
+            (function(exRef,lkRef,iRef,doneCurrRef){
+              db.addEventListener('click',function(){
+                vib([20]);
+                var nl=Object.assign({},ST.logs);
+                nl[lkRef]={done:!doneCurrRef,reps:exRef.reps};
+                ST=Object.assign({},ST,{logs:nl});saveS(ST);
+                if(!doneCurrRef){
+                  var isLastEx=iRef===bl.length-1;
+                  var isLastRound=curRound===rounds-1;
+                  var restSecs=isLastEx?(isLastRound?0:30):10;
+                  var nextLabel=isLastEx?(isLastRound?'Bloc suivant':'Repos inter-rounds'):'Suivant: '+bl[iRef+1].name;
+                  var nextName=isLastEx?(isLastRound?(mainBlocs[bi+1]?'BLOC '+(bi+2):'Finisher'):'Round '+(curRound+2)):bl[iRef+1].name;
+                  if(restSecs>0)startTimer(restSecs,nextLabel,nextName);
+                  else stopTimer();
+                }else{stopTimer();}
+                safeR();
+              });
+            })(ex,lkCurr,i,doneCurr);
+            exCard.appendChild(db);
+          }else if(isDone){
+            exCard.appendChild(div({width:'40px',height:'34px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',color:ph.color,flexShrink:'0'},'&#10003;'));
+          }
+          exList.appendChild(exCard);
+        });
+        blocCard.appendChild(exList);
+      }
+      content.appendChild(blocCard);
+    });
+
+    // FINISHER
+    if(allBlocsDone&&finExos.length>0){
+      content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'10px',color:'#e85e1a',letterSpacing:'4px',marginBottom:'8px'},'FINISHER'));
+      finExos.forEach(function(ex){
+        var lk=sKey+'_'+ex.id+'_0';
+        var log=ST.logs[lk];
+        var done=!!(log&&log.done);
+        var card=div({background:done?'rgba(232,94,26,.07)':'#0f0f0f',
+          border:'1px solid '+(done?'#e85e1a40':'#1e1e1e'),
+          borderRadius:'12px',padding:'14px 16px',
+          display:'flex',alignItems:'center',gap:'12px'});
+        card.appendChild(div({width:'36px',height:'36px',borderRadius:'10px',
+          background:done?'#e85e1a':'#1e1e1e',flexShrink:'0',
+          display:'flex',alignItems:'center',justifyContent:'center',
+          fontSize:'11px',color:done?'#000':'#e85e1a',
+          fontFamily:'Bebas Neue,cursive',border:'1px solid '+(done?'#e85e1a':'#2a2a2a')},
+          'FIN'));
+        var info=div({flex:'1'});
+        info.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'17px',color:'#e85e1a',letterSpacing:'1px'},ex.name));
+        info.appendChild(div({fontSize:'11px',color:'#555',marginTop:'2px'},ex.reps+'s - Finisher'));
+        card.appendChild(info);
+        var db=document.createElement('button');db.innerHTML='&#10003;';
+        Object.assign(db.style,{width:'40px',height:'34px',borderRadius:'8px',cursor:'pointer',flexShrink:'0',
+          background:done?'#e85e1a':'#1a1a1a',border:'2px solid '+(done?'#e85e1a':'#2a2a2a'),
+          color:done?'#000':'#333',fontSize:'14px',fontWeight:'700',
+          display:'flex',alignItems:'center',justifyContent:'center'});
+        (function(lkRef,doneRef){
+          db.addEventListener('click',function(){
+            vib([20]);
+            var nl=Object.assign({},ST.logs);nl[lkRef]={done:!doneRef,reps:ex.reps};
+            ST=Object.assign({},ST,{logs:nl});saveS(ST);stopTimer();safeR();
+          });
+        })(lk,done);
+        card.appendChild(db);
+        content.appendChild(card);
+      });
+    }else if(!allBlocsDone&&finExos.length>0){
+      // Show finisher locked
+      var lockedFin=div({background:'#0a0a0a',border:'1px solid #181818',borderRadius:'12px',padding:'14px 16px',display:'flex',alignItems:'center',gap:'10px',opacity:'0.4'});
+      lockedFin.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:13px;color:#444;letter-spacing:2px">FINISHER - '+finExos[0].name+' - '+finExos[0].reps+'s</div>';
+      content.appendChild(lockedFin);
+    }
+    root.appendChild(content);
+  }
+
+  var te=buildTimer();if(te)root.appendChild(te);
+  if(T0&&!allDone)startChrono();
+  return root;
+}
+
+
 function buildSession(){
   var s=SESS,ph=getPhase(ST.week),wip=getWIP(ST.week),sKey=ST.week+'_'+s.id;
   var exos=getExos(s);
@@ -1157,7 +1536,7 @@ function buildSession(){
 
 // SMART HELPERS
 function progressionVsPast(exId,weeksAgo){
-  // Returns {curr, past, deltaPct} — comparing best 1RM in a window
+  // Returns {curr, past, deltaPct} - comparing best 1RM in a window
   var curr=best1RMUntil(exId,ST.week);
   var past=best1RMUntil(exId,Math.max(1,ST.week-weeksAgo));
   if(!curr||!past)return null;
@@ -1352,7 +1731,7 @@ function buildHome(){
 
   // Sessions
   // Filter tabs
-  var FILTERS=[{k:'all',l:'TOUT'},{k:'THOR',l:'THOR×ANATOLY'},{k:'ABS',l:'ABS'},{k:'STREET',l:'STREET'},{k:'RFT',l:'RFT'}];
+  var FILTERS=[{k:'all',l:'TOUT'},{k:'THOR',l:'THORxANATOLY'},{k:'ABS',l:'ABS'},{k:'STREET',l:'STREET'},{k:'RFT',l:'RFT'}];
   var activeFil=localStorage.getItem('jz_filter')||'all';
   var tabsWrap=div({display:'flex',gap:'6px',marginBottom:'14px',overflowX:'auto',WebkitOverflowScrolling:'touch',paddingBottom:'2px'});
   tabsWrap.style.cssText+='scrollbar-width:none;-ms-overflow-style:none';
@@ -1376,12 +1755,33 @@ function buildHome(){
   });
   content.appendChild(tabsWrap);
 
+  // RFT level selector (shown only in RFT filter)
+  if(activeFil==='RFT'){
+    var rftLvlBox=div({background:'#0f0f0f',border:'1px solid '+ph.color+'30',borderRadius:'12px',padding:'12px 14px',marginBottom:'14px'});
+    rftLvlBox.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'10px'},'NIVEAU RFT'));
+    var rftLvlRow=div({display:'flex',gap:'8px'});
+    [{v:1,l:'DEBUTANT',t:'30s'},{v:2,l:'INTERMEDIAIRE',t:'35s'},{v:3,l:'EXPERT',t:'40-45s'}].forEach(function(lv){
+      var isAct=RFT_LEVEL===lv.v;
+      var lb=document.createElement('button');
+      lb.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:13px;letter-spacing:1px">'+(isAct?'▸ ':'')+lv.l+'</div><div style="font-size:9px;margin-top:2px;opacity:.7">'+lv.t+'</div>';
+      Object.assign(lb.style,{flex:'1',padding:'10px 8px',borderRadius:'10px',cursor:'pointer',background:isAct?ph.color+'20':'#1a1a1a',border:'2px solid '+(isAct?ph.color:'#2a2a2a'),color:isAct?ph.color:'#555',textAlign:'center'});
+      lb.addEventListener('click',function(){
+        RFT_LEVEL=lv.v;
+        localStorage.setItem('jz_rft_level',String(lv.v));
+        safeR();
+      });
+      rftLvlRow.appendChild(lb);
+    });
+    rftLvlBox.appendChild(rftLvlRow);
+    content.appendChild(rftLvlBox);
+  }
+
   // Filtered sessions
   var visibleSessions=SESSIONS.filter(function(s){
     if(activeFil==='all')return true;
     if(activeFil==='ABS')return s.id.indexOf('abs')===0;
     if(activeFil==='STREET')return s.id.indexOf('sw')===0;
-    if(activeFil==='RFT')return s.id.indexOf('rft')===0||s.id.indexOf('s1')===0||s.id.indexOf('s2')===0||s.id.indexOf('s3')===0||s.tag==='RFT';
+    if(activeFil==='RFT')return s.tag==='RFT';
     if(activeFil==='THOR')return s.tag==='THOR'||s.tag==='ANATOLY';
     return true;
   });
@@ -1493,7 +1893,7 @@ function buildStats(){
   keyLifts.forEach(function(kl){
     var b=best1RM(kl.id);
     var c2=div({background:'#0f0f0f',borderRadius:'12px',padding:'12px 14px',border:'1px solid '+(b>0?ph.color+'30':'#181818')});
-    c2.innerHTML='<div style="font-size:11px;color:#555;margin-bottom:4px">'+kl.n+'</div><div style="font-family:Bebas Neue,cursive;font-size:'+(b>0?'22':'16')+'px;color:'+(b>0?ph.color:'#333')+';letter-spacing:2px">'+(b>0?b+'kg':'—')+'</div>';
+    c2.innerHTML='<div style="font-size:11px;color:#555;margin-bottom:4px">'+kl.n+'</div><div style="font-family:Bebas Neue,cursive;font-size:'+(b>0?'22':'16')+'px;color:'+(b>0?ph.color:'#333')+';letter-spacing:2px">'+(b>0?b+'kg':'-')+'</div>';
     rmGrid.appendChild(c2);
   });
   content.appendChild(rmGrid);
