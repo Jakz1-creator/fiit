@@ -2547,7 +2547,24 @@ requestNotifPermission();
 buildSmartNotifBanner();
 // Service Worker for offline mode
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(function(){});
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    // Check for updates on every load
+    reg.update();
+    if(reg.waiting) reg.waiting.postMessage('skipWaiting');
+    reg.addEventListener('updatefound', function(){
+      var newWorker = reg.installing;
+      newWorker.addEventListener('statechange', function(){
+        if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+          newWorker.postMessage('skipWaiting');
+        }
+      });
+    });
+  }).catch(function(){});
+  // Reload once when new SW takes control
+  var refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(!refreshing){ refreshing=true; window.location.reload(); }
+  });
 }
 if(!sessionStorage.getItem('jacobz_intro')){
   sessionStorage.setItem('jacobz_intro','1');
