@@ -1476,7 +1476,13 @@ function buildCircuitSession(){
   var chrEl=document.createElement('span');chrEl.id='chrono';
   chrEl.style.cssText='font-size:10px;color:'+ph.color+';font-family:Bebas Neue,cursive;margin-top:2px;display:block';chrEl.textContent='0:00';
   tb.appendChild(chrEl);hr.appendChild(tb);
-  if(allDone)hr.appendChild(div({background:ph.dim,border:'1px solid '+ph.color,borderRadius:'8px',padding:'4px 10px',fontSize:'10px',color:ph.color,letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'DONE'));
+  if(allDone){
+    var doneNavBtn=btn({background:ph.color,border:'none',borderRadius:'8px',padding:'6px 14px',fontSize:'11px',color:'#000',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'DONE ✓',function(){
+      if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}
+      SUBVIEW='home';relWL();OPEN=null;ANIM='back';safeR();
+    });
+    hr.appendChild(doneNavBtn);
+  }
   header.appendChild(hr);
 
   // Level selector
