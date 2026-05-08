@@ -73,7 +73,37 @@ function playAlert(){beep(660,.15,.4);setTimeout(function(){beep(880,.15,.4);},1
 function playDone(){beep(440,.2,.3);setTimeout(function(){beep(554,.2,.3);},220);setTimeout(function(){beep(660,.4,.35);},440);}
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
-// WAKELOCK
+// NOTIFICATIONS
+var notifOK = false;
+function requestNotifPermission() {
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'granted') { notifOK = true; return; }
+  if(Notification.permission !== 'denied') {
+    Notification.requestPermission().then(function(p) {
+      notifOK = p === 'granted';
+    });
+  }
+}
+function scheduleNotif(secs, title, body) {
+  if(!notifOK) return;
+  // Cancel any previous scheduled notif
+  if(window._notifTimeout) clearTimeout(window._notifTimeout);
+  window._notifTimeout = setTimeout(function() {
+    try {
+      var n = new Notification(title || 'JACOBZ', {
+        body: body || 'Repos termine - C\'est parti !',
+        icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 192 192\'%3E%3Crect width=\'192\' height=\'192\' rx=\'38\' fill=\'%23080808\'/%3E%3Ctext x=\'96\' y=\'148\' font-family=\'serif\' font-weight=\'900\' font-size=\'130\' text-anchor=\'middle\' fill=\'%23c8a45a\'%3EJ%3C/text%3E%3C/svg%3E',
+        badge: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 192 192\'%3E%3Crect width=\'192\' height=\'192\' rx=\'38\' fill=\'%23080808\'/%3E%3Ctext x=\'96\' y=\'148\' font-family=\'serif\' font-weight=\'900\' font-size=\'130\' text-anchor=\'middle\' fill=\'%23c8a45a\'%3EJ%3C/text%3E%3C/svg%3E',
+        silent: false,
+        vibrate: [300, 100, 300]
+      });
+      setTimeout(function() { n.close(); }, 5000);
+    } catch(e) {}
+  }, secs * 1000);
+}
+function cancelNotif() {
+  if(window._notifTimeout) { clearTimeout(window._notifTimeout); window._notifTimeout = null; }
+}
 var wl=null;
 function reqWL(){try{if('wakeLock' in navigator)navigator.wakeLock.request('screen').then(function(w){wl=w;});}catch(e){}}
 function relWL(){if(wl){wl.release();wl=null;}}
@@ -947,7 +977,12 @@ function buildTimer(){
     box.appendChild(div({background:'rgba(255,255,255,0.04)',border:'1px solid #2a2a2a',borderRadius:'10px',padding:'10px 14px',marginBottom:'12px'},'<span style="font-size:9px;color:#555;letter-spacing:3px;font-family:Bebas Neue,cursive">SUIVANT </span><span style="font-size:14px;color:#ccc;font-family:Bebas Neue,cursive;letter-spacing:1px">'+TNEXT+'</span>'));
   }
   var btns=div({display:'flex',gap:'10px'});
-  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:'#1a1a1a',border:'1px solid #2a2a2a',color:'#aaa',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},t.paused?'REPRENDRE':'PAUSE',function(){TMR.paused=!TMR.paused;if(TMR.paused)clearInterval(TMR.iv);else timerGo();safeR();}));
+  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:'#1a1a1a',border:'1px solid #2a2a2a',color:'#aaa',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},t.paused?'REPRENDRE':'PAUSE',function(){
+    TMR.paused=!TMR.paused;
+    if(TMR.paused){clearInterval(TMR.iv);cancelNotif();}
+    else{timerGo();scheduleNotif(TMR.rem,'JACOBZ - Repos termine',TNEXT?('Prochain : '+TNEXT):"C'est parti !");}
+    safeR();
+  }));
   btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:c+'18',border:'1px solid '+c+'60',color:c,fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'SKIP',function(){stopTimer();safeR();}));
   box.appendChild(btns);overlay.appendChild(box);
   return overlay;
@@ -956,6 +991,9 @@ function startTimer(secs,label,next){
   if(TMR)clearInterval(TMR.iv);
   TNEXT=next||null;TALERTED=false;
   TMR={secs:secs,rem:secs,label:label,paused:false,iv:null};
+  // Schedule notification for when timer ends
+  var notifBody=next?('Prochain : '+next):"C'est parti !";
+  scheduleNotif(secs, 'JACOBZ - Repos termine', notifBody);
   timerGo();
 }
 function timerGo(){
@@ -967,7 +1005,7 @@ function timerGo(){
     tickUI();
   },1000);
 }
-function stopTimer(){if(TMR)clearInterval(TMR.iv);TMR=null;TNEXT=null;TALERTED=false;}
+function stopTimer(){if(TMR)clearInterval(TMR.iv);TMR=null;TNEXT=null;TALERTED=false;cancelNotif();}
 function tickUI(){
   if(!TMR)return;
   var Rr=54,ci=2*Math.PI*Rr,pct=(TMR.secs-TMR.rem)/TMR.secs;
@@ -1982,6 +2020,7 @@ function buildAgenda(){
 
 // BOOT
 R();
+requestNotifPermission();
 if(!sessionStorage.getItem('jacobz_intro')){
   sessionStorage.setItem('jacobz_intro','1');
   showIntro();
