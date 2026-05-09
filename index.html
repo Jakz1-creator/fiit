@@ -14,6 +14,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#080808;color:#fff;font-family:'DM Sans',system-ui;min-height:100vh}
 body{padding-top:env(safe-area-inset-top);padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+/* Ambient orbs for glassmorphism depth */
+body::before{content:'';position:fixed;top:-200px;left:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,164,90,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-200px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(200,164,90,0.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+/* Glassmorphism utility */
+.glass{background:rgba(255,255,255,0.04)!important;backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;border:1px solid rgba(255,255,255,0.08)!important}
+.glass-gold{background:rgba(200,164,90,0.06)!important;backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;border:1px solid rgba(200,164,90,0.15)!important}
+.glass-dark{background:rgba(0,0,0,0.4)!important;backdrop-filter:blur(20px)!important;-webkit-backdrop-filter:blur(20px)!important;border:1px solid rgba(255,255,255,0.06)!important}
 input[type=number]{-webkit-appearance:none;-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 button{font-family:'DM Sans',system-ui;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s ease}
@@ -1098,7 +1105,7 @@ function buildTimer(){
   var urgent=t.rem<=10;
   var c=urgent?'#e85e1a':t.rem<=30?'#e07c2a':ph.color;
 
-  var overlay=div({position:'fixed',inset:'0',zIndex:'2000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(6,6,6,0.97)',backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)'});
+  var overlay=div({position:'fixed',inset:'0',zIndex:'2000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(6,6,6,0.92)',backdropFilter:'blur(32px)',WebkitBackdropFilter:'blur(32px)'});
 
   // Top label
   var topLbl=div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#444',letterSpacing:'6px',marginBottom:'20px'},'REPOS');
@@ -1410,7 +1417,7 @@ function buildExCard(ex,sKey,ph,wip,ssLetters,isSSA,isSSB,nextName){
   ch.addEventListener('click',function(){OPEN=OPEN===ex.id?null:ex.id;safeR();});
   card.appendChild(ch);
   if(isOpen){
-    var sw=div({padding:'0 12px 14px',display:'flex',flexDirection:'column',gap:'6px'});
+    var sw=div({padding:'0 12px 14px',display:'flex',flexDirection:'column',gap:'6px',background:'rgba(0,0,0,0.2)',borderTop:'1px solid rgba(255,255,255,0.04)'});
     if(ex.ss&&ex.ssPos==='a')sw.appendChild(div({background:'#150f00',border:'1px solid #c8a45a25',borderRadius:'8px',padding:'8px 12px',fontSize:'11px',color:'#c8a45a80'},'Enchaine SANS REPOS avec exercice suivant'));
     if(ex.ss&&ex.ssPos==='b')sw.appendChild(div({background:'#150f00',border:'1px solid #c8a45a25',borderRadius:'8px',padding:'8px 12px',fontSize:'11px',color:'#c8a45a80'},'Suite SS - repos '+ex.rest+'s apres'));
     // Tempo display
@@ -1528,7 +1535,7 @@ function buildCircuitSession(){
   var root=div({position:'fixed',top:'0',left:'0',right:'0',bottom:'0',background:'#080808',overflowY:'auto',WebkitOverflowScrolling:'touch',zIndex:'10',paddingTop:'env(safe-area-inset-top)',paddingBottom:'env(safe-area-inset-bottom)'});
 
   // Header
-  var header=div({position:'sticky',top:'0',zIndex:'100',background:'#0a0a0a',borderBottom:'1px solid #181818',padding:'14px 16px 10px'});
+  var header=div({position:'sticky',top:'0',zIndex:'100',background:'rgba(8,8,8,0.85)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'14px 16px 10px'});
   var hr=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'10px'});
   hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}SUBVIEW='home';OPEN=null;stopTimer();stopParticles();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
   var tb=div({flex:'1'});
@@ -1572,7 +1579,7 @@ function buildCircuitSession(){
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'64px',color:ph.color,lineHeight:'1',letterSpacing:'4px',marginBottom:'8px'},'GG'));
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'20px',color:'#aaa',letterSpacing:'3px',marginBottom:'6px'},s.name+' COMPLETE'));
     ds.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'14px',color:'#555',letterSpacing:'3px',marginBottom:'20px'},'Duree: '+fmtTime(elapsed)));
-    var sg=div({background:'#0f0f0f',border:'1px solid '+ph.color+'30',borderRadius:'16px',padding:'20px',marginBottom:'16px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'});
+    var sg=div({background:'rgba(200,164,90,0.05)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(200,164,90,0.15)',borderRadius:'16px',padding:'20px',marginBottom:'16px',display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'});
     [{v:String(mainBlocs.length),l:'BLOCS'},{v:String(rounds),l:'ROUNDS'},{v:String(calcStreak()),l:'STREAK'}].forEach(function(it){
       var c2=div({textAlign:'center'});
       c2.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'26px',color:ph.color,letterSpacing:'2px'},it.v));
@@ -1594,8 +1601,8 @@ function buildCircuitSession(){
       var curRound=bState.curRound;
 
       // Bloc card
-      var blocCard=div({background:isDone?'#0a0f0a':isActive?'#0d0d0d':'#0a0a0a',
-        border:'1px solid '+(isDone?ph.color+'50':isActive?ph.color+'40':'#181818'),
+      var blocCard=div({background:isDone?'rgba(100,255,100,0.04)':isActive?'rgba(255,255,255,0.05)':'rgba(255,255,255,0.02)',
+        backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid '+(isDone?ph.color+'50':isActive?ph.color+'30':'rgba(255,255,255,0.06)'),
         borderRadius:'14px',marginBottom:'12px',overflow:'hidden'});
 
       // Bloc header
@@ -2068,8 +2075,9 @@ function buildSmartNotifBanner(){
 
   var banner=div({
     position:'fixed',top:'calc(env(safe-area-inset-top) + 8px)',left:'12px',right:'12px',
-    zIndex:'3000',background:'rgba(10,10,10,0.97)',
-    border:'1px solid '+col+'60',borderRadius:'16px',
+    zIndex:'3000',background:'rgba(10,10,10,0.85)',
+    backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)',
+    border:'1px solid '+col+'50',borderRadius:'16px',
     padding:'14px 16px',backdropFilter:'blur(20px)',
     boxShadow:'0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px '+col+'20',
     transform:'translateY(-120px)',transition:'transform .4s cubic-bezier(.32,.72,.0,1)',
@@ -2180,7 +2188,7 @@ function buildHome(){
 
   // Daily quote
   var quote=getDailyQuote();
-  var qBox=div({background:'linear-gradient(135deg,'+ph.color+'10,transparent)',border:'1px solid '+ph.color+'25',borderRadius:'14px',padding:'14px 18px',marginBottom:'14px',position:'relative'});
+  var qBox=div({background:'linear-gradient(135deg,rgba(200,164,90,0.08),rgba(255,255,255,0.03))',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(200,164,90,0.2)',borderRadius:'14px',padding:'14px 18px',marginBottom:'14px',position:'relative'});
   qBox.innerHTML='<div style="font-size:9px;color:'+ph.color+'80;letter-spacing:4px;font-family:Bebas Neue,cursive;margin-bottom:6px">CITATION DU JOUR</div><div style="font-size:13px;color:#ccc;line-height:1.5;font-style:italic">"'+quote.text+'"</div><div style="font-size:10px;color:'+ph.color+';margin-top:8px;font-family:Bebas Neue,cursive;letter-spacing:2px">- '+quote.author+'</div>';
   content.appendChild(qBox);
   var alerts=getSmartAlerts();
@@ -2255,7 +2263,7 @@ function buildHome(){
 
   // RFT level selector (shown only in RFT filter)
   if(activeFil==='RFT'){
-    var rftLvlBox=div({background:'#0f0f0f',border:'1px solid '+ph.color+'30',borderRadius:'12px',padding:'12px 14px',marginBottom:'14px'});
+    var rftLvlBox=div({background:'rgba(200,164,90,0.05)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(200,164,90,0.15)',borderRadius:'12px',padding:'12px 14px',marginBottom:'14px'});
     rftLvlBox.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'10px'},'NIVEAU RFT'));
     var rftLvlRow=div({display:'flex',gap:'8px'});
     [{v:1,l:'DEBUTANT',t:'30s'},{v:2,l:'INTERMEDIAIRE',t:'35s'},{v:3,l:'EXPERT',t:'40-45s'}].forEach(function(lv){
@@ -2290,7 +2298,7 @@ function buildHome(){
     var pct=total>0?done/total:0,isDone=done===total&&total>0,started=done>0;
     var exos=getExos(s);
     var card=div({background:isDone?'#0e0d08':'#0f0f0f',border:'1px solid '+(isDone?ph.color+'60':started?ph.color+'28':'#181818'),borderRadius:'16px',padding:'16px',marginBottom:'10px',cursor:'pointer',position:'relative',overflow:'hidden'});
-    card.className='stagger-card ripple-btn';
+    card.className='stagger-card ripple-btn glass';
     card.style.animationDelay=(si*60)+'ms';
     if(started)card.appendChild(div({position:'absolute',left:'0',top:'0',bottom:'0',width:(pct*100)+'%',background:ph.color+'07'}));
     var row=div({display:'flex',gap:'14px',alignItems:'center',position:'relative'});
@@ -2347,7 +2355,7 @@ function buildStats(){
   // Muscle recovery
   content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'12px'},'RECUPERATION MUSCULAIRE'));
   var recov=getMuscleRecovery();
-  var recovBox=div({background:'#0f0f0f',borderRadius:'14px',padding:'16px',marginBottom:'16px',border:'1px solid #181818'});
+  var recovBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'16px',marginBottom:'16px'});
   var recovMuscles=[{k:'chest',n:'Pectoraux'},{k:'back',n:'Dos'},{k:'shoulders',n:'Epaules'},{k:'quads',n:'Quadriceps'},{k:'hamstrings',n:'Ischio'},{k:'glutes',n:'Fessiers'},{k:'biceps',n:'Biceps'},{k:'triceps',n:'Triceps'},{k:'core',n:'Core'},{k:'calves',n:'Mollets'}];
   recovMuscles.forEach(function(m){
     var val=recov[m.k]||0;
@@ -2458,7 +2466,7 @@ function buildStats(){
 
   // Backup section
   content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginTop:'20px',marginBottom:'12px'},'SAUVEGARDE'));
-  var backupBox=div({background:'#0f0f0f',border:'1px solid #181818',borderRadius:'14px',padding:'16px',marginBottom:'8px'});
+  var backupBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'16px',marginBottom:'8px'});
   backupBox.appendChild(div({fontSize:'11px',color:'#555',marginBottom:'14px',lineHeight:'1.5'},'Exporte tes PRs, logs et progression. Importe sur un nouvel iPhone pour tout retrouver.'));
 
   var expBtn=btn({display:'block',width:'100%',padding:'14px',borderRadius:'12px',background:ph.color+'20',border:'1px solid '+ph.color+'60',color:ph.color,fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',marginBottom:'10px'},'EXPORTER MES DONNEES',function(){
