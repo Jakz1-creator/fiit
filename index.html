@@ -3322,7 +3322,8 @@ function buildContact(){
     var msg=msgInput.value.trim();
     if(!msg){sendStatus.textContent='Ecris un message avant d\'envoyer';sendStatus.style.color='#e85e1a';return;}
     sendBtn.textContent='ENVOI...';sendBtn.style.opacity='0.6';sendBtn.disabled=true;
-    emailjs.send('service_8gz2dz4','bwaqvhj',{nom:nom,type:selectedType,message:msg},'XZY9uBvEJR8wskJxV')
+    emailjs.init('XZY9uBvEJR8wskJxV');
+    emailjs.send('service_8gz2dz4','bwaqvhj',{nom:nom,type:selectedType,message:msg})
     .then(function(){
       sendBtn.textContent='ENVOYE';sendBtn.style.background='#9aeebb';sendBtn.style.opacity='1';sendBtn.disabled=false;
       sendStatus.textContent='Merci '+nom+' ! Message recu.';sendStatus.style.color='#9aeebb';
