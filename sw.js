@@ -1,39 +1,56 @@
-const CACHE = 'jacobz-v2';
+// JACOBZ Service Worker - Network First pour HTML, Cache pour assets
+var CACHE='jacobz-v3';
+var HTML_URL='/fiit/';
+var FALLBACKS=['/fiit/','/fiit/index.html'];
 
-self.addEventListener('install', function(e) {
+self.addEventListener('install',function(e){
   self.skipWaiting();
-});
-
-self.addEventListener('activate', function(e) {
   e.waitUntil(
-    caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k){ return k !== CACHE; })
-            .map(function(k){ return caches.delete(k); })
-      );
-    }).then(function(){
-      return self.clients.claim();
+    caches.open(CACHE).then(function(c){
+      return c.addAll(FALLBACKS).catch(function(){});
     })
   );
 });
 
-self.addEventListener('fetch', function(e) {
-  if(!e.request.url.startsWith(self.location.origin)) return;
+self.addEventListener('activate',function(e){
+  e.waitUntil(
+    caches.keys().then(function(keys){
+      return Promise.all(keys.filter(function(k){return k!==CACHE;}).map(function(k){return caches.delete(k);}));
+    }).then(function(){return self.clients.claim();})
+  );
+});
+
+self.addEventListener('fetch',function(e){
+  var req=e.request;
+  var url=new URL(req.url);
+  // HTML files: network first, fallback to cache
+  if(req.mode==='navigate'||url.pathname.endsWith('.html')||url.pathname.endsWith('/')){
+    e.respondWith(
+      fetch(req).then(function(res){
+        var clone=res.clone();
+        caches.open(CACHE).then(function(c){c.put(req,clone);});
+        return res;
+      }).catch(function(){
+        return caches.match(req).then(function(r){return r||caches.match('/fiit/');});
+      })
+    );
+    return;
+  }
+  // Other assets: cache first
   e.respondWith(
-    caches.open(CACHE).then(function(cache){
-      return cache.match(e.request).then(function(cached){
-        var networkFetch = fetch(e.request).then(function(response){
-          if(response && response.status === 200 && response.type === 'basic'){
-            cache.put(e.request, response.clone());
-          }
-          return response;
-        }).catch(function(){ return cached; });
-        return cached || networkFetch;
+    caches.match(req).then(function(cached){
+      var networkFetch=fetch(req).then(function(res){
+        if(res&&res.status===200){
+          var clone=res.clone();
+          caches.open(CACHE).then(function(c){c.put(req,clone);});
+        }
+        return res;
       });
+      return cached||networkFetch;
     })
   );
 });
 
-self.addEventListener('message', function(e){
-  if(e.data === 'skipWaiting') self.skipWaiting();
+self.addEventListener('message',function(e){
+  if(e.data==='skipWaiting')self.skipWaiting();
 });
