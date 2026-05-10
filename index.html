@@ -215,18 +215,29 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   border-bottom:none;
   box-shadow:0 -8px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.18);
   border-radius:24px 24px 0 0;
-  max-height:90vh;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  max-height:88vh;
+  display:flex;flex-direction:column;
   animation:sheetSlideUp .35s ease both;
   will-change:transform;
+  overflow:hidden;
+}
+.bs-header{
+  flex-shrink:0;
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+  cursor:grab;
+}
+.bs-content{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   padding-bottom:calc(env(safe-area-inset-bottom) + 16px);
-  will-change:transform;
-  touch-action:pan-y;
 }
 .bs-handle{
   width:100%;display:flex;justify-content:center;align-items:center;
-  padding:14px 0 8px;background:transparent;cursor:grab;
+  padding:14px 0 6px;background:transparent;
 }
 .spring-pop{animation:springPop var(--spring-fast) both}
 @keyframes springSlideUp{
@@ -2289,12 +2300,22 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
   sheet.className='bs-sheet';
   if(noAnim)sheet.style.animation='none';
 
-  // Drag handle
-  var handle=document.createElement('div');handle.className='bs-handle';
-  sheet.appendChild(handle);
+  // Fixed header (not scrollable) - drag target
+  var bsHeader=document.createElement('div');
+  bsHeader.className='bs-header';
 
-  // Header
-  var shHeader=div({padding:'16px 20px 8px'});
+  // Drag handle inside fixed header
+  var handle=document.createElement('div');handle.className='bs-handle';
+  bsHeader.appendChild(handle);
+
+  sheet.appendChild(bsHeader);
+
+  // Scrollable content wrapper
+  var bsContent=document.createElement('div');
+  bsContent.className='bs-content';
+
+  // Header content (muscle pill, name, notes, tempo)
+  var shHeader=div({padding:'0 20px 8px'});
   var musColors={chest:'#e8856a',back:'#6a9ee8',shoulders:'#e8c96a',quads:'#6ae8a0',hamstrings:'#a06ae8',glutes:'#e86aa0',biceps:'#6ae8e8',triceps:'#e8a06a',core:'#e8e86a',calves:'#a0e86a'};
   var musCol=ex.mus&&musColors[ex.mus]?musColors[ex.mus]:ph.color;
   var ac=ex.bwOnly?'#9aeebb':ex.bw?ph.color:ex.cond?'#64b4ff':ph.color;
@@ -2320,7 +2341,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     });
     shHeader.appendChild(tRow);
   }
-  sheet.appendChild(shHeader);
+  bsContent.appendChild(shHeader);
 
   // Divider
   sheet.appendChild(div({height:'1px',background:'rgba(255,255,255,0.07)',margin:'0 20px'}));
@@ -2362,7 +2383,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
   setsRight.appendChild(setsCount);
   setsRight.appendChild(plusSetBtn);
   setsCtrl.appendChild(setsRight);
-  sheet.appendChild(setsCtrl);
+  bsContent.appendChild(setsCtrl);
 
   var setsWrap=div({padding:'0 16px 0'});
   var logs={};
@@ -2370,7 +2391,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
   for(var j=0;j<ex.sets;j++){
     setsWrap.appendChild(buildSetRow(j,ex,logs[j],sKey,ph,wip,nextName));
   }
-  sheet.appendChild(setsWrap);
+  bsContent.appendChild(setsWrap);
 
   // Substitutions
   if(SUBS[ex.id]){
@@ -2381,13 +2402,14 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
       si.innerHTML='<span style="color:'+ph.color+';font-size:14px">&#10143;</span> '+sub;
       subSec.appendChild(si);
     });
-    sheet.appendChild(subSec);
+    bsContent.appendChild(subSec);
   }
 
   // Video button
   var vidSec=div({padding:'0 16px 16px'});
   vidSec.appendChild(btn({display:'block',width:'100%',padding:'12px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.7)',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'&#9654;  VOIR LA TECHNIQUE',function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
-  sheet.appendChild(vidSec);
+  bsContent.appendChild(vidSec);
+  sheet.appendChild(bsContent);
 
   // Smooth drag-to-dismiss with velocity
   // DISMISS function
@@ -2400,23 +2422,19 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},320);
   }
 
-  // DRAG - attached to handle only, no document listeners
+  // Style the visual pill handle
+  handle.innerHTML='<div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.22);pointer-events:none"></div>';
+
+  // DRAG on bsHeader (fixed, non-scrollable zone — iOS won't intercept)
   var _y0=0,_dy=0,_active=false,_raf=null;
 
-  handle.style.cssText='width:100%;padding:16px 0 8px;display:flex;justify-content:center;align-items:center;background:transparent;touch-action:none;cursor:grab;user-select:none';
-  var pill=document.createElement('div');
-  pill.style.cssText='width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.22);pointer-events:none';
-  handle.innerHTML='';handle.appendChild(pill);
-
-  handle.addEventListener('touchstart',function(e){
-    e.stopPropagation();
+  bsHeader.addEventListener('touchstart',function(e){
     _y0=e.touches[0].clientY;_dy=0;_active=true;
     sheet.style.transition='none';
   },{passive:true});
 
-  handle.addEventListener('touchmove',function(e){
+  bsHeader.addEventListener('touchmove',function(e){
     if(!_active)return;
-    e.stopPropagation();
     var dy=e.touches[0].clientY-_y0;
     if(dy<=0)return;
     _dy=dy;
@@ -2427,15 +2445,14 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     });
   },{passive:true});
 
-  handle.addEventListener('touchend',function(e){
+  bsHeader.addEventListener('touchend',function(){
     if(!_active)return;
-    e.stopPropagation();
     _active=false;
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    if(_dy>80){
+    if(_dy>70){
       dismissSheet();
     }else{
-      sheet.style.transition='transform .35s ease';
+      sheet.style.transition='transform .3s ease';
       sheet.style.transform='translateY(0)';
       overlay.style.transition='opacity .2s';
       overlay.style.opacity='0.5';
@@ -2443,9 +2460,9 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     }
   },{passive:true});
 
-  handle.addEventListener('touchcancel',function(){
+  bsHeader.addEventListener('touchcancel',function(){
     _active=false;_dy=0;
-    sheet.style.transition='transform .35s ease';
+    sheet.style.transition='transform .3s ease';
     sheet.style.transform='translateY(0)';
   },{passive:true});
 
