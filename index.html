@@ -188,9 +188,9 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 }
 .nb.act::before{display:none}
 .nb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-#splash{position:fixed;inset:0;z-index:9999;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.spark{position:absolute;border-radius:50%;pointer-events:none}
+#splash{position:fixed;inset:0;z-index:9999;background:#060606;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splashVig{from{opacity:0}to{opacity:1}}
 /* SPRING PHYSICS - iOS 26 */
 :root{--spring:.55s cubic-bezier(.34,1.56,.64,1);--spring-fast:.35s cubic-bezier(.34,1.56,.64,1)}
 @keyframes staggerIn{
@@ -264,10 +264,7 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 .ripple-btn .rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,.15);animation:ripple .5s ease-out forwards;pointer-events:none}
 @keyframes checkDraw{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 @keyframes prBurst{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
-@keyframes splashOut{0%{opacity:1}85%{opacity:1;transform:scale(1.03)}100%{opacity:0;transform:scale(1.05)}}
-@keyframes glow{0%,100%{text-shadow:0 0 20px #c8a45a50}50%{text-shadow:0 0 70px #c8a45a,0 0 140px #c8a45a30}}
-@keyframes lineAnim{from{width:0;opacity:0}to{width:200px;opacity:1}}
-@keyframes sparkAnim{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+@keyframes splashOut{from{opacity:1}to{opacity:0;transform:scale(1.02)}}
 @keyframes slideInRight{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideInLeft{from{opacity:0;transform:translateX(-100%)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -388,38 +385,76 @@ function introSound(){
 }
 function showIntro(){
   var sp=document.createElement('div');sp.id='splash';
+  document.body.appendChild(sp);
+
+  // Nolan vignette
+  var vig=document.createElement('div');
+  Object.assign(vig.style,{position:'absolute',inset:'0',background:'radial-gradient(ellipse at center,transparent 20%,rgba(0,0,0,0.85) 100%)',opacity:'0',transition:'opacity 3s ease',pointerEvents:'none'});
+  sp.appendChild(vig);
+
+  // Subtle glow behind logo
+  var glow=document.createElement('div');
+  Object.assign(glow.style,{position:'absolute',width:'400px',height:'120px',borderRadius:'50%',background:'radial-gradient(ellipse,rgba(200,164,90,0.07) 0%,transparent 70%)',opacity:'0',transition:'opacity 2s ease',pointerEvents:'none'});
+  sp.appendChild(glow);
+
+  // Center wrap
   var w=document.createElement('div');
-  w.style.cssText='display:flex;flex-direction:column;align-items:center;position:relative';
-  var J=document.createElement('div');
-  J.style.cssText="font-family:'Bebas Neue',cursive;font-size:120px;color:#c8a45a;line-height:.85;letter-spacing:-4px;opacity:0;animation:fadeUp .5s .2s ease forwards,glow 2s .7s ease-in-out infinite";
-  J.textContent='J';
-  var rest=document.createElement('div');
-  rest.style.cssText="font-family:'Bebas Neue',cursive;font-size:40px;color:#fff;letter-spacing:16px;opacity:0;animation:fadeUp .5s .45s ease forwards;margin-top:-10px";
-  rest.textContent='ACOBZ';
-  var line=document.createElement('div');
-  line.style.cssText='height:2px;background:linear-gradient(90deg,transparent,#c8a45a,transparent);margin-top:16px;opacity:0;width:0;animation:lineAnim .6s .7s ease forwards';
+  w.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;position:relative;z-index:2';
+
+  // THOR x ANATOLY
+  var slogan=document.createElement('div');
+  Object.assign(slogan.style,{fontFamily:'DM Sans,system-ui',fontSize:'10px',letterSpacing:'7px',color:'rgba(200,164,90,0)',textTransform:'uppercase',paddingRight:'7px',transition:'color 1.4s ease'});
+  slogan.textContent='THOR x ANATOLY';
+  w.appendChild(slogan);
+
+  // JACOBZ — letter spacing collapse (Dior signature)
+  var logo=document.createElement('div');
+  Object.assign(logo.style,{fontFamily:"'Bebas Neue',cursive",fontSize:'68px',color:'rgba(200,164,90,0)',letterSpacing:'52px',paddingRight:'52px',transition:'color 1s ease,letter-spacing 1.8s cubic-bezier(.4,0,.2,1),padding-right 1.8s cubic-bezier(.4,0,.2,1)'});
+  logo.textContent='JACOBZ';
+  w.appendChild(logo);
+
+  // Thin rule
+  var rule=document.createElement('div');
+  Object.assign(rule.style,{height:'0.5px',width:'0',background:'rgba(200,164,90,0.5)',transition:'width 1.2s cubic-bezier(.4,0,.2,1)'});
+  w.appendChild(rule);
+
+  // 16 Week
   var tag=document.createElement('div');
-  tag.style.cssText="font-family:'DM Sans',system-ui;font-size:11px;color:#666;letter-spacing:5px;margin-top:18px;opacity:0;animation:fadeUp .5s .9s ease forwards";
-  tag.textContent='16-WEEK HYBRID PROGRAM';
-  w.appendChild(J);w.appendChild(rest);w.appendChild(line);w.appendChild(tag);
-  sp.appendChild(w);document.body.appendChild(sp);
+  Object.assign(tag.style,{fontFamily:'DM Sans,system-ui',fontSize:'9px',letterSpacing:'5px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'5px',transition:'color 1s ease'});
+  tag.textContent='16 Week Hybrid Program';
+  w.appendChild(tag);
+
+  sp.appendChild(w);
+
+  // SEQUENCE
+  // 0.1s: vignette
+  setTimeout(function(){vig.style.opacity='1';},100);
+
+  // 0.7s: slogan whispers in
+  setTimeout(function(){slogan.style.color='rgba(200,164,90,0.4)';},700);
+
+  // 1.1s: JACOBZ — colour + letter spacing collapse simultaneously
   setTimeout(function(){
-    introSound();
-    for(var i=0;i<30;i++){
-      var s=document.createElement('div');s.className='spark';
-      var angle=Math.random()*360;var dist=70+Math.random()*130;
-      var size=1+Math.random()*3;
-      var tx=Math.cos(angle*Math.PI/180)*dist+'px';
-      var ty=Math.sin(angle*Math.PI/180)*dist+'px';
-      var col=Math.random()>.4?'#c8a45a':'#fff';
-      s.style.cssText='left:50%;top:50%;width:'+size+'px;height:'+size+'px;background:'+col+';--tx:'+tx+';--ty:'+ty+';animation:sparkAnim '+(0.4+Math.random()*0.5)+'s '+(Math.random()*0.3)+'s ease-out forwards';
-      sp.appendChild(s);
-    }
-  },700);
+    logo.style.color='rgba(200,164,90,1)';
+    logo.style.letterSpacing='16px';
+    logo.style.paddingRight='16px';
+  },1100);
+
+  // 2.0s: rule draws
+  setTimeout(function(){rule.style.width='160px';},2000);
+
+  // 2.3s: 16 Week
+  setTimeout(function(){tag.style.color='rgba(255,255,255,0.3)';},2300);
+
+  // 2.5s: glow settles
+  setTimeout(function(){glow.style.opacity='1';},2500);
+
+  // 3.6s: exit
   setTimeout(function(){
-    sp.style.animation='splashOut .55s ease forwards';
-    setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},560);
-  },2700);
+    sp.style.transition='opacity .6s ease';
+    sp.style.opacity='0';
+    setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},650);
+  },3600);
 }
 
 // THEME
