@@ -163,29 +163,17 @@ button:active{transform:scale(0.96);transition:transform .1s ease}
 body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 .nb{
   flex:1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-  padding:8px 16px;
-  background:none;
-  border:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:8px 14px;
+  background:none;border:none;
   color:rgba(255,255,255,0.35);
   font-family:'Bebas Neue',cursive;
-  font-size:8px;
-  letter-spacing:2px;
+  font-size:8px;letter-spacing:2px;
   cursor:pointer;
   transition:all .3s cubic-bezier(.34,1.4,.64,1);
-  position:relative;
-  border-radius:32px;
-  white-space:nowrap;
+  position:relative;border-radius:32px;white-space:nowrap;
 }
-.nb.act{
-  color:#fff;
-  background:rgba(255,255,255,0.12);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
-}
+.nb.act{color:#fff;background:rgba(255,255,255,0.12);box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);}
 .nb.act::before{display:none}
 .nb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 #splash{position:fixed;inset:0;z-index:9999;background:#060606;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
@@ -283,7 +271,7 @@ body.session-active #nav{display:none}
 <div id="nav">
   <button class="nb act" id="n0" onclick="navTo(0)">
     <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><polyline points="9,21 9,12 15,12 15,21"/></svg>
-    ACCUEIL
+    HOME
   </button>
   <button class="nb" id="n1" onclick="navTo(1)">
     <svg viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
@@ -294,8 +282,8 @@ body.session-active #nav{display:none}
     ANALYSE
   </button>
   <button class="nb" id="n3" onclick="navTo(3)">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    AGENDA
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    CONTACT
   </button>
 </div>
 <script>
@@ -1442,7 +1430,7 @@ function build(){
   if(SUBVIEW==='warmup')return buildWarmup();
   if(VIEW===1)return buildStats();
   if(VIEW===2)return buildAnalyse();
-  if(VIEW===3)return buildAgenda();
+  if(VIEW===3)return buildContact();
   return buildHome();
 }
 function navTo(i){
@@ -3274,6 +3262,100 @@ function buildStats(){
   impWrap.appendChild(impLabel);
   backupBox.appendChild(impWrap);
   content.appendChild(backupBox);
+
+  root.appendChild(content);
+  return root;
+}
+
+// CONTACT
+function buildContact(){
+  var ph=getPhase(ST.week);
+  var root=div({minHeight:'100vh',background:'#060606',paddingBottom:'80px'});
+  var hero=div({background:'linear-gradient(165deg,rgba(16,12,3,0.95),rgba(6,6,6,0.9))',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.07)',padding:'28px 20px 22px'});
+  hero.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'32px',letterSpacing:'5px',color:ph.color,lineHeight:'1'},'CONTACT'));
+  hero.appendChild(div({fontSize:'11px',color:'rgba(255,255,255,0.3)',letterSpacing:'2px',marginTop:'4px'},'Feedback, bugs, idees'));
+  root.appendChild(hero);
+  var content=div({padding:'20px 16px'});
+
+  // FEEDBACK FORM
+  content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'14px'},'ENVOYER UN MESSAGE'));
+  var fbBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.09)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.14)',borderRadius:'20px',padding:'20px',marginBottom:'12px'});
+
+  // Type selector
+  var typeRow=div({display:'flex',gap:'8px',marginBottom:'16px'});
+  var selectedType='Bug';
+  var typeOpts=['Bug','Idee','Autre'];
+  var typeBtns=[];
+  typeOpts.forEach(function(t){
+    var tb=document.createElement('button');
+    tb.textContent=t;
+    Object.assign(tb.style,{flex:'1',padding:'10px 4px',borderRadius:'12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',touchAction:'manipulation',transition:'all .2s',background:t==='Bug'?'rgba(200,164,90,0.12)':'rgba(255,255,255,0.04)',border:t==='Bug'?'1px solid rgba(200,164,90,0.35)':'1px solid rgba(255,255,255,0.08)',color:t==='Bug'?ph.color:'#555'});
+    tb.addEventListener('click',function(){
+      selectedType=t;
+      typeBtns.forEach(function(b,i){
+        var active=typeOpts[i]===t;
+        b.style.background=active?'rgba(200,164,90,0.12)':'rgba(255,255,255,0.04)';
+        b.style.border=active?'1px solid rgba(200,164,90,0.35)':'1px solid rgba(255,255,255,0.08)';
+        b.style.color=active?ph.color:'#555';
+      });
+    });
+    typeBtns.push(tb);typeRow.appendChild(tb);
+  });
+  fbBox.appendChild(typeRow);
+
+  // Pseudo input
+  var nomInput=document.createElement('input');
+  nomInput.type='text';nomInput.placeholder='Ton pseudo (facultatif)';
+  Object.assign(nomInput.style,{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.09)',borderRadius:'12px',padding:'11px 14px',color:'#fff',fontSize:'13px',fontFamily:'DM Sans,system-ui',marginBottom:'10px',boxSizing:'border-box',outline:'none'});
+  fbBox.appendChild(nomInput);
+
+  // Message textarea
+  var msgInput=document.createElement('textarea');
+  msgInput.placeholder='Decris le bug ou ton idee...';
+  Object.assign(msgInput.style,{width:'100%',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.09)',borderRadius:'12px',padding:'11px 14px',color:'#fff',fontSize:'13px',fontFamily:'DM Sans,system-ui',marginBottom:'14px',boxSizing:'border-box',outline:'none',resize:'none',height:'100px',lineHeight:'1.6'});
+  fbBox.appendChild(msgInput);
+
+  var sendStatus=div({fontSize:'11px',textAlign:'center',marginTop:'8px',minHeight:'18px',color:'#555'});
+  var sendBtn=btn({width:'100%',padding:'14px',borderRadius:'14px',background:ph.color,border:'none',color:'#000',fontSize:'13px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',touchAction:'manipulation'},'ENVOYER',function(){
+    var nom=nomInput.value.trim()||'Anonyme';
+    var msg=msgInput.value.trim();
+    if(!msg){sendStatus.textContent='Ecris un message avant d\'envoyer';sendStatus.style.color='#e85e1a';return;}
+    sendBtn.textContent='ENVOI...';sendBtn.style.opacity='0.6';sendBtn.disabled=true;
+    fetch('https://api.emailjs.com/api/v1.0/email/send',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({service_id:'service_8gz2dz4',template_id:'bwaqvhj',user_id:'XZY9uBvEJR8wskJxV',template_params:{nom:nom,type:selectedType,message:msg,email:'noreply@jacobz.app'}})
+    }).then(function(r){
+      if(r.ok){
+        sendBtn.textContent='ENVOYE';sendBtn.style.background='#9aeebb';sendBtn.style.opacity='1';sendBtn.disabled=false;
+        sendStatus.textContent='Merci '+nom+' ! Message recu.';sendStatus.style.color='#9aeebb';
+        nomInput.value='';msgInput.value='';
+        setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;sendStatus.textContent='';},3000);
+      }else{
+        sendBtn.textContent='ERREUR';sendBtn.style.background='#e85e1a';sendBtn.style.opacity='1';sendBtn.disabled=false;
+        sendStatus.textContent='Probleme d\'envoi, reessaie.';sendStatus.style.color='#e85e1a';
+        setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;},2500);
+      }
+    }).catch(function(){
+      sendBtn.textContent='ERREUR';sendBtn.style.background='#e85e1a';sendBtn.style.opacity='1';sendBtn.disabled=false;
+      sendStatus.textContent='Verifie ta connexion.';sendStatus.style.color='#e85e1a';
+      setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;},2500);
+    });
+  });
+  fbBox.appendChild(sendBtn);
+  fbBox.appendChild(sendStatus);
+  content.appendChild(fbBox);
+
+  // PAYPAL
+  content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'14px'},'SOUTENIR LE PROJET'));
+  var donBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.09)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.12)',borderRadius:'20px',padding:'20px'});
+  donBox.appendChild(div({fontSize:'13px',color:'rgba(255,255,255,0.5)',lineHeight:'1.6',marginBottom:'16px'},'Si JACOBZ t\'est utile au quotidien, un petit don fait vraiment plaisir et motive a continuer. Merci !'));
+  var donLink=document.createElement('a');
+  donLink.href='https://paypal.me/ijacobz';
+  donLink.target='_blank';
+  donLink.textContent='Faire un don via PayPal';
+  Object.assign(donLink.style,{display:'block',textAlign:'center',padding:'14px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.6)',fontSize:'13px',fontFamily:'DM Sans,system-ui',textDecoration:'none'});
+  donBox.appendChild(donLink);
+  content.appendChild(donBox);
 
   root.appendChild(content);
   return root;
