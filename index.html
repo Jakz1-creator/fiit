@@ -27,7 +27,7 @@ body::after{content:'';position:fixed;bottom:-150px;right:-80px;width:360px;heig
 input[type=number]{-webkit-appearance:none;-moz-appearance:textfield}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 button{font-family:'DM Sans',system-ui;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .1s ease;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-button:active{transform:scale(0.93);transition:transform .08s cubic-bezier(.34,1.56,.64,1)}
+button:active{transform:scale(0.96);transition:transform .1s ease}
 /* iOS 26 LIQUID GLASS LOGO */
 @keyframes logoShimmer{
   0%{background-position:200% center}
@@ -128,10 +128,9 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 /* SPRING PHYSICS - iOS 26 */
 :root{--spring:.55s cubic-bezier(.34,1.56,.64,1);--spring-fast:.35s cubic-bezier(.34,1.56,.64,1)}
 @keyframes staggerIn{
-  0%{opacity:0;transform:translateY(22px) scale(0.96)}
-  65%{opacity:1;transform:translateY(-3px) scale(1.01)}
-  100%{opacity:1;transform:translateY(0) scale(1)}}
-.stagger-card{animation:staggerIn var(--spring) both;transform-origin:bottom center}
+  0%{opacity:0;transform:translateY(18px)}
+  100%{opacity:1;transform:translateY(0)}}
+.stagger-card{animation:staggerIn .4s cubic-bezier(.25,.46,.45,.94) both;}
 @keyframes springPop{
   0%{opacity:0;transform:scale(0.88)}
   60%{opacity:1;transform:scale(1.04)}
@@ -139,13 +138,17 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 /* BOTTOM SHEET */
 @keyframes sheetSlideUp{
   0%{transform:translateY(100%)}
-  65%{transform:translateY(-6px)}
   100%{transform:translateY(0)}}
 @keyframes sheetFadeIn{from{opacity:0}to{opacity:1}}
-.bs-overlay{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,0);animation:sheetFadeIn .25s forwards}
+.bs-overlay{
+  position:fixed;inset:0;z-index:1500;
+  background:rgba(0,0,0,0.5);
+  animation:sheetFadeIn .2s ease forwards;
+  will-change:opacity;
+}
 .bs-sheet{
   position:fixed;bottom:0;left:0;right:0;z-index:1501;
-  background:rgba(18,18,18,0.85);
+  background:rgba(18,18,18,0.88);
   backdrop-filter:blur(40px) saturate(200%);
   -webkit-backdrop-filter:blur(40px) saturate(200%);
   border:1px solid rgba(255,255,255,0.12);
@@ -155,10 +158,18 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   max-height:90vh;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
-  animation:sheetSlideUp .45s cubic-bezier(.34,1.4,.64,1) both;
+  animation:sheetSlideUp .4s cubic-bezier(.32,.72,0,1) both;
   padding-bottom:calc(env(safe-area-inset-bottom) + 16px);
+  will-change:transform;
+  touch-action:pan-y;
 }
-.bs-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:12px auto 0;}
+.bs-handle{
+  width:36px;height:4px;
+  background:rgba(255,255,255,0.25);
+  border-radius:2px;
+  margin:12px auto 4px;
+  cursor:grab;
+}
 .spring-pop{animation:springPop var(--spring-fast) both}
 @keyframes springSlideUp{
   0%{opacity:0;transform:translateY(30px) scale(0.95)}
@@ -962,6 +973,12 @@ function getDailyQuote(){var day=Math.floor(Date.now()/(24*3600*1000));return QU
 
 // MUSCLE RECOVERY
 var RECOVERY_H={chest:48,back:48,shoulders:48,quads:72,hamstrings:72,glutes:72,biceps:36,triceps:36,core:24,calves:24};
+// Universal exercise lookup
+function findExById(exId){
+  var found=null;
+  SESSIONS.forEach(function(s){Object.keys(s.phaseExercises).forEach(function(p){s.phaseExercises[p].forEach(function(e){if(e.id===exId)found=e;});});});
+  return found;
+}
 function getMuscleRecovery(){
   var now=Date.now();
   var lastHit={};
@@ -969,10 +986,10 @@ function getMuscleRecovery(){
   var lastDate=dates.length?new Date(dates[dates.length-1]).getTime():0;
   Object.keys(ST.logs).forEach(function(k){
     var l=ST.logs[k];if(!l||!l.done)return;
-    var parts=k.split('_');if(parts.length<3)return;
-    var exId=parts[2];
-    var ex=null;
-    SESSIONS.forEach(function(s){Object.keys(s.phaseExercises).forEach(function(p){s.phaseExercises[p].forEach(function(e){if(e.id===exId)ex=e;});});});
+    var parts=k.split('_');
+    var exId=parts[2]||null;
+    var ex=exId?findExById(exId):null;
+    if(!ex&&parts[3])ex=findExById(parts[3]);
     if(!ex||!ex.mus)return;
     if(!lastHit[ex.mus]||lastDate>lastHit[ex.mus])lastHit[ex.mus]=lastDate;
   });
@@ -1169,10 +1186,12 @@ function getMuscleLoad(){
   var muscles={chest:0,shoulders:0,triceps:0,back:0,biceps:0,quads:0,hamstrings:0,glutes:0,core:0,calves:0};
   var w=ST.week;
   SESSIONS.forEach(function(s){
-    getExos(s,w).forEach(function(ex){
+    var exos=s.rftCircuit?getExosForSession(s):getExos(s,w);
+    var prefix=s.rftCircuit?(w+'_'+s.id+'_lvl'+RFT_LEVEL):(w+'_'+s.id);
+    exos.forEach(function(ex){
       var sets=0;
-      for(var i=0;i<ex.sets;i++){
-        var l=ST.logs[w+'_'+s.id+'_'+ex.id+'_'+i];
+      for(var i=0;i<(ex.sets||3);i++){
+        var l=ST.logs[prefix+'_'+ex.id+'_'+i];
         if(l&&l.done)sets++;
       }
       if(sets>0&&ex.mus&&muscles[ex.mus]!==undefined)muscles[ex.mus]+=sets;
@@ -2003,8 +2022,46 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   // Divider
   sheet.appendChild(div({height:'1px',background:'rgba(255,255,255,0.07)',margin:'0 20px'}));
 
-  // Set rows
-  var setsWrap=div({padding:'12px 16px 0'});
+  // Add/remove sets controls
+  var setsCtrl=div({display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px 6px'});
+  setsCtrl.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px'},'SERIES'));
+  var setsRight=div({display:'flex',alignItems:'center',gap:'8px'});
+  var setsCount=div({fontFamily:'Bebas Neue,cursive',fontSize:'18px',color:ph.color,minWidth:'20px',textAlign:'center'},String(ex.sets));
+
+  var minusSetBtn=document.createElement('button');
+  minusSetBtn.textContent='-';
+  Object.assign(minusSetBtn.style,{width:'32px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#888',fontSize:'18px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',touchAction:'manipulation'});
+  minusSetBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(ex.sets<=1)return;
+    ex.sets--;
+    setsCount.textContent=String(ex.sets);
+    // Remove last set row
+    var rows=setsWrap.children;
+    if(rows.length>0)setsWrap.removeChild(rows[rows.length-1]);
+    vib([15]);
+  });
+
+  var plusSetBtn=document.createElement('button');
+  plusSetBtn.textContent='+';
+  Object.assign(plusSetBtn.style,{width:'32px',height:'32px',borderRadius:'8px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#888',fontSize:'18px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',touchAction:'manipulation'});
+  plusSetBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    if(ex.sets>=8)return;
+    var newIdx=ex.sets;
+    ex.sets++;
+    setsCount.textContent=String(ex.sets);
+    setsWrap.appendChild(buildSetRow(newIdx,ex,null,sKey,ph,wip,nextName));
+    vib([15]);
+  });
+
+  setsRight.appendChild(minusSetBtn);
+  setsRight.appendChild(setsCount);
+  setsRight.appendChild(plusSetBtn);
+  setsCtrl.appendChild(setsRight);
+  sheet.appendChild(setsCtrl);
+
+  var setsWrap=div({padding:'0 16px 0'});
   var logs={};
   for(var i=0;i<ex.sets;i++)logs[i]=ST.logs[sKey+'_'+ex.id+'_'+i];
   for(var j=0;j<ex.sets;j++){
@@ -2029,35 +2086,70 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   vidSec.appendChild(btn({display:'block',width:'100%',padding:'12px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.7)',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'&#9654;  VOIR LA TECHNIQUE',function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
   sheet.appendChild(vidSec);
 
-  // Dismiss on overlay click
-  overlay.addEventListener('click',function(e){
-    if(e.target===overlay){
-      SHEET_STATE=null;
-      sheet.style.transform='translateY(100%)';sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
-      overlay.style.opacity='0';overlay.style.transition='opacity .3s';
-      setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
-      OPEN=null;
-    }
-  });
+  // Smooth drag-to-dismiss with velocity
+  var startY=0,lastY=0,isDragging=false,dragY=0,velY=0,lastTime=0,raf=null;
 
-  // Swipe down to dismiss
-  var startY=0,isDragging=false;
-  handle.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;isDragging=true;},{passive:true});
-  sheet.addEventListener('touchmove',function(e){
+  function dismissSheet(){
+    SHEET_STATE=null;
+    sheet.style.transition='transform .28s cubic-bezier(.32,.72,0,1)';
+    sheet.style.transform='translateY(110%)';
+    overlay.style.transition='opacity .25s';
+    overlay.style.opacity='0';
+    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
+    OPEN=null;
+  }
+
+  function onDragStart(clientY){
+    // Only start drag from near the top of the sheet
+    isDragging=true;
+    startY=clientY;lastY=clientY;dragY=0;velY=0;lastTime=Date.now();
+    sheet.style.transition='none'; // kill CSS transition during drag
+    sheet.style.willChange='transform';
+  }
+
+  function onDragMove(clientY){
     if(!isDragging)return;
-    var dy=e.touches[0].clientY-startY;
-    if(dy>0)sheet.style.transform='translateY('+dy+'px)';
-  },{passive:true});
-  sheet.addEventListener('touchend',function(e){
-    var dy=e.changedTouches[0].clientY-startY;
-    if(dy>80){
-      SHEET_STATE=null;
-      sheet.style.transform='translateY(100%)';sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
-      overlay.style.opacity='0';overlay.style.transition='opacity .3s';
-      setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
-      OPEN=null;
-    }else{sheet.style.transform='';sheet.style.transition='transform .2s cubic-bezier(.34,1.4,.64,1)';}
+    var now=Date.now();
+    var dy=clientY-lastY;
+    velY=dy/(now-lastTime||1)*16; // velocity in px/frame
+    lastTime=now;lastY=clientY;
+    dragY=Math.max(0,clientY-startY); // only drag down
+    if(raf)cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(function(){
+      sheet.style.transform='translateY('+dragY+'px)';
+      overlay.style.opacity=String(Math.max(0,0.5-dragY/600));
+    });
+  }
+
+  function onDragEnd(){
+    if(!isDragging)return;
     isDragging=false;
+    if(raf)cancelAnimationFrame(raf);
+    // Dismiss if dragged far enough OR velocity is fast downward
+    if(dragY>100||velY>8){
+      dismissSheet();
+    }else{
+      // Snap back with spring
+      sheet.style.transition='transform .35s cubic-bezier(.34,1.4,.64,1)';
+      sheet.style.transform='translateY(0)';
+      overlay.style.transition='opacity .2s';
+      overlay.style.opacity='0.5';
+    }
+    dragY=0;velY=0;
+  }
+
+  // Touch events — handle only on handle area to avoid conflicts with scroll
+  handle.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientY);},{passive:true});
+  document.addEventListener('touchmove',function(e){if(isDragging)onDragMove(e.touches[0].clientY);},{passive:true});
+  document.addEventListener('touchend',function(){onDragEnd();},{passive:true});
+
+  // Also allow dragging from top 60px of sheet
+  var sheetTopArea=div({position:'absolute',top:'0',left:'0',right:'0',height:'60px',zIndex:'10',cursor:'grab'});
+  sheetTopArea.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientY);},{passive:true});
+  sheet.appendChild(sheetTopArea);
+
+  overlay.addEventListener('click',function(e){
+    if(e.target===overlay) dismissSheet();
   });
 
   overlay.appendChild(sheet);
