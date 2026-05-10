@@ -224,11 +224,8 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   touch-action:pan-y;
 }
 .bs-handle{
-  width:36px;height:4px;
-  background:rgba(255,255,255,0.25);
-  border-radius:2px;
-  margin:12px auto 4px;
-  cursor:grab;
+  width:100%;display:flex;justify-content:center;align-items:center;
+  padding:14px 0 8px;background:transparent;cursor:grab;
 }
 .spring-pop{animation:springPop var(--spring-fast) both}
 @keyframes springSlideUp{
@@ -2405,7 +2402,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   function onStart(e){
     startY=e.touches[0].clientY;
     lastY=startY;dragY=0;velY=0;moved=false;isDragging=false;lastTime=Date.now();
-    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchmove',onMove,{passive:true});
     document.addEventListener('touchend',onEnd,{passive:true});
     document.addEventListener('touchcancel',onEnd,{passive:true});
   }
@@ -2419,7 +2416,6 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
       sheet.style.transition='none';
     }
     if(!isDragging)return;
-    e.preventDefault();
     var now=Date.now();
     velY=(clientY-lastY)/(now-lastTime||1)*16;
     lastTime=now;lastY=clientY;
@@ -2449,9 +2445,19 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
     dragY=0;velY=0;
   }
 
-  handle.style.padding='16px 40px';
-  handle.style.margin='-4px auto 4px';
+  // Drag zone: invisible but large touch area, small visual pill
+  handle.style.padding='20px 60px';
+  handle.style.margin='0 auto';
+  handle.style.background='transparent';
   handle.style.cursor='grab';
+  handle.style.touchAction='none';
+  handle.style.display='flex';
+  handle.style.justifyContent='center';
+  // The visual pill is the bs-handle ::before
+  var pill=document.createElement('div');
+  Object.assign(pill.style,{width:'36px',height:'4px',borderRadius:'2px',background:'rgba(255,255,255,0.2)',flexShrink:'0'});
+  handle.innerHTML='';
+  handle.appendChild(pill);
   handle.addEventListener('touchstart',onStart,{passive:true});
 
   overlay.addEventListener('click',function(e){
