@@ -293,6 +293,10 @@ body.session-active #nav{display:none}
     STATS
   </button>
   <button class="nb" id="n2" onclick="navTo(2)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><polygon points="12,12 16,8 12,7 8,8"/></svg>
+    ANALYSE
+  </button>
+  <button class="nb" id="n3" onclick="navTo(3)">
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     AGENDA
   </button>
@@ -1078,10 +1082,31 @@ var QUOTES=[
   {text:'Le mouvement est medicine.',author:'Da Rulk'},
   {text:"Ne souhaite pas que ce soit plus facile. Souhaite etre meilleur.",author:'Da Rulk'},
   {text:"Les champions s'entrainent quand ils n'en ont pas envie.",author:'Anatoly'},
-  {text:'La regularite bat l\'intensite sur le long terme.',author:'Da Rulk'},
+  {text:"La regularite bat l'intensite sur le long terme.",author:'Da Rulk'},
   {text:"Ton seul concurrent c'est toi d'hier.",author:'Anatoly'},
-  {text:'Le Raw Functional Training c\'est etre fort pour la vraie vie.',author:'Da Rulk'},
-  {text:'Garde les abdos forts, la ceinture reste au vestiaire.',author:'Anatoly'}
+  {text:"Le Raw Functional Training c'est etre fort pour la vraie vie.",author:'Da Rulk'},
+  {text:'Garde les abdos forts, la ceinture reste au vestiaire.',author:'Anatoly'},
+  {text:"La fatigue est dans la tete avant d'etre dans les jambes.",author:'Kobe Bryant'},
+  {text:'5h du matin. Les autres dorment. Moi je travaille.',author:'Kobe Bryant'},
+  {text:"Il n'y a pas de raccourci. Il n'y en a jamais eu.",author:'Kobe Bryant'},
+  {text:'Bats-toi avec la douleur ou tu vivras avec le regret.',author:'Kobe Bryant'},
+  {text:"Je rate 100% des shoots que je ne tente pas.",author:'Michael Jordan'},
+  {text:"Talent, c'est Dieu. Travail, c'est toi.",author:'Michael Jordan'},
+  {text:"Les limites existent seulement dans l'esprit.",author:'Michael Jordan'},
+  {text:"Le confort est l'ennemi de la croissance.",author:'David Goggins'},
+  {text:"Quand ton esprit dit stop, tu en es a 40% de tes capacites.",author:'David Goggins'},
+  {text:'Personne ne va venir te sauver. Leve-toi.',author:'David Goggins'},
+  {text:"La souffrance est le prix de l'excellence.",author:'David Goggins'},
+  {text:"La derniere rep, celle qui fait mal, c'est celle qui fait grandir.",author:'Arnold'},
+  {text:'Tout le monde veut le resultat. Personne ne veut le chemin.',author:'Arnold'},
+  {text:"Je ne commencerai pas a compter que quand ca brule.",author:'Muhammad Ali'},
+  {text:'Impossible est un mot que les laches utilisent.',author:'Muhammad Ali'},
+  {text:"Ton futur est cree par ce que tu fais aujourd'hui.",author:'Cristiano Ronaldo'},
+  {text:"Le talent sans travail n'est que du gaspillage.",author:'Cristiano Ronaldo'},
+  {text:'Everybody wants to be a bodybuilder but nobody wants to lift.',author:'Ronnie Coleman'},
+  {text:"Je ne crains pas celui qui pratique 10000 techniques. Je crains celui qui en pratique une 10000 fois.",author:'Bruce Lee'},
+  {text:'La douleur du jour est la force de demain.',author:'Phil Heath'},
+  {text:'Leg day is the day you find out who you really are.',author:'Tom Platz'}
 ];
 function getDailyQuote(){var day=Math.floor(Date.now()/(24*3600*1000));return QUOTES[day%QUOTES.length];}
 
@@ -1381,7 +1406,8 @@ function build(){
   if(SUBVIEW==='session')return SESS&&SESS.rftCircuit?buildCircuitSession():buildSession();
   if(SUBVIEW==='warmup')return buildWarmup();
   if(VIEW===1)return buildStats();
-  if(VIEW===2)return buildAgenda();
+  if(VIEW===2)return buildAnalyse();
+  if(VIEW===3)return buildAgenda();
   return buildHome();
 }
 function navTo(i){
@@ -3218,6 +3244,179 @@ function buildStats(){
   return root;
 }
 
+// ANALYSE
+function buildAnalyse(){
+  var ph=getPhase(ST.week);
+  var root=div({minHeight:'100vh',background:'#060606',paddingBottom:'80px'});
+  var hero=div({background:'linear-gradient(165deg,rgba(16,12,3,0.95),rgba(6,6,6,0.9))',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',borderBottom:'1px solid rgba(255,255,255,0.07)',padding:'28px 20px 22px'});
+  hero.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'32px',letterSpacing:'5px',color:ph.color,lineHeight:'1'},'ANALYSE'));
+  hero.appendChild(div({fontSize:'11px',color:'rgba(255,255,255,0.3)',letterSpacing:'2px',marginTop:'4px'},'Corps & Equilibre musculaire'));
+  root.appendChild(hero);
+  var content=div({padding:'16px 16px'});
+
+  // RADAR MUSCULAIRE
+  content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'14px'},'EQUILIBRE MUSCULAIRE'));
+  var radarBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)',border:'1px solid rgba(255,255,255,0.09)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.12)',borderRadius:'20px',padding:'16px',marginBottom:'16px'});
+
+  // Get muscle load data
+  var load=getMuscleLoad();
+  var muscles=[
+    {k:'chest',n:'Pecto',angle:-90},
+    {k:'back',n:'Dos',angle:-45},
+    {k:'shoulders',n:'Epaules',angle:0},
+    {k:'biceps',n:'Biceps',angle:45},
+    {k:'quads',n:'Quadri',angle:90},
+    {k:'hamstrings',n:'Ischio',angle:135},
+    {k:'core',n:'Core',angle:180},
+    {k:'triceps',n:'Triceps',angle:-135}
+  ];
+
+  var svgNS='http://www.w3.org/2000/svg';
+  var radar=document.createElementNS(svgNS,'svg');
+  radar.setAttribute('width','100%');radar.setAttribute('viewBox','0 0 300 300');
+  var cx=150,cy=150,maxR=100;
+
+  // Grid
+  [25,50,75,100].forEach(function(r){
+    var c=document.createElementNS(svgNS,'circle');
+    c.setAttribute('cx',String(cx));c.setAttribute('cy',String(cy));c.setAttribute('r',String(r));
+    c.setAttribute('fill','none');c.setAttribute('stroke','rgba(255,255,255,0.06)');c.setAttribute('stroke-width','0.5');
+    radar.appendChild(c);
+  });
+
+  // Axis lines
+  muscles.forEach(function(m){
+    var rad=m.angle*Math.PI/180;
+    var line=document.createElementNS(svgNS,'line');
+    line.setAttribute('x1',String(cx));line.setAttribute('y1',String(cy));
+    line.setAttribute('x2',String(cx+maxR*Math.cos(rad)));line.setAttribute('y2',String(cy+maxR*Math.sin(rad)));
+    line.setAttribute('stroke','rgba(255,255,255,0.06)');line.setAttribute('stroke-width','0.5');
+    radar.appendChild(line);
+  });
+
+  // Data polygon
+  var pts=muscles.map(function(m){
+    var val=load[m.k]||0;
+    var rad=m.angle*Math.PI/180;
+    return (cx+val*maxR*Math.cos(rad))+','+(cy+val*maxR*Math.sin(rad));
+  }).join(' ');
+  var poly=document.createElementNS(svgNS,'polygon');
+  poly.setAttribute('points',pts);
+  poly.setAttribute('fill',ph.color);poly.setAttribute('fill-opacity','0.18');
+  poly.setAttribute('stroke',ph.color);poly.setAttribute('stroke-width','1.5');
+  radar.appendChild(poly);
+
+  // Dots + labels
+  muscles.forEach(function(m){
+    var val=load[m.k]||0;
+    var rad=m.angle*Math.PI/180;
+    var dotX=cx+val*maxR*Math.cos(rad);var dotY=cy+val*maxR*Math.sin(rad);
+    var dot=document.createElementNS(svgNS,'circle');
+    dot.setAttribute('cx',String(dotX));dot.setAttribute('cy',String(dotY));dot.setAttribute('r','4');
+    dot.setAttribute('fill',val<0.3?'#e85e1a':ph.color);
+    radar.appendChild(dot);
+    // Label
+    var lblR=maxR+18;var lblX=cx+lblR*Math.cos(rad);var lblY=cy+lblR*Math.sin(rad);
+    var txt=document.createElementNS(svgNS,'text');
+    txt.setAttribute('x',String(lblX));txt.setAttribute('y',String(lblY+4));
+    txt.setAttribute('text-anchor','middle');txt.setAttribute('font-family','system-ui');
+    txt.setAttribute('font-size','9');txt.setAttribute('fill',val<0.3?'#e85e1a':'rgba(255,255,255,0.6)');
+    txt.textContent=m.n;radar.appendChild(txt);
+    // % value
+    if(val>0){
+      var pTxt=document.createElementNS(svgNS,'text');
+      pTxt.setAttribute('x',String(lblX));pTxt.setAttribute('y',String(lblY+14));
+      pTxt.setAttribute('text-anchor','middle');pTxt.setAttribute('font-family','Bebas Neue,cursive');
+      pTxt.setAttribute('font-size','9');pTxt.setAttribute('fill',val<0.3?'#e85e1a':ph.color);
+      pTxt.textContent=Math.round(val*100)+'%';radar.appendChild(pTxt);
+    }
+  });
+
+  radarBox.appendChild(radar);
+
+  // Alert if imbalance
+  var weak=muscles.filter(function(m){return (load[m.k]||0)<0.3;});
+  if(weak.length>0){
+    var alert=div({display:'flex',alignItems:'center',gap:'10px',marginTop:'10px',padding:'10px 12px',background:'rgba(232,94,26,0.08)',border:'1px solid rgba(232,94,26,0.25)',borderRadius:'10px'});
+    alert.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'14px',color:'#e85e1a',flexShrink:'0'},'!'));
+    var alertTxt=div({flex:'1'});
+    alertTxt.appendChild(div({fontSize:'11px',color:'#e07c2a',fontWeight:'600'},weak.map(function(m){return m.n;}).join(', ')+' sous-travailles'));
+    alertTxt.appendChild(div({fontSize:'10px',color:'#555',marginTop:'2px'},'Ajoute une seance pour equilibrer'));
+    alert.appendChild(alertTxt);
+    radarBox.appendChild(alert);
+  }
+  content.appendChild(radarBox);
+
+  // ACTIVITY RINGS (moved from Stats)
+  content.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#555',letterSpacing:'4px',marginBottom:'14px'},'ACTIVITE HEBDOMADAIRE'));
+  var ringsBox=div({background:'rgba(255,255,255,0.04)',backdropFilter:'blur(24px)',WebkitBackdropFilter:'blur(24px)',border:'1px solid rgba(255,255,255,0.09)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.12)',borderRadius:'20px',padding:'20px',marginBottom:'16px',display:'flex',alignItems:'center',gap:'20px'});
+  var seancesDone=0;
+  SESSIONS.forEach(function(s){var st=sesStats(s);if(st.done===st.total&&st.total>0)seancesDone++;});
+  var seancesTotal=6;
+  var seancesPct=Math.min(1,seancesDone/seancesTotal);
+  var strk=calcStreak();
+  var strkPct=Math.min(1,strk/7);
+  var volLoad=getMuscleLoad();
+  var volTotal=0;Object.keys(volLoad).forEach(function(k){volTotal+=volLoad[k];});
+  var volPct=Math.min(1,volTotal/5);
+  var rings=[
+    {pct:seancesPct,color:ph.color,label:'SEANCES',value:seancesDone+'/'+seancesTotal},
+    {pct:volPct,color:'#e07c2a',label:'VOLUME',value:Math.round(volPct*100)+'%'},
+    {pct:strkPct,color:'#e85e1a',label:'STREAK',value:strk+'j'}
+  ];
+  var svgEl=document.createElementNS(svgNS,'svg');
+  svgEl.setAttribute('width','150');svgEl.setAttribute('height','150');svgEl.setAttribute('viewBox','0 0 150 150');
+  var radii=[62,46,30];
+  rings.forEach(function(r,i){
+    var rad=radii[i];var circ=2*Math.PI*rad;var offset=circ*(1-r.pct);
+    var track=document.createElementNS(svgNS,'circle');
+    track.setAttribute('cx','75');track.setAttribute('cy','75');track.setAttribute('r',String(rad));
+    track.setAttribute('fill','none');track.setAttribute('stroke',r.color);track.setAttribute('stroke-opacity','0.15');track.setAttribute('stroke-width','13');
+    svgEl.appendChild(track);
+    var prog=document.createElementNS(svgNS,'circle');
+    prog.setAttribute('cx','75');prog.setAttribute('cy','75');prog.setAttribute('r',String(rad));
+    prog.setAttribute('fill','none');prog.setAttribute('stroke',r.color);prog.setAttribute('stroke-width','13');
+    prog.setAttribute('stroke-dasharray',String(circ));prog.setAttribute('stroke-dashoffset',String(circ));
+    prog.setAttribute('stroke-linecap','round');prog.setAttribute('transform','rotate(-90 75 75)');
+    prog.style.transition='stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1) '+(i*200)+'ms';
+    svgEl.appendChild(prog);
+    setTimeout(function(){prog.setAttribute('stroke-dashoffset',String(offset));},50+i*200);
+    if(r.pct>0.02){
+      var angle=(-90+r.pct*360)*Math.PI/180;
+      var cx2=75+rad*Math.cos(angle);var cy2=75+rad*Math.sin(angle);
+      var cap=document.createElementNS(svgNS,'circle');
+      cap.setAttribute('cx',String(cx2));cap.setAttribute('cy',String(cy2));cap.setAttribute('r','6.5');
+      cap.setAttribute('fill',r.color);cap.style.opacity='0';
+      cap.style.transition='opacity .3s '+(0.8+i*0.2)+'s';
+      svgEl.appendChild(cap);
+      setTimeout(function(){cap.style.opacity='0.95';},800+i*200);
+    }
+  });
+  var cTxt=document.createElementNS(svgNS,'text');
+  cTxt.setAttribute('x','75');cTxt.setAttribute('y','70');cTxt.setAttribute('text-anchor','middle');
+  cTxt.setAttribute('font-family','Bebas Neue,cursive');cTxt.setAttribute('font-size','22');cTxt.setAttribute('fill','#fff');
+  cTxt.textContent=seancesDone+'/'+seancesTotal;svgEl.appendChild(cTxt);
+  var cLbl=document.createElementNS(svgNS,'text');
+  cLbl.setAttribute('x','75');cLbl.setAttribute('y','86');cLbl.setAttribute('text-anchor','middle');
+  cLbl.setAttribute('font-family','system-ui');cLbl.setAttribute('font-size','9');cLbl.setAttribute('fill','#666');cLbl.setAttribute('letter-spacing','2');
+  cLbl.textContent='SEANCES';svgEl.appendChild(cLbl);
+  ringsBox.appendChild(svgEl);
+  var legend=div({flex:'1',display:'flex',flexDirection:'column',gap:'14px'});
+  rings.forEach(function(r){
+    var row=div({display:'flex',alignItems:'center',gap:'10px'});
+    var dot=div({width:'10px',height:'10px',borderRadius:'50%',background:r.color,flexShrink:'0'});
+    var info=div({flex:'1'});
+    info.appendChild(div({fontSize:'9px',color:'#555',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},r.label));
+    info.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'20px',color:r.color,lineHeight:'1.1',letterSpacing:'1px'},r.value));
+    row.appendChild(dot);row.appendChild(info);legend.appendChild(row);
+  });
+  ringsBox.appendChild(legend);
+  content.appendChild(ringsBox);
+
+  root.appendChild(content);
+  return root;
+}
+
 // AGENDA
 function buildAgenda(){
   var ph=getPhase(ST.week);
@@ -3273,9 +3472,146 @@ function buildAgenda(){
   ].join('');
   document.head.appendChild(s);
 })();
+// ONBOARDING
+function buildOnboarding(){
+  var step=0;
+  var data={poids:80,bench:100,squat:125,deadlift:145,ohp:65,curl:50};
+  var ph=getPhase(1);
+
+  function render(){
+    var existing=document.getElementById('onboarding');
+    if(existing)existing.parentNode.removeChild(existing);
+    var ov=document.createElement('div');
+    ov.id='onboarding';
+    Object.assign(ov.style,{position:'fixed',inset:'0',zIndex:'9999',background:'rgba(6,6,6,0.98)',backdropFilter:'blur(40px)',WebkitBackdropFilter:'blur(40px)',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'32px 24px',animation:'springPop .4s cubic-bezier(.34,1.4,.64,1) both'});
+
+    // Header
+    var hd=div({textAlign:'center',marginBottom:'32px'});
+    hd.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'42px',letterSpacing:'6px',color:ph.color,lineHeight:'1'},'JACOBZ'));
+    hd.appendChild(div({fontSize:'11px',color:'#555',letterSpacing:'3px',marginTop:'6px'},'CONFIGURATION · '+(step+1)+' / 3'));
+    // Progress bar
+    var pb=div({height:'2px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',marginTop:'16px',overflow:'hidden'});
+    pb.appendChild(div({height:'100%',width:(((step+1)/3)*100)+'%',background:ph.color,borderRadius:'2px',transition:'width .4s cubic-bezier(.34,1.4,.64,1)'}));
+    hd.appendChild(pb);
+    ov.appendChild(hd);
+
+    var card=div({background:'rgba(255,255,255,0.05)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18)',borderRadius:'24px',padding:'28px 24px',width:'100%',maxWidth:'340px',boxSizing:'border-box'});
+
+    if(step===0){
+      // Step 1: poids
+      card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Ton poids'));
+      card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'24px'},'Pour calibrer les charges recommandees'));
+      var numDisplay=div({textAlign:'center',marginBottom:'20px'});
+      var bigNum=div({fontFamily:'Bebas Neue,cursive',fontSize:'72px',color:ph.color,lineHeight:'1',letterSpacing:'2px'},String(data.poids));
+      numDisplay.appendChild(bigNum);
+      numDisplay.appendChild(div({fontSize:'11px',color:'#555',letterSpacing:'3px'},'KG'));
+      card.appendChild(numDisplay);
+      var slider=document.createElement('input');
+      slider.type='range';slider.min='50';slider.max='150';slider.value=String(data.poids);slider.step='1';
+      Object.assign(slider.style,{width:'100%',accentColor:ph.color,marginBottom:'8px'});
+      slider.addEventListener('input',function(){data.poids=parseInt(slider.value);bigNum.textContent=slider.value;});
+      card.appendChild(slider);
+      var marks=div({display:'flex',justifyContent:'space-between',fontSize:'10px',color:'#444'});
+      marks.appendChild(div({},'50kg'));marks.appendChild(div({},'100kg'));marks.appendChild(div({},'150kg'));
+      card.appendChild(marks);
+
+    }else if(step===1){
+      // Step 2: lifts
+      card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Tes lifts actuels'));
+      card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'20px'},'Estimation 1RM ou meilleure serie'));
+      var grid=div({display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
+      [['bench','Bench Press'],['squat','Squat'],['deadlift','Deadlift'],['ohp','OHP'],['curl','Curl'],['ohp','Poids']].forEach(function(pair,i){
+        if(i>4)return;
+        var k=pair[0],n=pair[1];
+        var block=div({background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'12px',textAlign:'center'});
+        block.appendChild(div({fontSize:'9px',color:'#555',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',marginBottom:'6px'},n));
+        var row=div({display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'});
+        var mBtn=document.createElement('button');mBtn.textContent='-';
+        Object.assign(mBtn.style,{width:'28px',height:'28px',borderRadius:'7px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#888',fontSize:'14px',cursor:'pointer',touchAction:'manipulation'});
+        var valEl=div({fontFamily:'Bebas Neue,cursive',fontSize:'20px',color:ph.color,minWidth:'48px',textAlign:'center'},data[k]+'kg');
+        var pBtn=document.createElement('button');pBtn.textContent='+';
+        Object.assign(pBtn.style,{width:'28px',height:'28px',borderRadius:'7px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#888',fontSize:'14px',cursor:'pointer',touchAction:'manipulation'});
+        (function(key,el){
+          mBtn.addEventListener('click',function(){data[key]=Math.max(20,data[key]-2.5);el.textContent=data[key]+'kg';});
+          pBtn.addEventListener('click',function(){data[key]=Math.min(300,data[key]+2.5);el.textContent=data[key]+'kg';});
+        })(k,valEl);
+        row.appendChild(mBtn);row.appendChild(valEl);row.appendChild(pBtn);
+        block.appendChild(row);grid.appendChild(block);
+      });
+      card.appendChild(grid);
+
+    }else{
+      // Step 3: programme
+      card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Ton programme'));
+      card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'20px'},'Tu pourras en changer depuis l\'accueil'));
+      var progs=[{k:'THOR',l:'THOR x ANATOLY',desc:'Force + Hypertrophie · 16 semaines'},{k:'STREET',l:'STREET WORKOUT',desc:'Calisthenics · Progressif'},{k:'RFT',l:'RFT DA RULK',desc:'Conditioning · 3 niveaux'}];
+      var chosen='THOR';
+      var progBtns=[];
+      progs.forEach(function(p){
+        var b=document.createElement('button');
+        b.style.cssText='display:block;width:100%;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#fff;text-align:left;cursor:pointer;margin-bottom:8px;touch-action:manipulation';
+        b.innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:16px;letter-spacing:2px;color:'+(p.k==='THOR'?ph.color:'#888')+'">'+p.l+'</div><div style="font-size:10px;color:#555;margin-top:2px">'+p.desc+'</div>';
+        if(p.k==='THOR')b.style.border='1px solid '+ph.color+'60';
+        b.addEventListener('click',function(){
+          chosen=p.k;
+          progBtns.forEach(function(pb,i){
+            pb.style.border='1px solid rgba(255,255,255,0.1)';pb.style.background='rgba(255,255,255,0.04)';
+            pb.querySelector('div').style.color='#888';
+          });
+          b.style.border='1px solid '+ph.color+'60';b.style.background='rgba(200,164,90,0.06)';
+          b.querySelector('div').style.color=ph.color;
+        });
+        progBtns.push(b);card.appendChild(b);
+      });
+    }
+
+    ov.appendChild(card);
+
+    // Buttons
+    var btnsRow=div({display:'flex',gap:'12px',marginTop:'20px',width:'100%',maxWidth:'340px'});
+    if(step>0){
+      var backB=btn({flex:'1',padding:'14px',borderRadius:'14px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'#777',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){step--;render();});
+      btnsRow.appendChild(backB);
+    }
+    var nextLabel=step===2?'COMMENCER':'SUIVANT';
+    var nextB=btn({flex:'2',padding:'14px',borderRadius:'14px',background:ph.color,border:'none',color:'#000',fontSize:'14px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive'},nextLabel,function(){
+      if(step<2){step++;render();}
+      else{
+        // Save and close
+        localStorage.setItem('jz_onboarded','1');
+        localStorage.setItem('jz_user_poids',String(data.poids));
+        localStorage.setItem('jz_user_bench',String(data.bench));
+        localStorage.setItem('jz_user_squat',String(data.squat));
+        localStorage.setItem('jz_user_dl',String(data.deadlift));
+        localStorage.setItem('jz_user_ohp',String(data.ohp));
+        localStorage.setItem('jz_user_curl',String(data.curl));
+        ov.style.transition='opacity .3s,transform .3s';
+        ov.style.opacity='0';ov.style.transform='scale(0.96)';
+        setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov);},300);
+      }
+    });
+    btnsRow.appendChild(nextB);
+    ov.appendChild(btnsRow);
+
+    // Skip
+    if(step===0){
+      var skip=document.createElement('button');
+      skip.textContent='Passer';
+      skip.style.cssText='background:none;border:none;color:#444;font-size:12px;margin-top:12px;cursor:pointer;padding:8px;touch-action:manipulation';
+      skip.addEventListener('click',function(){localStorage.setItem('jz_onboarded','1');ov.parentNode.removeChild(ov);});
+      ov.appendChild(skip);
+    }
+
+    document.body.appendChild(ov);
+  }
+  render();
+}
+
 R();
 requestNotifPermission();
 buildSmartNotifBanner();
+// Show onboarding on first launch
+if(!localStorage.getItem('jz_onboarded'))buildOnboarding();
 // Service Worker for offline mode
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(function(reg){
