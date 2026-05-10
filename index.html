@@ -2383,50 +2383,65 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   sheet.appendChild(vidSec);
 
   // Smooth drag-to-dismiss with velocity
-  var startY=0,lastY=0,isDragging=false,dragY=0,velY=0,lastTime=0,raf=null;
+  var startY=0,lastY=0,isDragging=false,dragY=0,velY=0,lastTime=0,raf=null,moved=false;
 
   function dismissSheet(){
+    cleanup();
     SHEET_STATE=null;
-    sheet.style.transition='transform .28s cubic-bezier(.32,.72,0,1)';
+    sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
     sheet.style.transform='translateY(110%)';
-    overlay.style.transition='opacity .25s';
+    overlay.style.transition='opacity .28s';
     overlay.style.opacity='0';
-    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
+    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},320);
     OPEN=null;
   }
 
-  function onDragStart(clientY){
-    // Only start drag from near the top of the sheet
-    isDragging=true;
-    startY=clientY;lastY=clientY;dragY=0;velY=0;lastTime=Date.now();
-    sheet.style.transition='none'; // kill CSS transition during drag
-    sheet.style.willChange='transform';
+  function cleanup(){
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onEnd);
+    document.removeEventListener('touchcancel',onEnd);
   }
 
-  function onDragMove(clientY){
+  function onStart(e){
+    startY=e.touches[0].clientY;
+    lastY=startY;dragY=0;velY=0;moved=false;isDragging=false;lastTime=Date.now();
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('touchend',onEnd,{passive:true});
+    document.addEventListener('touchcancel',onEnd,{passive:true});
+  }
+
+  function onMove(e){
+    var clientY=e.touches[0].clientY;
+    var dy=clientY-startY;
+    if(!moved){
+      if(dy<8)return;
+      moved=true;isDragging=true;
+      sheet.style.transition='none';
+    }
     if(!isDragging)return;
+    e.preventDefault();
     var now=Date.now();
-    var dy=clientY-lastY;
-    velY=dy/(now-lastTime||1)*16; // velocity in px/frame
+    velY=(clientY-lastY)/(now-lastTime||1)*16;
     lastTime=now;lastY=clientY;
-    dragY=Math.max(0,clientY-startY); // only drag down
+    dragY=Math.max(0,dy);
     if(raf)cancelAnimationFrame(raf);
     raf=requestAnimationFrame(function(){
       sheet.style.transform='translateY('+dragY+'px)';
-      overlay.style.opacity=String(Math.max(0,0.5-dragY/600));
+      overlay.style.opacity=String(Math.max(0,0.5-dragY/500));
     });
   }
 
-  function onDragEnd(){
-    if(!isDragging)return;
-    isDragging=false;
-    if(raf)cancelAnimationFrame(raf);
-    // Dismiss if dragged far enough OR velocity is fast downward
-    if(dragY>100||velY>8){
+  function onEnd(){
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onEnd);
+    document.removeEventListener('touchcancel',onEnd);
+    if(raf){cancelAnimationFrame(raf);raf=null;}
+    if(!isDragging){isDragging=false;moved=false;return;}
+    isDragging=false;moved=false;
+    if(dragY>90||velY>6){
       dismissSheet();
     }else{
-      // Snap back with spring
-      sheet.style.transition='transform .35s cubic-bezier(.34,1.4,.64,1)';
+      sheet.style.transition='transform .4s cubic-bezier(.34,1.4,.64,1)';
       sheet.style.transform='translateY(0)';
       overlay.style.transition='opacity .2s';
       overlay.style.opacity='0.5';
@@ -2434,18 +2449,13 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
     dragY=0;velY=0;
   }
 
-  // Touch events — handle only on handle area to avoid conflicts with scroll
-  handle.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientY);},{passive:true});
-  document.addEventListener('touchmove',function(e){if(isDragging)onDragMove(e.touches[0].clientY);},{passive:true});
-  document.addEventListener('touchend',function(){onDragEnd();},{passive:true});
-
-  // Also allow dragging from top 60px of sheet
-  var sheetTopArea=div({position:'absolute',top:'0',left:'0',right:'0',height:'60px',zIndex:'10',cursor:'grab'});
-  sheetTopArea.addEventListener('touchstart',function(e){onDragStart(e.touches[0].clientY);},{passive:true});
-  sheet.appendChild(sheetTopArea);
+  handle.style.padding='16px 40px';
+  handle.style.margin='-4px auto 4px';
+  handle.style.cursor='grab';
+  handle.addEventListener('touchstart',onStart,{passive:true});
 
   overlay.addEventListener('click',function(e){
-    if(e.target===overlay) dismissSheet();
+    if(e.target===overlay)dismissSheet();
   });
 
   overlay.appendChild(sheet);
