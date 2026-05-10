@@ -1355,6 +1355,9 @@ function navTo(i){
 // TIMER
 function buildTimer(){
   if(!TMR)return null;
+  // Remove any existing timer
+  var existing=document.getElementById('timer-overlay');
+  if(existing)existing.parentNode.removeChild(existing);
   var t=TMR,ph=getPhase(ST.week);
   var pct=(t.secs-t.rem)/t.secs;
   var m=Math.floor(t.rem/60),s=t.rem%60;
@@ -1362,7 +1365,8 @@ function buildTimer(){
   var urgent=t.rem<=10;
   var c=urgent?'#e85e1a':t.rem<=30?'#e07c2a':ph.color;
 
-  var overlay=div({position:'fixed',inset:'0',zIndex:'2000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(4,4,4,0.88)',backdropFilter:'blur(40px)',WebkitBackdropFilter:'blur(40px)',animation:'springPop .4s cubic-bezier(.34,1.4,.64,1) both'});
+  var overlay=div({position:'fixed',inset:'0',zIndex:'9000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:'rgba(4,4,4,0.88)',backdropFilter:'blur(40px)',WebkitBackdropFilter:'blur(40px)',animation:'springPop .4s cubic-bezier(.34,1.4,.64,1) both'});
+  overlay.id='timer-overlay';
 
   // Top label
   var topLbl=div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:'#444',letterSpacing:'6px',marginBottom:'20px'},'REPOS');
@@ -1451,7 +1455,8 @@ function buildTimer(){
   btns.appendChild(adjBtn);
   btns.appendChild(btn({flex:'1',padding:'16px',borderRadius:'14px',background:c+'20',border:'1px solid '+c+'60',color:c,fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'SKIP',function(){stopTimer();safeR();}));
   overlay.appendChild(btns);
-  return overlay;
+  document.body.appendChild(overlay);
+  return null; // already appended to body
 }
 function startTimer(secs,label,next){
   if(TMR)clearInterval(TMR.iv);
@@ -1461,6 +1466,7 @@ function startTimer(secs,label,next){
   var notifBody=next?('Prochain : '+next):"C'est parti !";
   scheduleNotif(secs, 'JACOBZ - Repos termine', notifBody);
   timerGo();
+  buildTimer(); // append to body immediately
 }
 function timerGo(){
   TMR.iv=setInterval(function(){
@@ -1471,7 +1477,11 @@ function timerGo(){
     tickUI();
   },1000);
 }
-function stopTimer(){if(TMR)clearInterval(TMR.iv);TMR=null;TNEXT=null;TALERTED=false;cancelNotif();}
+function stopTimer(){
+  if(TMR)clearInterval(TMR.iv);TMR=null;TNEXT=null;TALERTED=false;cancelNotif();
+  var te=document.getElementById('timer-overlay');
+  if(te)te.parentNode.removeChild(te);
+}
 function tickUI(){
   if(!TMR)return;
   var bigR=98,bigCI=2*Math.PI*bigR,pct=(TMR.secs-TMR.rem)/TMR.secs;
@@ -2048,7 +2058,6 @@ function buildCircuitSession(){
     root.appendChild(content);
   }
 
-  var te=buildTimer();if(te)root.appendChild(te);
   if(T0&&!allDone)startChrono();
   return root;
 }
@@ -2419,7 +2428,6 @@ function buildSession(){
     });
     root.appendChild(el2);
   }
-  var te=buildTimer();if(te)root.appendChild(te);
   if(T0&&!allDone)startChrono();
   return root;
 }
