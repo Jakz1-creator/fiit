@@ -265,6 +265,7 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 body.session-active{overflow:hidden;position:fixed;width:100%;height:100%}
 body.session-active #nav{display:none}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -3321,24 +3322,16 @@ function buildContact(){
     var msg=msgInput.value.trim();
     if(!msg){sendStatus.textContent='Ecris un message avant d\'envoyer';sendStatus.style.color='#e85e1a';return;}
     sendBtn.textContent='ENVOI...';sendBtn.style.opacity='0.6';sendBtn.disabled=true;
-    fetch('https://api.emailjs.com/api/v1.0/email/send',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({service_id:'service_8gz2dz4',template_id:'bwaqvhj',user_id:'XZY9uBvEJR8wskJxV',template_params:{nom:nom,type:selectedType,message:msg,email:'noreply@jacobz.app'}})
-    }).then(function(r){
-      if(r.ok){
-        sendBtn.textContent='ENVOYE';sendBtn.style.background='#9aeebb';sendBtn.style.opacity='1';sendBtn.disabled=false;
-        sendStatus.textContent='Merci '+nom+' ! Message recu.';sendStatus.style.color='#9aeebb';
-        nomInput.value='';msgInput.value='';
-        setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;sendStatus.textContent='';},3000);
-      }else{
-        sendBtn.textContent='ERREUR';sendBtn.style.background='#e85e1a';sendBtn.style.opacity='1';sendBtn.disabled=false;
-        sendStatus.textContent='Probleme d\'envoi, reessaie.';sendStatus.style.color='#e85e1a';
-        setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;},2500);
-      }
-    }).catch(function(){
+    emailjs.send('service_8gz2dz4','bwaqvhj',{nom:nom,type:selectedType,message:msg},'XZY9uBvEJR8wskJxV')
+    .then(function(){
+      sendBtn.textContent='ENVOYE';sendBtn.style.background='#9aeebb';sendBtn.style.opacity='1';sendBtn.disabled=false;
+      sendStatus.textContent='Merci '+nom+' ! Message recu.';sendStatus.style.color='#9aeebb';
+      nomInput.value='';msgInput.value='';
+      setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;sendStatus.textContent='';},3000);
+    },function(err){
       sendBtn.textContent='ERREUR';sendBtn.style.background='#e85e1a';sendBtn.style.opacity='1';sendBtn.disabled=false;
-      sendStatus.textContent='Verifie ta connexion.';sendStatus.style.color='#e85e1a';
-      setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;},2500);
+      sendStatus.textContent='Erreur: '+JSON.stringify(err);sendStatus.style.color='#e85e1a';
+      setTimeout(function(){sendBtn.textContent='ENVOYER';sendBtn.style.background=ph.color;},3000);
     });
   });
   fbBox.appendChild(sendBtn);
