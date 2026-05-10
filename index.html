@@ -1423,7 +1423,15 @@ function R(){
   }
   ANIM='fade';
 }
-function safeR(){setTimeout(function(){R();if(SHEET_STATE&&SUBVIEW==='session'){openBottomSheet(SHEET_STATE.ex,SHEET_STATE.sKey,SHEET_STATE.ph,SHEET_STATE.wip,SHEET_STATE.nextName);}},0);}
+function safeR(){
+  setTimeout(function(){
+    R();
+    if(SHEET_STATE&&SUBVIEW==='session'){
+      // Update sheet in-place without slide animation
+      openBottomSheet(SHEET_STATE.ex,SHEET_STATE.sKey,SHEET_STATE.ph,SHEET_STATE.wip,SHEET_STATE.nextName,true);
+    }
+  },0);
+}
 function build(){
   if(SUBVIEW==='session')return SESS&&SESS.rftCircuit?buildCircuitSession():buildSession();
   if(SUBVIEW==='warmup')return buildWarmup();
@@ -2267,7 +2275,7 @@ function stopLiveActivity(){
 }
 
 // BOTTOM SHEET for exercise details
-function openBottomSheet(ex,sKey,ph,wip,nextName){
+function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
   // Store state so safeR() can re-open after re-render
   SHEET_STATE={ex:ex,sKey:sKey,ph:ph,wip:wip,nextName:nextName};
   // Remove existing sheet
@@ -2279,6 +2287,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
 
   var sheet=document.createElement('div');
   sheet.className='bs-sheet';
+  if(noAnim)sheet.style.animation='none';
 
   // Drag handle
   var handle=document.createElement('div');handle.className='bs-handle';
@@ -2381,69 +2390,71 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   sheet.appendChild(vidSec);
 
   // Smooth drag-to-dismiss with velocity
-  // Simple reliable dismiss
+  // DISMISS function
   function dismissSheet(){
-    cleanup();
-    SHEET_STATE=null;
-    sheet.style.transition='transform .32s cubic-bezier(.32,.72,0,1)';
-    sheet.style.transform='translateY(105%)';
-    overlay.style.transition='opacity .3s ease';
+    SHEET_STATE=null;OPEN=null;
+    sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
+    overlay.style.transition='opacity .28s ease';
+    sheet.style.transform='translateY(106%)';
     overlay.style.opacity='0';
-    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},340);
-    OPEN=null;
+    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},320);
   }
 
-  function cleanup(){
-    document.removeEventListener('touchmove',onMove,{passive:true});
-    document.removeEventListener('touchend',onEnd,{passive:true});
-  }
+  // DRAG - attached to handle only, no document listeners
+  var _y0=0,_dy=0,_active=false,_raf=null;
 
-  var _startY=0,_dragY=0,_dragging=false,_raf=null;
+  handle.style.cssText='width:100%;padding:16px 0 8px;display:flex;justify-content:center;align-items:center;background:transparent;touch-action:none;cursor:grab;user-select:none';
+  var pill=document.createElement('div');
+  pill.style.cssText='width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.22);pointer-events:none';
+  handle.innerHTML='';handle.appendChild(pill);
 
-  function onMove(e){
-    if(!_dragging)return;
-    var dy=e.touches[0].clientY-_startY;
-    if(dy<0)return;
-    _dragY=dy;
+  handle.addEventListener('touchstart',function(e){
+    e.stopPropagation();
+    _y0=e.touches[0].clientY;_dy=0;_active=true;
+    sheet.style.transition='none';
+  },{passive:true});
+
+  handle.addEventListener('touchmove',function(e){
+    if(!_active)return;
+    e.stopPropagation();
+    var dy=e.touches[0].clientY-_y0;
+    if(dy<=0)return;
+    _dy=dy;
     if(_raf)cancelAnimationFrame(_raf);
     _raf=requestAnimationFrame(function(){
-      sheet.style.transition='none';
-      sheet.style.transform='translateY('+_dragY+'px)';
-      overlay.style.opacity=String(Math.max(0,0.5-_dragY/400));
+      sheet.style.transform='translateY('+_dy+'px)';
+      overlay.style.opacity=String(Math.max(0,0.5-_dy/350));
     });
-  }
+  },{passive:true});
 
-  function onEnd(){
-    document.removeEventListener('touchmove',onMove);
-    document.removeEventListener('touchend',onEnd);
-    _dragging=false;
+  handle.addEventListener('touchend',function(e){
+    if(!_active)return;
+    e.stopPropagation();
+    _active=false;
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    if(_dragY>80){
+    if(_dy>80){
       dismissSheet();
     }else{
-      sheet.style.transition='transform .35s cubic-bezier(.25,.46,.45,.94)';
+      sheet.style.transition='transform .35s ease';
       sheet.style.transform='translateY(0)';
       overlay.style.transition='opacity .2s';
       overlay.style.opacity='0.5';
-      _dragY=0;
+      _dy=0;
     }
-  }
-
-  handle.style.cssText='width:100%;padding:14px 0 6px;display:flex;justify-content:center;align-items:center;background:transparent;cursor:grab;touch-action:none';
-  var pill=document.createElement('div');
-  pill.style.cssText='width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.22)';
-  handle.innerHTML='';handle.appendChild(pill);
-  handle.addEventListener('touchstart',function(e){
-    _startY=e.touches[0].clientY;_dragY=0;_dragging=true;
-    document.addEventListener('touchmove',onMove,{passive:true});
-    document.addEventListener('touchend',onEnd,{passive:true});
   },{passive:true});
 
-  // Tap overlay to close
+  handle.addEventListener('touchcancel',function(){
+    _active=false;_dy=0;
+    sheet.style.transition='transform .35s ease';
+    sheet.style.transform='translateY(0)';
+  },{passive:true});
+
+  // Tap backdrop to close
   overlay.addEventListener('click',function(e){
     if(e.target===overlay)dismissSheet();
   });
 
+  overlay.appendChild(sheet);
   overlay.appendChild(sheet);
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
