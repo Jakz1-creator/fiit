@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -620,6 +621,40 @@ var SESSIONS=[
     {id:'u4br',name:'Battle Rope Final',sets:4,reps:40,rest:60,notes:'40s max',cond:true,mus:'core'}
   ]
 }},
+{id:'lower',name:'LOWER',sub:'Ischio-Fessiers et Core',tag:'THOR',wu:'legs',phaseExercises:{
+  1:[
+    {id:'lo1rdl',name:'Romanian Deadlift',sets:4,reps:10,baseKg:80,incr:[2.5,2.5,5,5],rest:180,notes:'Charniere hanche, dos droit',mus:'hamstrings'},
+    {id:'lo1hip',name:'Hip Thrust Barre',sets:4,reps:12,baseKg:80,incr:[5,5,5,5],rest:120,notes:'Pause 1s en haut, fessiers contractes',mus:'glutes'},
+    {id:'lo1bss',name:'Bulgarian Split Squat',sets:3,reps:10,baseKg:20,incr:[2.5,2.5,5,5],rest:120,notes:'10 par jambe, pied arriere sureleve',mus:'quads'},
+    {id:'lo1lc',name:'Leg Curl Couche',sets:4,reps:12,baseKg:35,incr:[2.5,2.5,5,5],rest:90,notes:'Controle descente 3s',mus:'hamstrings'},
+    {id:'lo1hl',name:'Hanging Leg Raise',sets:4,reps:12,rest:75,notes:'Jambes tendues, sans elan',bwOnly:true,mus:'core'},
+    {id:'lo1ab',name:'Ab Wheel Rollout',sets:3,reps:10,rest:75,notes:'Extension complete, controle retour',bwOnly:true,mus:'core'}
+  ],
+  2:[
+    {id:'lo2rdl',name:'Romanian Deadlift',sets:4,reps:8,baseKg:90,incr:[2.5,2.5,5,5],rest:180,notes:'Plus lourd, charniere parfaite',mus:'hamstrings'},
+    {id:'lo2hip',name:'Hip Thrust Barre',sets:4,reps:10,baseKg:90,incr:[5,5,5,5],rest:120,notes:'Pause 2s en haut',mus:'glutes'},
+    {id:'lo2bss',name:'Bulgarian Split Squat Leste',sets:4,reps:8,baseKg:25,incr:[2.5,2.5,5,5],rest:120,notes:'8 par jambe avec halteres',mus:'quads'},
+    {id:'lo2nc',name:'Nordic Curl',sets:3,reps:6,rest:120,notes:'Negative lente 5s, ischio',bwOnly:true,mus:'hamstrings'},
+    {id:'lo2cr',name:'Weighted Crunches',sets:4,reps:15,baseKg:10,incr:[2.5,2.5,5,5],rest:75,bw:true,notes:'Plaque sur poitrine',mus:'core'},
+    {id:'lo2hr',name:'Hanging Knee to Elbow',sets:4,reps:12,rest:75,notes:'Genou touche coude, rotation',bwOnly:true,mus:'core'}
+  ],
+  3:[
+    {id:'lo3rdl',name:'Romanian Deadlift Lourd',sets:5,reps:6,baseKg:102.5,incr:[2.5,2.5,5,5],rest:210,notes:'Charge max, charniere parfaite',mus:'hamstrings'},
+    {id:'lo3hip',name:'Hip Thrust Barre Lourd',sets:4,reps:8,baseKg:100,incr:[5,5,5,5],rest:150,notes:'Force maximale fessiers',mus:'glutes'},
+    {id:'lo3bss',name:'Bulgarian Split Squat Lourd',sets:4,reps:6,baseKg:30,incr:[2.5,2.5,5,5],rest:150,notes:'6 par jambe, force pure',mus:'quads'},
+    {id:'lo3nc',name:'Nordic Curl',sets:4,reps:6,rest:120,notes:'4s descente, retour explosif',bwOnly:true,mus:'hamstrings'},
+    {id:'lo3dlf',name:'Dragon Flag',sets:3,reps:8,rest:90,notes:'Controle total, isometrique au bas',bwOnly:true,mus:'core'},
+    {id:'lo3aw',name:'Ab Wheel Rollout',sets:4,reps:12,rest:75,notes:'Extension maximale',bwOnly:true,mus:'core'}
+  ],
+  4:[
+    {id:'lo4rdl',name:'Romanian Deadlift Peak',sets:5,reps:5,baseKg:112.5,incr:[2.5,2.5,5,5],rest:240,notes:'PR attempt sur les 5 reps',mus:'hamstrings'},
+    {id:'lo4hip',name:'Hip Thrust Barre Peak',sets:5,reps:6,baseKg:110,incr:[5,5,5,5],rest:180,notes:'Volume peak fessiers',mus:'glutes'},
+    {id:'lo4bss',name:'Bulgarian Split Squat Peak',sets:5,reps:5,baseKg:35,incr:[2.5,2.5,5,5],rest:180,notes:'5 par jambe, intensite max',mus:'quads'},
+    {id:'lo4nc',name:'Nordic Curl',sets:4,reps:8,rest:120,notes:'Pleine amplitude, force ischio',bwOnly:true,mus:'hamstrings'},
+    {id:'lo4lh',name:'L-Sit Hanging',sets:4,reps:30,rest:90,notes:'30s tenue stricte',bwOnly:true,mus:'core'},
+    {id:'lo4aw',name:'Ab Wheel Rollout',sets:4,reps:15,rest:75,notes:'Peak volume core',bwOnly:true,mus:'core'}
+  ]
+}},
 {id:'cond',name:'COND',sub:'Conditioning Core',tag:'ANATOLY',wu:'cond',phaseExercises:{
   1:[
     {id:'c1wb',name:'Wall Ball 9kg',sets:5,reps:20,rest:60,notes:'Squat profond',cond:true,mus:'core'},
@@ -658,7 +693,7 @@ var SESSIONS=[
     {id:'c4fin',name:'Finisher',sets:4,reps:30,rest:60,notes:'Sled+rope',cond:true,mus:'core'}
   ]
 }},
-{id:'absA',name:'ABS A',sub:'Anatoly Routine A',tag:'ANATOLY',wu:'abs',phaseExercises:{
+{id:'absA',name:'ABS A',sub:'Anatoly Routine A',tag:'ABS',wu:'abs',phaseExercises:{
   1:[
     {id:'a1hkr',name:'Hanging Knee Raise',sets:3,reps:12,rest:60,notes:'Controle, pas de balancement',bwOnly:true,mus:'core'},
     {id:'a1cru',name:'Bodyweight Crunches',sets:3,reps:30,rest:60,notes:'Contraction max au sommet',bwOnly:true,mus:'core'},
@@ -684,7 +719,7 @@ var SESSIONS=[
     {id:'a4bex',name:'Back Extension',sets:4,reps:20,baseKg:17.5,incr:[2.5,2.5,5,5],rest:60,bw:true,notes:'Lestage progressif',mus:'back'}
   ]
 }},
-{id:'absB',name:'ABS B',sub:'Anatoly Routine B',tag:'ANATOLY',wu:'abs',phaseExercises:{
+{id:'absB',name:'ABS B',sub:'Anatoly Routine B',tag:'ABS',wu:'abs',phaseExercises:{
   1:[
     {id:'b1lrp',name:'Leg Raises Dip Station',sets:3,reps:12,rest:60,notes:'Sur barres paralleles',bwOnly:true,mus:'core'},
     {id:'b1obl',name:'Oblique Crunches',sets:3,reps:15,rest:60,notes:'Chaque cote',bwOnly:true,mus:'core'},
@@ -975,6 +1010,14 @@ var VIDS={
   l3nor:'nordic+curl',l1calf:'calf+raise',u1row:'barbell+row',u1pu:'tractions',
   p1wb:'wall+ball',l1sled:'sled+push',q1br:'battle+rope',c1plk:'planche',
   c3drg:'dragon+flag',c3hlr:'hanging+leg+raise',c4mup:'muscle+up',
+  // LOWER
+  lo1rdl:'romanian+deadlift+technique',lo2rdl:'romanian+deadlift+lourd',lo3rdl:'romanian+deadlift+heavy',
+  lo1hip:'hip+thrust+barre+technique',lo2hip:'hip+thrust+barre+lourd',lo3hip:'hip+thrust+progressif',
+  lo1bss:'bulgarian+split+squat+technique',lo2bss:'bulgarian+split+squat+halteres',lo3bss:'bulgarian+split+squat+lourd',
+  lo1lc:'leg+curl+couche+technique',lo2nc:'nordic+curl+progression',lo3nc:'nordic+curl+technique',
+  lo1hl:'hanging+leg+raise+strict',lo2hr:'hanging+knee+to+elbow',
+  lo1ab:'ab+wheel+rollout+technique',lo3dlf:'dragon+flag+technique',
+  lo3aw:'ab+wheel+rollout+avance',lo4lh:'l+sit+hanging+technique',
   // ABS Anatoly
   a1hkr:'hanging+knee+raise+technique',a2hlr:'hanging+leg+raise+strict',a3hlr:'hanging+leg+raise+slow+negative',
   a1cru:'crunches+technique',a2wcr:'weighted+crunches+technique',
