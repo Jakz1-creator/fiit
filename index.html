@@ -1102,6 +1102,7 @@ function saveS(d){try{localStorage.setItem(SK,JSON.stringify(d));}catch(e){}}
 function fresh(){return{week:1,logs:{},prs:{},dates:[]};}
 var ST=loadS()||fresh();
 var VIEW=0,SESS=null,SUBVIEW='home',OPEN=null;
+var SHEET_STATE=null; // persists bottom sheet across safeR() calls
 var TMR=null,TNEXT=null,TALERTED=false;
 var T0=null,CRONIV=null;
 var wuChecks={};
@@ -1232,7 +1233,7 @@ function R(){
   }
   ANIM='fade'; // reset after each render
 }
-function safeR(){setTimeout(R,0);}
+function safeR(){setTimeout(function(){R();if(SHEET_STATE&&SUBVIEW==='session'){openBottomSheet(SHEET_STATE.ex,SHEET_STATE.sKey,SHEET_STATE.ph,SHEET_STATE.wip,SHEET_STATE.nextName);}},0);}
 function build(){
   if(SUBVIEW==='session')return SESS&&SESS.rftCircuit?buildCircuitSession():buildSession();
   if(SUBVIEW==='warmup')return buildWarmup();
@@ -1555,7 +1556,7 @@ function buildExCard(ex,sKey,ph,wip,ssLetters,isSSA,isSSB,nextName){
   Object.assign(vb.style,{width:'30px',height:'30px',borderRadius:'8px',background:ac+'15',border:'1px solid '+ac+'40',color:ac,fontSize:'10px',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:'0',cursor:'pointer'});
   vb.addEventListener('click',function(e){e.stopPropagation();window.open(vidUrl(ex.id,ex.name),'_blank');});
   rb.appendChild(vb);
-  rb.appendChild(div({fontSize:'18px',color:'#333',transform:isOpen?'rotate(180deg)':'none',transition:'transform .2s'},'v'));
+  rb.appendChild(div({fontSize:'16px',color:'rgba(255,255,255,0.2)',lineHeight:'1'},'v'));
   ch.appendChild(rb);
   ch.addEventListener('click',function(){openBottomSheet(ex,sKey,ph,wip,nextName);});
   card.appendChild(ch);
@@ -1640,7 +1641,7 @@ function buildCircuitSession(){
   // Header
   var header=div({position:'sticky',top:'0',zIndex:'100',background:'rgba(6,6,6,0.82)',backdropFilter:'blur(28px)',WebkitBackdropFilter:'blur(28px)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'14px 16px 10px'});
   var hr=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'10px'});
-  hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}SUBVIEW='home';OPEN=null;stopTimer();stopParticles();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
+  hr.appendChild(btn({background:'none',border:'1px solid #222',color:'#666',borderRadius:'8px',padding:'6px 12px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){if(RFT_EX_TMR){clearInterval(RFT_EX_TMR.iv);RFT_EX_TMR=null;}SHEET_STATE=null;SUBVIEW='home';OPEN=null;stopTimer();stopParticles();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
   var tb=div({flex:'1'});
   tb.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'22px',color:ph.color,letterSpacing:'3px',lineHeight:'1'},s.name));
   var chrEl=document.createElement('span');chrEl.id='chrono';
@@ -1954,6 +1955,8 @@ function buildCircuitSession(){
 
 // BOTTOM SHEET for exercise details
 function openBottomSheet(ex,sKey,ph,wip,nextName){
+  // Store state so safeR() can re-open after re-render
+  SHEET_STATE={ex:ex,sKey:sKey,ph:ph,wip:wip,nextName:nextName};
   // Remove existing sheet
   var existing=document.getElementById('bs-overlay');
   if(existing)existing.parentNode.removeChild(existing);
@@ -2029,10 +2032,11 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   // Dismiss on overlay click
   overlay.addEventListener('click',function(e){
     if(e.target===overlay){
+      SHEET_STATE=null;
       sheet.style.transform='translateY(100%)';sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
       overlay.style.opacity='0';overlay.style.transition='opacity .3s';
       setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
-      OPEN=null;safeR();
+      OPEN=null;
     }
   });
 
@@ -2047,10 +2051,11 @@ function openBottomSheet(ex,sKey,ph,wip,nextName){
   sheet.addEventListener('touchend',function(e){
     var dy=e.changedTouches[0].clientY-startY;
     if(dy>80){
+      SHEET_STATE=null;
       sheet.style.transform='translateY(100%)';sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
       overlay.style.opacity='0';overlay.style.transition='opacity .3s';
       setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},300);
-      OPEN=null;safeR();
+      OPEN=null;
     }else{sheet.style.transform='';sheet.style.transition='transform .2s cubic-bezier(.34,1.4,.64,1)';}
     isDragging=false;
   });
@@ -2080,7 +2085,7 @@ function buildSession(){
   var header=div({position:'sticky',top:'0',zIndex:'100',background:'rgba(6,6,6,0)',backdropFilter:'blur(0px)',WebkitBackdropFilter:'blur(0px)',borderBottom:'1px solid transparent',padding:'14px 16px 10px',transition:'background .3s,backdrop-filter .3s,border-color .3s'});
   header.id='sess-header';
   var hr=div({display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'});
-  hr.appendChild(btn({background:'rgba(255,255,255,0.08)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(255,255,255,0.12)',color:'#aaa',borderRadius:'20px',padding:'6px 14px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){SUBVIEW='home';OPEN=null;stopTimer();stopParticles();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
+  hr.appendChild(btn({background:'rgba(255,255,255,0.08)',backdropFilter:'blur(12px)',WebkitBackdropFilter:'blur(12px)',border:'1px solid rgba(255,255,255,0.12)',color:'#aaa',borderRadius:'20px',padding:'6px 14px',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){SHEET_STATE=null;SUBVIEW='home';OPEN=null;stopTimer();stopParticles();relWL();clearInterval(CRONIV);ANIM='back';safeR();}));
   var tb=div({flex:'1'});
   // Compact title (hidden until scroll)
   var compactTitle=div({fontFamily:'Bebas Neue,cursive',fontSize:'18px',color:ph.color,letterSpacing:'3px',lineHeight:'1',opacity:'0',transform:'translateY(6px)',transition:'opacity .25s,transform .25s'},s.name);
