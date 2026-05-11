@@ -1,5 +1,5 @@
 // JACOBZ Service Worker - Network First pour HTML, Cache pour assets
-var CACHE='jacobz-v3';
+var CACHE='jacobz-v4';
 var HTML_URL='/fiit/';
 var FALLBACKS=['/fiit/','/fiit/index.html'];
 
