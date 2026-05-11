@@ -1200,6 +1200,10 @@ var SUBS={
   u2pu:['Lat Pulldown','Seated Row','Australian Pull-up']
 };
 
+// Exercise name overrides (substitutions chosen by user)
+var OVERRIDES=JSON.parse(localStorage.getItem('jz_overrides')||'{}');
+function saveOverrides(){localStorage.setItem('jz_overrides',JSON.stringify(OVERRIDES));}
+
 // SESSION SHARE
 function shareSessionImage(sessName,doneSets,elapsed,prCount,phColor){
   try{
@@ -1407,7 +1411,19 @@ function calcKg(base,pid,wip,incr){
   var a=incr?incr[Math.min(wip-1,incr.length-1)]:0;
   return Math.round((b+(wip-1)*a)*2)/2;
 }
-function getExos(s,w){if(!w)w=ST.week;var pid=getPhase(w).id;return s.phaseExercises[pid]||s.phaseExercises[3]||s.phaseExercises[2]||s.phaseExercises[1]||[];}
+function getExos(s,w){
+  if(!w)w=ST.week;
+  var pid=getPhase(w).id;
+  var exos=s.phaseExercises[pid]||s.phaseExercises[3]||s.phaseExercises[2]||s.phaseExercises[1]||[];
+  // Apply user substitutions
+  exos.forEach(function(ex){
+    if(OVERRIDES[ex.id]){
+      if(!ex._origName)ex._origName=ex.name;
+      ex.name=OVERRIDES[ex.id];
+    }
+  });
+  return exos;
+}
 function rm1(kg,reps){return reps===1?kg:Math.round(kg*(1+reps/30));}
 function fmtTime(s){return Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);}
 
@@ -2593,10 +2609,39 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
   // Substitutions
   if(SUBS[ex.id]){
     var subSec=div({padding:'12px 16px'});
-    subSec.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'8px'},'SUBSTITUTIONS'));
+    var subLabel=div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'8px'});
+    subLabel.textContent=OVERRIDES[ex.id]?'SUBSTITUTION ACTIVE':'SUBSTITUTIONS';
+    subSec.appendChild(subLabel);
+
+    // Show reset if override active
+    if(OVERRIDES[ex.id]){
+      var resetBtn=document.createElement('button');
+      Object.assign(resetBtn.style,{display:'block',width:'100%',padding:'8px 12px',marginBottom:'8px',borderRadius:'8px',background:'rgba(232,94,26,0.1)',border:'1px solid rgba(232,94,26,0.3)',color:'#e85e1a',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',touchAction:'manipulation',textAlign:'left'});
+      resetBtn.textContent='↩ RETABLIR '+ex.name.toUpperCase();
+      resetBtn.addEventListener('click',function(){
+        delete OVERRIDES[ex.id];saveOverrides();
+        ex.name=ex._origName||ex.name;
+        SHEET_STATE.ex=ex;
+        openBottomSheet(ex,sKey,ph,wip,nextName,true);
+        safeR();
+      });
+      subSec.appendChild(resetBtn);
+    }
+
     SUBS[ex.id].forEach(function(sub){
-      var si=div({padding:'8px 12px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'8px',marginBottom:'6px',fontSize:'12px',color:'rgba(255,255,255,0.5)',display:'flex',alignItems:'center',gap:'8px'});
-      si.innerHTML='<span style="color:'+ph.color+';font-size:14px">&#10143;</span> '+sub;
+      var isActive=OVERRIDES[ex.id]===sub;
+      var si=document.createElement('button');
+      Object.assign(si.style,{display:'flex',width:'100%',alignItems:'center',gap:'10px',padding:'10px 12px',background:isActive?'rgba(200,164,90,0.12)':'rgba(255,255,255,0.04)',border:'1px solid '+(isActive?ph.color+'50':'rgba(255,255,255,0.07)'),borderRadius:'10px',marginBottom:'6px',fontSize:'13px',color:isActive?ph.color:'rgba(255,255,255,0.6)',cursor:'pointer',touchAction:'manipulation',textAlign:'left',fontFamily:'DM Sans,system-ui'});
+      si.innerHTML='<span style="color:'+ph.color+';font-size:15px;flex-shrink:0">'+(isActive?'✓':'→')+'</span><span>'+sub+'</span>';
+      si.addEventListener('click',function(){
+        if(!ex._origName)ex._origName=ex.name;
+        OVERRIDES[ex.id]=sub;saveOverrides();
+        ex.name=sub;
+        SHEET_STATE.ex=ex;
+        openBottomSheet(ex,sKey,ph,wip,nextName,true);
+        safeR();
+        vib([20,50,20]);
+      });
       subSec.appendChild(si);
     });
     container.appendChild(subSec);
