@@ -1420,7 +1420,7 @@ var ST=loadS()||fresh();
 var VIEW=0,SESS=null,SUBVIEW='home',OPEN=null;
 var SHEET_STATE=null; // persists bottom sheet across safeR() calls
 var TMR=null,TNEXT=null,TALERTED=false;
-var T0=null,CRONIV=null;
+var T0=null,CRONIV=null,SESS_ELAPSED=0;
 var wuChecks={};
 
 // ANALYTICS
@@ -1944,8 +1944,8 @@ function buildWarmup(){
     content.appendChild(card);
   });
   var btns=div({display:'flex',gap:'10px',marginTop:'20px'});
-  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:'rgba(255,255,255,0.05)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.12)',color:'#777',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'PASSER',function(){SUBVIEW='session';T0=Date.now();reqWL();startChrono();startParticles(ph.color);startLiveActivity(SESS.name,ph);ANIM='fwd';safeR();}));
-  btns.appendChild(btn({flex:'2',padding:'14px',borderRadius:'12px',background:ph.color,border:'none',color:'#000',fontSize:'15px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive'},'COMMENCER',function(){SUBVIEW='session';T0=Date.now();reqWL();startChrono();startParticles(ph.color);startLiveActivity(SESS.name,ph);ANIM='fwd';safeR();}));
+  btns.appendChild(btn({flex:'1',padding:'14px',borderRadius:'12px',background:'rgba(255,255,255,0.05)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.12)',color:'#777',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'PASSER',function(){SUBVIEW='session';T0=Date.now();SESS_ELAPSED=0;reqWL();startChrono();startParticles(ph.color);startLiveActivity(SESS.name,ph);ANIM='fwd';safeR();}));
+  btns.appendChild(btn({flex:'2',padding:'14px',borderRadius:'12px',background:ph.color,border:'none',color:'#000',fontSize:'15px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive'},'COMMENCER',function(){SUBVIEW='session';T0=Date.now();SESS_ELAPSED=0;reqWL();startChrono();startParticles(ph.color);startLiveActivity(SESS.name,ph);ANIM='fwd';safeR();}));
   content.appendChild(btns);
   root.appendChild(content);
   return root;
@@ -1989,7 +1989,7 @@ function buildCircuitSession(){
   var allBlocsDone=activBloc>=mainBlocs.length;
   var allFinDone=finExos.length===0||finExos.every(function(ex){var l=ST.logs[sKey+'_'+ex.id+'_0'];return l&&l.done;});
   var allDone=allBlocsDone&&allFinDone;
-  if(allDone){markToday();clearInterval(CRONIV);}
+  if(allDone){markToday();clearInterval(CRONIV);SESS_ELAPSED=T0?Math.floor((Date.now()-T0)/1000):SESS_ELAPSED;}
 
   var root=div({position:'fixed',top:'0',left:'0',right:'0',bottom:'0',background:'#080808',overflowY:'auto',WebkitOverflowScrolling:'touch',zIndex:'10',paddingTop:'env(safe-area-inset-top)',paddingBottom:'env(safe-area-inset-bottom)'});
 
@@ -2622,7 +2622,7 @@ function buildSession(){
   });
   var progress=totalSets>0?doneSets/totalSets:0;
   var allDone=doneSets===totalSets&&totalSets>0;
-  if(allDone){markToday();clearInterval(CRONIV);}
+  if(allDone){markToday();clearInterval(CRONIV);SESS_ELAPSED=T0?Math.floor((Date.now()-T0)/1000):SESS_ELAPSED;}
   var ssLetters={};var ssIdx=0;
   exos.forEach(function(ex){if(ex.ss&&!ssLetters[ex.ss])ssLetters[ex.ss]=String.fromCharCode(65+ssIdx++);});
   var root=div({position:'fixed',top:'0',left:'0',right:'0',bottom:'0',background:'#080808',overflowY:'auto',WebkitOverflowScrolling:'touch',zIndex:'10',paddingTop:'env(safe-area-inset-top)',paddingBottom:'env(safe-area-inset-bottom)'});
@@ -2658,7 +2658,7 @@ function buildSession(){
   root.appendChild(largeHero);
 
   if(allDone){
-    var elapsed=T0?Math.floor((Date.now()-T0)/1000):0;
+    var elapsed=SESS_ELAPSED||0;
     var prThisSess=exos.filter(function(ex){return ST.prs[ex.id];}).length;
     var ds=div({padding:'30px 20px',textAlign:'center'});
     var ggEl=div({fontFamily:'Bebas Neue,cursive',fontSize:'64px',color:ph.color,lineHeight:'1',letterSpacing:'4px',marginBottom:'8px',animation:'springPop .5s cubic-bezier(.34,1.8,.64,1) both'},'GG');ds.appendChild(ggEl);
