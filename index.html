@@ -2553,7 +2553,7 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
 
   var overlay=document.createElement('div');
   overlay.className='bs-overlay';overlay.id='bs-overlay';
-  overlay.style.background='rgba(0,0,0,0.5)';
+  overlay.style.cssText='background:rgba(0,0,0,0.55);position:fixed;inset:0;z-index:1500;';
 
   var sheet=document.createElement('div');
   sheet.className='bs-sheet';
@@ -2597,14 +2597,8 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
     _lastY=_y0;_lastT=Date.now();
     _dy=0;_velY=0;_active=false;
     // Reset any leftover transparent state immediately
-    if(parseFloat(overlay.style.opacity)<0.49){
-      overlay.style.transition='none';
-      overlay.style.opacity='0.5';
-    }
-    if(sheet.style.transform&&sheet.style.transform!=='translateY(0px)'&&sheet.style.transform!=='translateY(0)'){
-      sheet.style.transition='none';
-      sheet.style.transform='translateY(0)';
-    }
+    sheet.style.transition='none';
+    sheet.style.transform='translateY(0)';
   },{passive:true});
 
   sheet.addEventListener('touchmove',function(e){
@@ -2620,7 +2614,6 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
       if(_raf)cancelAnimationFrame(_raf);
       _raf=requestAnimationFrame(function(){
         sheet.style.transform='translateY('+_dy+'px)';
-        overlay.style.opacity=String(Math.max(0,0.5-_dy/400));
       });
     }
   },{passive:true});
@@ -2628,8 +2621,6 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
   sheet.addEventListener('touchend',function(){
     if(!_active){
       // Even if drag was minimal, always restore overlay
-      overlay.style.transition='opacity .2s ease';
-      overlay.style.opacity='0.5';
       sheet.style.transition='transform .25s ease';
       sheet.style.transform='translateY(0)';
       _dy=0;return;
@@ -2640,8 +2631,6 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
       dismissSheet();
     }else{
       // Restore overlay immediately
-      overlay.style.transition='opacity .25s ease';
-      overlay.style.opacity='0.5';
       // Spring bounce back
       sheet.style.setProperty('--dy',Math.round(_dy)+'px');
       sheet.style.animation='none';
@@ -2663,8 +2652,6 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
 
   sheet.addEventListener('touchcancel',function(){
     _active=false;_dy=0;_velY=0;
-    overlay.style.transition='opacity .2s ease';
-    overlay.style.opacity='0.5';
     sheet.style.transition='transform .3s ease';
     sheet.style.transform='translateY(0)';
     setTimeout(function(){sheet.style.transition='';},320);
