@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="JACOBZ"/>
-<meta name="theme-color" content="#080808"/>
-<title>JACOBZ</title>
+<meta name="apple-mobile-web-app-title" content="TRNR"/>
+<meta name="theme-color" content="#060606"/>
+<title>TRNR</title>
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='38' fill='%23080808'/%3E%3Ctext x='96' y='148' font-family='serif' font-weight='900' font-size='130' text-anchor='middle' fill='%23c8a45a'%3EJ%3C/text%3E%3C/svg%3E"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
@@ -362,7 +362,7 @@ function scheduleNotif(secs, title, body) {
   if(window._notifTimeout) clearTimeout(window._notifTimeout);
   window._notifTimeout = setTimeout(function() {
     try {
-      var n = new Notification(title || 'JACOBZ', {
+      var n = new Notification(title || 'TRNR', {
         body: body || 'Repos termine - C\'est parti !',
         icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 192 192\'%3E%3Crect width=\'192\' height=\'192\' rx=\'38\' fill=\'%23080808\'/%3E%3Ctext x=\'96\' y=\'148\' font-family=\'serif\' font-weight=\'900\' font-size=\'130\' text-anchor=\'middle\' fill=\'%23c8a45a\'%3EJ%3C/text%3E%3C/svg%3E',
         badge: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 192 192\'%3E%3Crect width=\'192\' height=\'192\' rx=\'38\' fill=\'%23080808\'/%3E%3Ctext x=\'96\' y=\'148\' font-family=\'serif\' font-weight=\'900\' font-size=\'130\' text-anchor=\'middle\' fill=\'%23c8a45a\'%3EJ%3C/text%3E%3C/svg%3E',
@@ -436,19 +436,34 @@ function showIntro(){
   sp.appendChild(glow);
 
   // Center wrap
+  // Glass card wrapper
+  var glassCard=document.createElement('div');
+  Object.assign(glassCard.style,{
+    background:'rgba(255,255,255,0.04)',
+    backdropFilter:'blur(40px) saturate(200%)',
+    WebkitBackdropFilter:'blur(40px) saturate(200%)',
+    border:'0.5px solid rgba(255,255,255,0.12)',
+    boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.18),0 24px 64px rgba(0,0,0,0.6)',
+    borderRadius:'32px',
+    padding:'40px 48px',
+    display:'flex',flexDirection:'column',alignItems:'center',gap:'14px',
+    opacity:'0',transition:'opacity 1s ease'
+  });
+
   var w=document.createElement('div');
   w.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;position:relative;z-index:2';
 
   // THOR x ANATOLY
   var slogan=document.createElement('div');
-  Object.assign(slogan.style,{fontFamily:'DM Sans,system-ui',fontSize:'10px',letterSpacing:'7px',color:'rgba(200,164,90,0)',textTransform:'uppercase',paddingRight:'7px',transition:'color 1.4s ease'});
-  slogan.textContent='THOR x ANATOLY';
+  Object.assign(slogan.style,{fontFamily:'-apple-system,system-ui',fontSize:'10px',letterSpacing:'5px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'5px',transition:'color 1.4s ease',fontWeight:'300'});
+  slogan.textContent='Hybrid Training';
   w.appendChild(slogan);
 
   // JACOBZ — letter spacing collapse (Dior signature)
   var logo=document.createElement('div');
   Object.assign(logo.style,{fontFamily:"'Bebas Neue',cursive",fontSize:'68px',color:'rgba(200,164,90,0)',letterSpacing:'52px',paddingRight:'52px',transition:'color 1s ease,letter-spacing 1.8s cubic-bezier(.4,0,.2,1),padding-right 1.8s cubic-bezier(.4,0,.2,1)'});
-  logo.textContent='JACOBZ';
+  // TRN + R split
+  logo.innerHTML='<span style="font-weight:300;color:#fff">TRN</span><span style="font-weight:700;color:#c8a45a;text-shadow:0 0 40px rgba(200,164,90,0.3)">R</span>';
   w.appendChild(logo);
 
   // Thin rule
@@ -458,10 +473,14 @@ function showIntro(){
 
   // 16 Week
   var tag=document.createElement('div');
-  Object.assign(tag.style,{fontFamily:'DM Sans,system-ui',fontSize:'9px',letterSpacing:'5px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'5px',transition:'color 1s ease'});
-  tag.textContent='16 Week Hybrid Program';
+  Object.assign(tag.style,{fontFamily:'-apple-system,system-ui',fontSize:'9px',letterSpacing:'6px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'6px',transition:'color 1s ease',fontWeight:'300'});
+  tag.textContent='Hybrid Training';
   w.appendChild(tag);
 
+  glassCard.appendChild(logo);
+  glassCard.appendChild(rule);
+  glassCard.appendChild(tag);
+  w.appendChild(glassCard);
   sp.appendChild(w);
 
   // SEQUENCE
@@ -471,11 +490,10 @@ function showIntro(){
   // 0.7s: slogan whispers in
   setTimeout(function(){slogan.style.color='rgba(200,164,90,0.4)';},700);
 
-  // 1.1s: JACOBZ — colour + letter spacing collapse simultaneously
+  // 1.1s: logo appears
   setTimeout(function(){
-    logo.style.color='rgba(200,164,90,1)';
-    logo.style.letterSpacing='16px';
-    logo.style.paddingRight='16px';
+    logo.style.opacity='1';
+    glassCard.style.opacity='1';
   },1100);
 
   // 2.0s: rule draws
@@ -1408,7 +1426,7 @@ function shareSessionImage(sessName,doneSets,elapsed,prCount,phColor){
     // App name
     c.fillStyle='rgba(200,164,90,0.65)';
     c.font='600 22px -apple-system,Helvetica Neue,Arial';
-    c.textAlign='left';c.fillText('JACOBZ',54,72);
+    c.textAlign='left';c.fillText('TRNR',54,72);
 
     // Date
     c.fillStyle='rgba(255,255,255,0.25)';
@@ -1894,6 +1912,189 @@ function buildTimer(){
   document.body.appendChild(overlay);
   return null; // already appended to body
 }
+function startTabataWork(ex,sKey,ph,wip,nextName,nextEx,setIdx){
+  // Remove any existing timer
+  var existing=document.getElementById('timer-overlay');
+  if(existing)existing.parentNode.removeChild(existing);
+  if(TMR)clearInterval(TMR.iv);TMR=null;
+
+  var workSecs=ex.reps||20;
+  var restSecs=ex.rest||10;
+
+  function buildTabataOverlay(phase,rem,total){
+    var old=document.getElementById('timer-overlay');
+    if(old)old.parentNode.removeChild(old);
+
+    var isWork=phase==='work';
+    var col=isWork?'#a78bfa':'#c8a45a';
+    var pct=(total-rem)/total;
+    var bigR=98,bigCI=2*Math.PI*bigR;
+
+    var overlay=div({
+      position:'fixed',inset:'0',zIndex:'9000',
+      display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',
+      background:'rgba(4,4,4,0.95)',backdropFilter:'blur(40px)',WebkitBackdropFilter:'blur(40px)'
+    });
+    overlay.id='timer-overlay';
+
+    // Badge TABATA / EFFORT / REPOS
+    var badge=div({
+      display:'inline-flex',alignItems:'center',gap:'6px',
+      background:isWork?'rgba(167,139,250,0.12)':'rgba(200,164,90,0.1)',
+      border:'0.5px solid '+(isWork?'rgba(167,139,250,0.3)':'rgba(200,164,90,0.25)'),
+      borderRadius:'20px',padding:'5px 14px',marginBottom:'20px'
+    });
+    var dot=div({width:'6px',height:'6px',borderRadius:'50%',background:col,boxShadow:'0 0 6px '+col});
+    badge.appendChild(dot);
+    badge.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'11px',color:col,letterSpacing:'3px'},isWork?'EFFORT':'REPOS'));
+    overlay.appendChild(badge);
+
+    // Exercise name
+    var exName=div({fontFamily:'Bebas Neue,cursive',fontSize:'32px',color:isWork?'#fff':'#555',letterSpacing:'2px',lineHeight:'1',marginBottom:'4px',textAlign:'center'});
+    exName.textContent=ex.name.toUpperCase();
+    if(!isWork)exName.style.textDecoration='line-through';
+    overlay.appendChild(exName);
+
+    // Serie count
+    var tot=ex.sets;
+    var doneSoFar=0;
+    for(var s=0;s<tot;s++){var l=ST.logs[sKey+'_'+ex.id+'_'+s];if(l&&l.done)doneSoFar++;}
+    var serieLabel=div({fontSize:'10px',color:'#444',letterSpacing:'2px',marginBottom:'24px',textAlign:'center'});
+    serieLabel.textContent='Série '+(doneSoFar+1)+' / '+tot;
+    overlay.appendChild(serieLabel);
+
+    // Ring
+    var rw=div({position:'relative',width:'220px',height:'220px',marginBottom:'24px'});
+    var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('width','220');svg.setAttribute('height','220');
+    svg.style.transform='rotate(-90deg)';
+    function mkC(stroke,sw,da,off,id2){
+      var c2=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c2.setAttribute('cx','110');c2.setAttribute('cy','110');c2.setAttribute('r',String(bigR));
+      c2.setAttribute('fill','none');c2.setAttribute('stroke',stroke);c2.setAttribute('stroke-width',sw);
+      if(da){c2.setAttribute('stroke-dasharray',String(da));c2.setAttribute('stroke-dashoffset',String(off));c2.setAttribute('stroke-linecap','round');}
+      if(id2){c2.id=id2;c2.style.transition='stroke-dashoffset 1s linear';}
+      return c2;
+    }
+    svg.appendChild(mkC('#111','14',0,0,''));
+    var fgC=mkC(col,'12',bigCI,bigCI*pct,'tcircle');
+    fgC.style.filter='drop-shadow(0 0 10px '+col+'60)';
+    svg.appendChild(fgC);
+    rw.appendChild(svg);
+    var center=div({position:'absolute',inset:'0',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'});
+    var cdN=div({fontFamily:'Bebas Neue,cursive',fontSize:'88px',lineHeight:'1',letterSpacing:'-4px',color:rem<=5&&isWork?'#e85e1a':col});
+    cdN.id='tcd';cdN.textContent=String(rem);
+    var cdU=div({fontSize:'10px',color:col+'80',letterSpacing:'4px',marginTop:'4px',fontFamily:'Bebas Neue,cursive'});
+    cdU.id='tcu';cdU.textContent=isWork?'EFFORT':'REPOS';
+    center.appendChild(cdN);center.appendChild(cdU);
+    rw.appendChild(center);
+    overlay.appendChild(rw);
+
+    // Round progress dots
+    var dots=div({display:'flex',gap:'6px',justifyContent:'center',marginBottom:'20px'});
+    for(var d=0;d<tot;d++){
+      var dt=div({width:'28px',height:'4px',borderRadius:'2px',
+        background:d<doneSoFar?col:d===doneSoFar?col+'60':'rgba(255,255,255,0.08)'});
+      if(d===doneSoFar&&!isWork)dt.style.background=col;
+      dots.appendChild(dt);
+    }
+    overlay.appendChild(dots);
+
+    // Next box
+    var nextBox=div({
+      background:isWork?'rgba(255,255,255,0.04)':('rgba(200,164,90,0.07)'),
+      border:'0.5px solid '+(isWork?'rgba(255,255,255,0.07)':'rgba(200,164,90,0.2)'),
+      borderRadius:'16px',padding:'12px 20px',textAlign:'center',width:'80%'
+    });
+    var nextLbl=div({fontSize:'8px',color:isWork?'#333':'rgba(200,164,90,0.5)',letterSpacing:'3px',marginBottom:'5px',fontFamily:'Bebas Neue,cursive'});
+    nextLbl.textContent=isWork?('ENSUITE · REPOS '+restSecs+'s'):'PROCHAIN EXERCICE';
+    nextBox.appendChild(nextLbl);
+    var nextNm=div({fontFamily:'Bebas Neue,cursive',fontSize:'18px',letterSpacing:'1.5px',lineHeight:'1'});
+    nextNm.style.color=isWork?'#555':'#c8a45a';
+    nextNm.textContent=isWork?(nextEx?nextEx.name.toUpperCase():nextName?nextName.toUpperCase():'REPOS'):(nextEx?nextEx.name.toUpperCase():nextName?nextName.toUpperCase():'SUIVANT');
+    nextBox.appendChild(nextNm);
+    overlay.appendChild(nextBox);
+
+    // Buttons row
+    var skipRow=div({display:'flex',gap:'10px',marginTop:'20px',width:'80%'});
+    var pauseBtn=btn({flex:'1',padding:'14px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'#888',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'PAUSE',function(){
+      tabState.paused=!tabState.paused;
+      if(tabState.paused){pauseBtn.textContent='REPRENDRE';pauseBtn.style.color=col;pauseBtn.style.borderColor=col;vib([30]);}
+      else{pauseBtn.textContent='PAUSE';pauseBtn.style.color='#888';pauseBtn.style.borderColor='rgba(255,255,255,0.1)';vib([15]);}
+    });
+    skipRow.appendChild(pauseBtn);
+    skipRow.appendChild(btn({padding:'14px 16px',borderRadius:'14px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)',color:'#444',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'⌂',function(){
+      stopTabata();SHEET_STATE=null;OPEN=null;SUBVIEW='home';safeR();
+    }));
+    skipRow.appendChild(btn({padding:'14px 16px',borderRadius:'14px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.07)',color:'#555',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'SKIP',function(){
+      stopTabata();safeR();
+    }));
+    overlay.appendChild(skipRow);
+
+    document.body.appendChild(overlay);
+  }
+
+  var tabState={rem:workSecs,iv:null,paused:false,phase:'work'};
+
+  function stopTabata(){
+    if(tabState.iv)clearInterval(tabState.iv);tabState.iv=null;
+    var te=document.getElementById('timer-overlay');
+    if(te)te.parentNode.removeChild(te);
+  }
+
+  function tickTabata(phase,rem,total,onEnd){
+    // Update ring
+    var pct=(total-rem)/total;
+    var bigR=98,bigCI=2*Math.PI*bigR;
+    var tc=document.getElementById('tcircle');
+    var tcd=document.getElementById('tcd');
+    var col=phase==='work'?'#a78bfa':'#c8a45a';
+    if(tc)tc.setAttribute('stroke-dashoffset',String(bigCI*pct));
+    if(tcd){tcd.textContent=String(rem);tcd.style.color=rem<=5&&phase==='work'?'#e85e1a':col;}
+    if(rem===5&&phase==='work'){playAlert();vib([100,50,100]);}
+    if(rem<=0){onEnd();}
+  }
+
+  // Start WORK phase
+  buildTabataOverlay('work',workSecs,workSecs);
+  playTimerStart();vib([30]);
+  tabState.rem=workSecs;tabState.phase='work';
+  tabState.iv=setInterval(function(){
+    if(tabState.paused)return;
+    tabState.rem--;
+    tickTabata('work',tabState.rem,workSecs,function(){
+      // Work done → start REST phase
+      clearInterval(tabState.iv);tabState.iv=null;
+      playDone();vib([200,100,200]);
+      // Auto-validate this set
+      var k=sKey+'_'+ex.id+'_'+setIdx;
+      var nl=Object.assign({},ST.logs);
+      nl[k]={kg:0,reps:ex.reps,done:true};
+      ST=Object.assign({},ST,{logs:nl});saveS(ST);
+
+      // Build rest overlay
+      buildTabataOverlay('rest',restSecs,restSecs);
+      playTimerStart();
+      tabState.rem=restSecs;tabState.phase='rest';
+      tabState.iv=setInterval(function(){
+        if(tabState.paused)return;
+        tabState.rem--;
+        tickTabata('rest',tabState.rem,restSecs,function(){
+          // Rest done
+          clearInterval(tabIV);
+          playDone();vib([300]);
+          stopTabata();
+          // Open next: if nextEx in SS, or same exercise next set
+          if(nextEx&&nextEx.ss===ex.ss){
+            SHEET_STATE={ex:nextEx,sKey:sKey,ph:ph,wip:wip,nextName:nextName,_nextEx:null,_ssSwitch:true};
+          }
+          safeR();
+        });
+      },1000);
+    });
+  },1000);
+}
+
 function startTimer(secs,label,next){
   if(TMR)clearInterval(TMR.iv);
   TNEXT=next||null;TALERTED=false;
@@ -2003,18 +2204,7 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
     vib([20]);
     if(!entry.done){
       playValidate();
-      if(isTimed){
-        // Tabata: launch 20s WORK timer first, then rest timer after
-        startTimer(entry.reps, ex.name+' · GO !', null);
-        // After work timer ends, launch rest timer
-        var workEnd=Date.now()+entry.reps*1000;
-        var restChk=setInterval(function(){
-          if(!TMR||Date.now()>=workEnd){
-            clearInterval(restChk);
-            if(ex.rest>0)setTimeout(function(){startTimer(ex.rest,'Repos · '+ex.name,nextName);},300);
-          }
-        },500);
-      }
+
       save(Object.assign({},entry,{done:!entry.done}));
     }else{
       save(Object.assign({},entry,{done:!entry.done}));
@@ -2022,22 +2212,7 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
   });
   line1.appendChild(doneBtn);
   row.appendChild(line1);
-  // For timed exercises — GO button launches work timer
-  if(isTimed&&!entry.done){
-    var goBtn=document.createElement('button');
-    goBtn.textContent='▶  GO · '+entry.reps+'s';
-    Object.assign(goBtn.style,{
-      padding:'8px 14px',borderRadius:'10px',background:'rgba(167,139,250,0.1)',
-      border:'1.5px solid rgba(167,139,250,0.35)',color:'#a78bfa',fontSize:'11px',
-      letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',
-      touchAction:'manipulation',marginTop:'6px',display:'block',width:'100%'
-    });
-    goBtn.addEventListener('click',function(){
-      vib([15]);
-      startTimer(entry.reps,ex.name+' · GO !',null);
-    });
-    row.appendChild(goBtn);
-  }
+
   if(!entry.done){
     var swipeHint=document.createElement('div');
     swipeHint.className='swipe-hint';
@@ -2792,6 +2967,23 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
 }
 
 function buildSheetBody(ex,sKey,ph,wip,nextName,container){
+  // Auto-launch Tabata timer if timed exercise
+  if(ex.timed){
+    var nex=SHEET_STATE&&SHEET_STATE._nextEx;
+    // Find first undone set
+    var firstUndone=0;
+    for(var s=0;s<ex.sets;s++){
+      var l=ST.logs[sKey+'_'+ex.id+'_'+s];
+      if(!l||!l.done){firstUndone=s;break;}
+    }
+    var allDoneAlready=true;
+    for(var s2=0;s2<ex.sets;s2++){var l2=ST.logs[sKey+'_'+ex.id+'_'+s2];if(!l2||!l2.done){allDoneAlready=false;break;}}
+    if(!allDoneAlready){
+      setTimeout(function(){
+        startTabataWork(ex,sKey,ph,wip,nextName,nex,firstUndone);
+      },400);
+    }
+  }
   var musColors={chest:'#e8856a',back:'#6a9ee8',shoulders:'#e8c96a',quads:'#6ae8a0',hamstrings:'#a06ae8',glutes:'#e86aa0',biceps:'#6ae8e8',triceps:'#e8a06a',core:'#e8e86a',calves:'#a0e86a'};
   var musCol=ex.mus&&musColors[ex.mus]?musColors[ex.mus]:ph.color;
   var ac=ex.bwOnly?'#9aeebb':ex.bw?ph.color:ex.cond?'#64b4ff':ph.color;
@@ -3317,16 +3509,17 @@ function buildHome(){
   // Update CSS variable for logo color based on theme
   document.documentElement.style.setProperty('--logo-c', ph.color);
 
-  var logoWrap=div({position:'relative',zIndex:'1',display:'inline-block',marginBottom:'2px'});
-  logoWrap.className='liquid-logo-wrap';
-  logoWrap.style.setProperty('--logo-c', ph.color);
-  var jacobzLogo=div({fontFamily:'Bebas Neue,cursive',fontSize:'48px',letterSpacing:'7px',lineHeight:'1',position:'relative',zIndex:'1',display:'inline-block'},'JACOBZ');
-  jacobzLogo.className='liquid-logo';
-  jacobzLogo.style.setProperty('--logo-c', ph.color);
-  logoWrap.appendChild(jacobzLogo);
+  var logoWrap=div({position:'relative',zIndex:'1',display:'flex',alignItems:'baseline',marginBottom:'4px'});
+  var trnSpan=document.createElement('span');
+  trnSpan.textContent='TRN';
+  Object.assign(trnSpan.style,{fontFamily:'-apple-system,system-ui',fontSize:'52px',fontWeight:'300',color:'#fff',letterSpacing:'-2px',lineHeight:'0.9'});
+  var rSpan=document.createElement('span');
+  rSpan.textContent='R';
+  Object.assign(rSpan.style,{fontFamily:'-apple-system,system-ui',fontSize:'52px',fontWeight:'700',color:ph.color,letterSpacing:'-2px',lineHeight:'0.9',textShadow:'0 0 30px '+ph.color+'50'});
+  logoWrap.appendChild(trnSpan);
+  logoWrap.appendChild(rSpan);
   hero.appendChild(logoWrap);
-  hero.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'13px',letterSpacing:'6px',color:ph.color+'50',marginTop:'2px',position:'relative',zIndex:'1'},'THOR x ANATOLY'));
-  hero.appendChild(div({fontSize:'9px',color:'#333',letterSpacing:'4px',marginTop:'2px',position:'relative',zIndex:'1'},'16-WEEK HYBRID PROGRAM'));
+  hero.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'10px',fontWeight:'300',color:'rgba(255,255,255,0.2)',letterSpacing:'4px',marginTop:'4px',position:'relative',zIndex:'1'},'Hybrid Training'));
   var badge=div({display:'flex',alignItems:'center',gap:'10px',background:ph.dim,border:'1px solid '+ph.color+'40',borderRadius:'12px',padding:'11px 14px',marginTop:'14px'});
   badge.appendChild(div({width:'8px',height:'8px',borderRadius:'50%',background:ph.color,boxShadow:'0 0 10px '+ph.color,flexShrink:'0'}));
   var badgeInfo=div({flex:'1'});
@@ -4165,7 +4358,7 @@ function buildOnboarding(){
 
     // Header
     var hd=div({textAlign:'center',marginBottom:'32px'});
-    hd.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'42px',letterSpacing:'6px',color:ph.color,lineHeight:'1'},'JACOBZ'));
+    hd.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'42px',letterSpacing:'6px',color:ph.color,lineHeight:'1'},'TRNR'));
     hd.appendChild(div({fontSize:'11px',color:'#555',letterSpacing:'3px',marginTop:'6px'},'CONFIGURATION · '+(step+1)+' / 3'));
     // Progress bar
     var pb=div({height:'2px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',marginTop:'16px',overflow:'hidden'});
