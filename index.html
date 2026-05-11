@@ -2618,7 +2618,14 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
   },{passive:true});
 
   sheet.addEventListener('touchend',function(){
-    if(!_active){_dy=0;return;}
+    if(!_active){
+      // Even if drag was minimal, always restore overlay
+      overlay.style.transition='opacity .2s ease';
+      overlay.style.opacity='0.5';
+      sheet.style.transition='transform .25s ease';
+      sheet.style.transform='translateY(0)';
+      _dy=0;return;
+    }
     _active=false;
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
     if(_dy>120||_velY>12){
