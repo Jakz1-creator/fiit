@@ -2621,31 +2621,38 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
     if(!_active){_dy=0;return;}
     _active=false;
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    // Dismiss if far enough OR fast flick down
     if(_dy>120||_velY>12){
       dismissSheet();
     }else{
-      // Spring bounce back with overshoot
+      // Restore overlay immediately
+      overlay.style.transition='opacity .25s ease';
+      overlay.style.opacity='0.5';
+      // Spring bounce back
       sheet.style.setProperty('--dy',Math.round(_dy)+'px');
       sheet.style.animation='none';
       sheet.style.transform='translateY('+_dy+'px)';
       requestAnimationFrame(function(){
-        sheet.style.transition='none';
         requestAnimationFrame(function(){
-          sheet.style.animation='sheetBounce .55s cubic-bezier(.25,.46,.45,.94) forwards';
-          overlay.style.transition='opacity .3s';
-          overlay.style.opacity='0.5';
+          sheet.style.transition='none';
+          sheet.style.animation='sheetBounce .5s cubic-bezier(.25,.46,.45,.94) forwards';
         });
       });
-      setTimeout(function(){sheet.style.animation='';sheet.style.transform='translateY(0)';},580);
-      _dy=0;
+      setTimeout(function(){
+        sheet.style.animation='';
+        sheet.style.transform='translateY(0)';
+        sheet.style.transition='';
+      },520);
+      _dy=0;_velY=0;
     }
   },{passive:true});
 
   sheet.addEventListener('touchcancel',function(){
     _active=false;_dy=0;_velY=0;
-    sheet.style.animation='sheetBounce .4s cubic-bezier(.25,.46,.45,.94) forwards';
-    setTimeout(function(){sheet.style.animation='';sheet.style.transform='translateY(0)';},420);
+    overlay.style.transition='opacity .2s ease';
+    overlay.style.opacity='0.5';
+    sheet.style.transition='transform .3s ease';
+    sheet.style.transform='translateY(0)';
+    setTimeout(function(){sheet.style.transition='';},320);
   },{passive:true});
 
   sheet.addEventListener('touchcancel',function(){
