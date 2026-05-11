@@ -425,92 +425,65 @@ function showIntro(){
   var sp=document.createElement('div');sp.id='splash';
   document.body.appendChild(sp);
 
-  // Nolan vignette
-  var vig=document.createElement('div');
-  Object.assign(vig.style,{position:'absolute',inset:'0',background:'radial-gradient(ellipse at center,transparent 20%,rgba(0,0,0,0.85) 100%)',opacity:'0',transition:'opacity 3s ease',pointerEvents:'none'});
-  sp.appendChild(vig);
+  // Ambient orb
+  var orb=document.createElement('div');
+  Object.assign(orb.style,{position:'absolute',top:'30%',left:'50%',transform:'translateX(-50%)',
+    width:'300px',height:'300px',borderRadius:'50%',
+    background:'radial-gradient(circle,rgba(200,164,90,0.06) 0%,transparent 65%)',
+    opacity:'0',transition:'opacity 2s ease',pointerEvents:'none'});
+  sp.appendChild(orb);
 
-  // Subtle glow behind logo
-  var glow=document.createElement('div');
-  Object.assign(glow.style,{position:'absolute',width:'400px',height:'120px',borderRadius:'50%',background:'radial-gradient(ellipse,rgba(200,164,90,0.07) 0%,transparent 70%)',opacity:'0',transition:'opacity 2s ease',pointerEvents:'none'});
-  sp.appendChild(glow);
-
-  // Center wrap
-  // Glass card wrapper
-  var glassCard=document.createElement('div');
-  Object.assign(glassCard.style,{
+  // Glass card
+  var card=document.createElement('div');
+  Object.assign(card.style,{
     background:'rgba(255,255,255,0.04)',
-    backdropFilter:'blur(40px) saturate(200%)',
-    WebkitBackdropFilter:'blur(40px) saturate(200%)',
+    backdropFilter:'blur(40px) saturate(180%)',
+    WebkitBackdropFilter:'blur(40px) saturate(180%)',
     border:'0.5px solid rgba(255,255,255,0.12)',
-    boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.18),0 24px 64px rgba(0,0,0,0.6)',
-    borderRadius:'32px',
-    padding:'40px 48px',
-    display:'flex',flexDirection:'column',alignItems:'center',gap:'14px',
-    opacity:'0',transition:'opacity 1s ease'
+    boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.16),0 24px 60px rgba(0,0,0,0.6)',
+    borderRadius:'32px',padding:'44px 56px',
+    display:'flex',flexDirection:'column',alignItems:'center',gap:'16px',
+    opacity:'0',transform:'scale(0.96)',
+    transition:'opacity .8s ease,transform .8s cubic-bezier(.25,.46,.45,.94)'
   });
 
-  var w=document.createElement('div');
-  w.style.cssText='display:flex;flex-direction:column;align-items:center;gap:18px;position:relative;z-index:2';
+  // TRN + R
+  var logoRow=document.createElement('div');
+  logoRow.style.cssText='display:flex;align-items:baseline';
+  var trn=document.createElement('span');
+  trn.textContent='TRN';
+  Object.assign(trn.style,{fontFamily:'-apple-system,system-ui',fontSize:'80px',fontWeight:'300',color:'#fff',letterSpacing:'-3px',lineHeight:'0.85'});
+  var r=document.createElement('span');
+  r.textContent='R';
+  Object.assign(r.style,{fontFamily:'-apple-system,system-ui',fontSize:'80px',fontWeight:'700',color:'#c8a45a',letterSpacing:'-3px',lineHeight:'0.85',textShadow:'0 0 40px rgba(200,164,90,0.4)'});
+  logoRow.appendChild(trn);logoRow.appendChild(r);
+  card.appendChild(logoRow);
 
-  // THOR x ANATOLY
-  var slogan=document.createElement('div');
-  Object.assign(slogan.style,{fontFamily:'-apple-system,system-ui',fontSize:'10px',letterSpacing:'5px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'5px',transition:'color 1.4s ease',fontWeight:'300'});
-  slogan.textContent='Hybrid Training';
-  w.appendChild(slogan);
-
-  // JACOBZ — letter spacing collapse (Dior signature)
-  var logo=document.createElement('div');
-  Object.assign(logo.style,{fontFamily:"'Bebas Neue',cursive",fontSize:'68px',color:'rgba(200,164,90,0)',letterSpacing:'52px',paddingRight:'52px',transition:'color 1s ease,letter-spacing 1.8s cubic-bezier(.4,0,.2,1),padding-right 1.8s cubic-bezier(.4,0,.2,1)'});
-  // TRN + R split
-  logo.innerHTML='<span style="font-weight:300;color:#fff">TRN</span><span style="font-weight:700;color:#c8a45a;text-shadow:0 0 40px rgba(200,164,90,0.3)">R</span>';
-  w.appendChild(logo);
-
-  // Thin rule
+  // Rule
   var rule=document.createElement('div');
-  Object.assign(rule.style,{height:'0.5px',width:'0',background:'rgba(200,164,90,0.5)',transition:'width 1.2s cubic-bezier(.4,0,.2,1)'});
-  w.appendChild(rule);
+  Object.assign(rule.style,{height:'0.5px',width:'0',background:'rgba(200,164,90,0.35)',transition:'width 1s cubic-bezier(.4,0,.2,1)'});
+  card.appendChild(rule);
 
-  // 16 Week
-  var tag=document.createElement('div');
-  Object.assign(tag.style,{fontFamily:'-apple-system,system-ui',fontSize:'9px',letterSpacing:'6px',color:'rgba(255,255,255,0)',textTransform:'uppercase',paddingRight:'6px',transition:'color 1s ease',fontWeight:'300'});
-  tag.textContent='Hybrid Training';
-  w.appendChild(tag);
+  // Subtitle
+  var sub=document.createElement('div');
+  Object.assign(sub.style,{fontFamily:'-apple-system,system-ui',fontSize:'10px',fontWeight:'300',letterSpacing:'6px',color:'rgba(255,255,255,0)',textTransform:'uppercase',transition:'color .8s ease'});
+  sub.textContent='Hybrid Training';
+  card.appendChild(sub);
 
-  glassCard.appendChild(logo);
-  glassCard.appendChild(rule);
-  glassCard.appendChild(tag);
-  w.appendChild(glassCard);
-  sp.appendChild(w);
+  sp.appendChild(card);
 
   // SEQUENCE
-  // 0.1s: vignette
-  setTimeout(function(){vig.style.opacity='1';},100);
+  setTimeout(function(){orb.style.opacity='1';},200);
+  setTimeout(function(){card.style.opacity='1';card.style.transform='scale(1)';},400);
+  setTimeout(function(){rule.style.width='52px';},1000);
+  setTimeout(function(){sub.style.color='rgba(255,255,255,0.25)';},1200);
 
-  // 0.7s: slogan whispers in
-  setTimeout(function(){slogan.style.color='rgba(200,164,90,0.4)';},700);
-
-  // 1.1s: logo appears
-  setTimeout(function(){
-    logo.style.opacity='1';
-    glassCard.style.opacity='1';
-  },1100);
-
-  // 2.0s: rule draws
-  setTimeout(function(){rule.style.width='160px';},2000);
-
-  // 2.3s: 16 Week
-  setTimeout(function(){tag.style.color='rgba(255,255,255,0.3)';},2300);
-
-  // 2.5s: glow settles
-  setTimeout(function(){glow.style.opacity='1';},2500);
-
-  // 3.6s: exit
+  // Exit
   setTimeout(function(){
     sp.style.transition='opacity .6s ease';
     sp.style.opacity='0';
     setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},650);
-  },3600);
+  },2800);
 }
 
 // THEME
