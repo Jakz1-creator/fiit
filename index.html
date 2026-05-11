@@ -4496,32 +4496,11 @@ buildSmartNotifBanner();
 if(!localStorage.getItem('jz_onboarded'))buildOnboarding();
 // Service Worker for offline mode
 if('serviceWorker' in navigator){
-  // Force update — unregister all old SWs then re-register
+  // Unregister ALL service workers to force fresh load
   navigator.serviceWorker.getRegistrations().then(function(regs){
-    var hadOld=false;
-    regs.forEach(function(reg){
-      // If SW is old version, unregister it
-      if(reg.active&&reg.active.scriptURL.indexOf('sw.js')>-1){
-        reg.update();
-        if(reg.waiting)reg.waiting.postMessage('skipWaiting');
-      }
-    });
-  });
-  navigator.serviceWorker.register('sw.js?v=4').then(function(reg){
-    reg.update();
-    if(reg.waiting)reg.waiting.postMessage('skipWaiting');
-    reg.addEventListener('updatefound',function(){
-      var nw=reg.installing;
-      nw.addEventListener('statechange',function(){
-        if(nw.state==='installed'&&navigator.serviceWorker.controller){
-          nw.postMessage('skipWaiting');
-        }
-      });
-    });
-  }).catch(function(){});
-  var refreshing=false;
-  navigator.serviceWorker.addEventListener('controllerchange',function(){
-    if(!refreshing){refreshing=true;window.location.reload();}
+    regs.forEach(function(reg){reg.unregister();});
+    // Re-register after clearing
+    navigator.serviceWorker.register('sw.js?v=5').catch(function(){});
   });
 }
 if(!sessionStorage.getItem('jacobz_intro')){
