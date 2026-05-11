@@ -2161,9 +2161,9 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
       ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);safeR();
     }
   }
-  var rowBg=entry.done?(isCond?'rgba(100,180,255,.09)':isBW?'rgba(154,238,187,.09)':'rgba(200,164,90,0.1)'):'rgba(255,255,255,0.04)';
+  var rowBg=entry.done?(isCond?'rgba(100,180,255,.12)':isBW?'rgba(154,238,187,.12)':'rgba(200,164,90,0.1)'):'rgba(255,255,255,0.07)';
   var borderC=entry.done?(isCond?'rgba(100,180,255,.35)':isBW?'rgba(154,238,187,.35)':ph.color+'55'):'rgba(255,255,255,0.09)';
-  var row=div({padding:'12px 14px',background:rowBg,backdropFilter:'blur(28px) saturate(180%)',WebkitBackdropFilter:'blur(28px) saturate(180%)',borderRadius:'16px',border:'0.5px solid '+borderC,boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.12)',position:'relative',overflow:'hidden',marginBottom:'2px'});
+  var row=div({padding:'12px 14px',background:rowBg,borderRadius:'16px',border:'0.5px solid '+borderC,boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.14),0 2px 8px rgba(0,0,0,0.3)',position:'relative',marginBottom:'6px'});
   // LINE 1: number + done btn
   var line1=div({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:entry.done?'0':'8px'});
   var numEl=div({width:'26px',height:'26px',borderRadius:'50%',flexShrink:'0',background:entry.done?ac:'rgba(255,255,255,0.06)',border:'0.5px solid '+(entry.done?ac:'rgba(255,255,255,0.1)'),display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:'600',color:entry.done?'#000':'#555',fontFamily:'-apple-system,system-ui'},entry.done?'✓':String(idx+1));
