@@ -1797,7 +1797,7 @@ function startChrono(){
 }
 
 // SET ROW
-function buildSetRow(idx,ex,log,sKey,ph,wip,nextName){
+function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
   var isBW=!!ex.bwOnly,isBWL=!!ex.bw,isCond=!!ex.cond,isTimed=!!ex.timed;
   var suggested=(!isBW&&!isCond&&ex.baseKg)?calcKg(ex.baseKg,ph.id,wip,ex.incr):0;
   var entry=log||{kg:suggested,reps:ex.reps||8,done:false};
@@ -1826,9 +1826,21 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName){
           launchConfetti(ph.color);playPR();vib([100,50,100,50,200]);
         }
       }
-      if(!log||!log.done)if(ex.rest>0)startTimer(ex.rest,ex.name,nextName);
+      ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);
+
+      if(nextEx&&nextEx.ss===ex.ss){
+        // SS — jump to next exercise immediately after THIS set
+        vib([20,40,20]);
+        setTimeout(function(){
+          openBottomSheet(nextEx,sKey,ph,wip,nextEx.name,false);
+        },250);
+      }else if(!log||!log.done){
+        if(ex.rest>0)startTimer(ex.rest,ex.name,nextName);
+      }
+      safeR();
+    }else{
+      ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);safeR();
     }
-    ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);safeR();
   }
   var rowBg=entry.done?(isCond?'rgba(100,180,255,.09)':isBW?'rgba(154,238,187,.09)':'rgba(200,164,90,0.1)'):'rgba(255,255,255,0.04)';
   var borderC=entry.done?(isCond?'rgba(100,180,255,.35)':isBW?'rgba(154,238,187,.35)':ph.color+'55'):'rgba(255,255,255,0.09)';
@@ -2629,7 +2641,9 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
   for(var i=0;i<ex.sets;i++)logs[i]=ST.logs[sKey+'_'+ex.id+'_'+i];
   function rebuildSets(){
     setsWrap.innerHTML='';
-    for(var j=0;j<ex.sets;j++)setsWrap.appendChild(buildSetRow(j,ex,ST.logs[sKey+'_'+ex.id+'_'+j],sKey,ph,wip,nextName));
+    for(var j=0;j<ex.sets;j++){
+      setsWrap.appendChild(buildSetRow(j,ex,ST.logs[sKey+'_'+ex.id+'_'+j],sKey,ph,wip,nextName,ex.ss?SHEET_STATE&&SHEET_STATE._nextEx:null));
+    }
   }
   rebuildSets();
   minusSetBtn.addEventListener('click',function(e){e.stopPropagation();if(ex.sets<=1)return;ex.sets--;setsCount.textContent=String(ex.sets);rebuildSets();vib([15]);});
@@ -2750,17 +2764,111 @@ function buildSession(){
     root.appendChild(ds);
   }else{
     var el2=div({padding:'14px 14px 0'});
-    exos.forEach(function(ex,i){
-      var isSSA=!!(ex.ss&&ex.ssPos==='a'),isSSB=!!(ex.ss&&ex.ssPos==='b'),prev=exos[i-1];
+    var i=0;
+    while(i<exos.length){
+      var ex=exos[i];
       var nextName=exos[i+1]?exos[i+1].name:null;
-      if(isSSB&&prev&&prev.ss===ex.ss){
-        var conn=div({display:'flex',alignItems:'center',marginLeft:'24px',marginBottom:'4px',gap:'8px'});
-        conn.appendChild(div({width:'12px',height:'14px',borderLeft:'2px solid '+ph.color+'50',borderBottom:'2px solid '+ph.color+'50',borderRadius:'0 0 0 5px'}));
-        conn.appendChild(div({fontSize:'9px',color:ph.color+'70',letterSpacing:'3px'},'ENCHAINER'));
-        el2.appendChild(conn);
+
+      // Check if this starts a SS block
+      if(ex.ss&&ex.ssPos==='a'){
+        // Collect all exos in this SS group
+        var ssGroup=[ex];
+        var j=i+1;
+        while(j<exos.length&&exos[j].ss===ex.ss){ssGroup.push(exos[j]);j++;}
+
+        // SS block wrapper — left gold border
+        var ssBlock=div({
+          background:'rgba(200,164,90,0.03)',
+          border:'1px solid rgba(200,164,90,0.2)',
+          borderLeft:'3px solid '+ph.color,
+          borderRadius:'16px',
+          marginBottom:'10px',
+          overflow:'hidden'
+        });
+
+        // SS header
+        var ssHead=div({
+          display:'flex',alignItems:'center',gap:'8px',
+          padding:'8px 14px 6px',
+          borderBottom:'1px solid rgba(200,164,90,0.1)',
+          background:'rgba(200,164,90,0.05)'
+        });
+        ssHead.appendChild(div({
+          fontFamily:'Bebas Neue,cursive',fontSize:'9px',
+          color:ph.color,letterSpacing:'3px',
+          background:'rgba(200,164,90,0.12)',
+          border:'1px solid rgba(200,164,90,0.3)',
+          borderRadius:'6px',padding:'2px 8px'
+        },'SS '+ssLetters[ex.ss]));
+        ssHead.appendChild(div({fontSize:'10px',color:'rgba(255,255,255,0.3)',letterSpacing:'2px'},'SUPER SET · '+ssGroup.length+' EXERCICES'));
+        ssBlock.appendChild(ssHead);
+
+        // Each exercise in the group
+        ssGroup.forEach(function(ssEx,idx){
+          var isLast=idx===ssGroup.length-1;
+          var ssNextName=ssGroup[idx+1]?ssGroup[idx+1].name:(exos[i+ssGroup.length]?exos[i+ssGroup.length].name:null);
+          // Card without margin/border (handled by block)
+          var innerCard=div({padding:'0',marginBottom:'0',borderBottom:isLast?'none':'1px solid rgba(255,255,255,0.05)'});
+          // Build a simplified card header
+          var exHead=div({display:'flex',alignItems:'center',gap:'10px',padding:'12px 14px',cursor:'pointer'});
+          var ib=div({flex:'1'});
+          var allExDone=true;
+          var doneCt=0;
+          for(var s=0;s<ssEx.sets;s++){var l=ST.logs[sKey+'_'+ssEx.id+'_'+s];if(!l||!l.done){allExDone=false;}else doneCt++;}
+          // Badge
+          if(idx===0){
+            ib.appendChild(div({display:'inline-flex',background:'rgba(200,164,90,0.1)',border:'1px solid rgba(200,164,90,0.3)',borderRadius:'5px',padding:'2px 7px',fontSize:'9px',color:ph.color,letterSpacing:'2px',marginBottom:'4px',fontFamily:'Bebas Neue,cursive'},'COMMENCER'));
+          }else{
+            ib.appendChild(div({display:'inline-flex',background:'rgba(200,164,90,0.06)',border:'1px solid rgba(200,164,90,0.15)',borderRadius:'5px',padding:'2px 7px',fontSize:'9px',color:ph.color+'80',letterSpacing:'2px',marginBottom:'4px',fontFamily:'Bebas Neue,cursive'},'ENCHAINER'));
+          }
+          var nameDiv=div({fontFamily:'Bebas Neue,cursive',fontSize:'19px',letterSpacing:'1px',color:allExDone?ph.color:'#ddd',lineHeight:'1'});
+          nameDiv.textContent=ssEx.name;
+          ib.appendChild(nameDiv);
+          var sugKg=ssEx.baseKg?calcKg(ssEx.baseKg,ph.id,wip,ssEx.incr):0;
+          var wt=ssEx.bwOnly?'Corps':sugKg>0?'~'+sugKg+'kg':'';
+          var sub2=ssEx.sets+'x'+(ssEx.reps||'?')+' reps'+(wt?' · '+wt:'')+(ssEx.rest>0&&isLast?' · Repos '+ssEx.rest+'s':'· Pas de repos');
+          ib.appendChild(div({fontSize:'11px',color:'#555',marginTop:'2px'},sub2));
+          exHead.appendChild(ib);
+          var rb2=div({display:'flex',alignItems:'center',gap:'8px',flexShrink:'0'});
+          rb2.appendChild(div({fontSize:'11px',color:allExDone?ph.color:'#444',letterSpacing:'1px'},doneCt+'/'+ssEx.sets));
+          var playBtn2=div({width:'32px',height:'32px',borderRadius:'8px',background:allExDone?ph.color+'20':'rgba(255,255,255,0.06)',border:'0.5px solid '+(allExDone?ph.color+'40':'rgba(255,255,255,0.1)'),display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:'13px',color:allExDone?ph.color:'#888'});
+          playBtn2.textContent='▶';
+          rb2.appendChild(playBtn2);
+          exHead.appendChild(rb2);
+          // Click opens bottom sheet
+          (function(e,sk,n,nex){
+            playBtn2.addEventListener('click',function(ev){ev.stopPropagation();SHEET_STATE={ex:e,sKey:sk,ph:ph,wip:wip,nextName:n,_nextEx:nex};openBottomSheet(e,sk,ph,wip,n);});
+            exHead.addEventListener('click',function(){SHEET_STATE={ex:e,sKey:sk,ph:ph,wip:wip,nextName:n,_nextEx:nex};openBottomSheet(e,sk,ph,wip,n);});
+          })(ssEx,sKey,ssNextName,ssGroup[idx+1]||null);
+          innerCard.appendChild(exHead);
+
+          // Connector arrow between exos (not after last)
+          if(!isLast){
+            var conn=div({display:'flex',alignItems:'center',gap:'8px',padding:'0 14px 6px'});
+            conn.appendChild(div({fontSize:'18px',color:ph.color+'60',lineHeight:'1'},'↓'));
+            conn.appendChild(div({fontSize:'9px',color:'rgba(255,255,255,0.2)',letterSpacing:'3px'},'ENCHAINER DIRECT'));
+            innerCard.appendChild(conn);
+          }
+          ssBlock.appendChild(innerCard);
+        });
+
+        // Rest note after block
+        var lastEx=ssGroup[ssGroup.length-1];
+        if(lastEx.rest>0){
+          var restNote=div({padding:'6px 14px 10px',fontSize:'10px',color:'rgba(255,255,255,0.2)',letterSpacing:'1px'});
+          restNote.textContent='↺ Répéter '+lastEx.sets+'x · Repos '+lastEx.rest+'s entre chaque round';
+          ssBlock.appendChild(restNote);
+        }
+
+        el2.appendChild(ssBlock);
+        i=j; // skip all exos in this group
+
+      }else{
+        // Normal exercise
+        el2.appendChild(buildExCard(ex,sKey,ph,wip,ssLetters,false,false,nextName));
+        i++;
       }
-      el2.appendChild(buildExCard(ex,sKey,ph,wip,ssLetters,isSSA,isSSB,nextName));
-    });
+    }
     root.appendChild(el2);
   }
   if(T0&&!allDone)startChrono();
