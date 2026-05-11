@@ -1216,20 +1216,75 @@ function getMuscleRecovery(){
 
 // EXERCISE SUBSTITUTIONS
 var SUBS={
-  p1bp:['Dumbbell Bench Press','Push-up Leste','Machine Chest Press'],
-  p1dip:['Bench Dips','Push-up etroit','Cable Crossover'],
-  p1ohp:['Barbell OHP','Arnold Press','Machine Shoulder Press'],
-  q1dl:['Romanian DL','Trap Bar DL','Hip Thrust Leste'],
-  q1lpd:['Tractions','Seated Cable Row','Machine Pulldown'],
-  l1sq:['Goblet Squat','Hack Squat','Leg Press'],
-  l1rdl:['Leg Curl','Nordic Curl','Good Morning'],
-  u1pu:['Lat Pulldown','Seated Row','Australian Pull-up'],
-  p1llr:['Cable Lateral Raise','Machine Lateral','DB Face Pull'],
-  q1cur:['Preacher Curl','Incline DB Curl','Cable Curl'],
-  p2dip:['Bench Dips','Close Grip Push-up','Cable Crossover'],
-  q2pu:['Lat Pulldown','Assisted Pull-up','Inverted Row'],
-  l2bsq:['Lunges DB','Step-up','Pistol Assist'],
-  u2pu:['Lat Pulldown','Seated Row','Australian Pull-up']
+  // ── POITRINE ──
+  p1bp:['DB Bench Press','Close Grip Bench','Incline Bench Press','Machine Chest Press','Push-up Leste','Cable Fly'],
+  p1dbp:['Barbell Bench Press','Machine Chest Press','Push-up Leste','Cable Fly bas','DB Fly'],
+  p1dip:['Bench Dips','Close Grip Push-up','Cable Crossover','Pec Deck','Push-up decline'],
+  p2fly:['Cable Fly','Pec Deck','DB Pullover','Machine Fly','Svend Press'],
+  p1inc:['DB Incline Press','Machine Incline','Landmine Press','Cable Incline Fly','Push-up incline'],
+
+  // ── EPAULES ──
+  p1ohp:['DB OHP Assis','Arnold Press','Machine Shoulder Press','Landmine Press','Cable Face Pull','DB Lateral Raise'],
+  p1llr:['Cable Lateral Raise','Machine Lateral','DB Face Pull','Cable Face Pull','Leaning Lateral','Band Pull-Apart'],
+  p1frt:['DB Front Raise','Plate Front Raise','Cable Front Raise','Barbell Front Raise','Landmine Front Raise'],
+  p1rdf:['Cable Rear Delt Fly','Pec Deck inverse','DB Rear Delt','Band Pull-Apart','Face Pull Cable','Machine Rear Delt'],
+  p1fcp:['Band Pull-Apart','DB Face Pull','Cable Face Pull','Prone Y Raise','Machine Rear Delt'],
+
+  // ── DOS ──
+  q1lpd:['Close Grip Lat Pulldown','Wide Grip Pulldown','Tractions Pronation','Tractions Supination','Machine Pulldown','Cable Pullover'],
+  u1row:['Pendlay Row','DB Row','Cable Row assis','Machine Row','Meadows Row','T-Bar Row','Chest Supported Row'],
+  q1dl:['Romanian DL','Trap Bar DL','Rack Pull','Hip Thrust Leste','Good Morning','Cable Pull-Through'],
+  u1pu:['Lat Pulldown Large','Close Grip Pulldown','Cable Row','Tractions Supination','Australian Pull-up','Machine Row'],
+  u2row:['Pendlay Row','DB Row','Machine Row','T-Bar Row','Cable Row','Seal Row'],
+  q2pu:['Lat Pulldown','Assisted Pull-up','Inverted Row','Cable Pullover','Machine Pulldown'],
+
+  // ── BICEPS ──
+  q1cur:['Preacher Curl','Incline DB Curl','Cable Curl bas','Hammer Curl','Spider Curl','Concentration Curl'],
+  q2cur:['Cable Curl','EZ Bar Curl','Hammer Curl','Incline DB Curl','Machine Curl','Zottman Curl'],
+  q3cur:['Hammer Curl','Cross Body Curl','Rope Hammer Cable','Reverse Curl','Zottman Curl'],
+  q1hcu:['Rope Hammer Cable','Cross Body Curl','Reverse Curl','DB Hammer Curl','Zottman Curl'],
+  p2bcu:['Cable Curl haut','Incline DB Curl','Preacher Curl','Spider Curl','Machine Curl'],
+
+  // ── TRICEPS ──
+  p1tri:['Cable Pushdown corde','Overhead Extension','Close Grip Bench','Dips lestes','Skull Crusher','Machine Dips'],
+  p1tpd:['Overhead Tricep Extension','Skull Crusher EZ','Close Grip Bench','Cable Kickback','Machine Tricep','Dips'],
+  p2tov:['Cable Pushdown','Skull Crusher','Close Grip Push-up','Machine Tricep','DB Overhead Extension'],
+
+  // ── QUADRICEPS ──
+  l1sq:['Low Bar Squat','Goblet Squat','Hack Squat','Leg Press Large','Leg Press Serre','Front Squat','Box Squat'],
+  l2bsq:['Lunges DB','Step-up leste','Pistol Assist','Reverse Lunge','Walking Lunges','Bulgarian Split Squat'],
+  l1lpe:['Hack Squat','Leg Press Serre','Leg Press Large','Goblet Squat','Wall Sit','Step-up'],
+  q1lpe:['Leg Press Serre','Leg Press Large','Hack Squat','Goblet Squat','Sissy Squat','Spanish Squat'],
+
+  // ── ISCHIO-JAMBIERS ──
+  l1rdl:['Leg Curl Couche','Nordic Curl','Good Morning','Stiff Leg DL','Sumo DL','Hip Hinge Cable'],
+  lo1rdl:['Stiff Leg DL','Good Morning','Nordic Curl','Leg Curl Assis','Hip Hinge Cable','Sumo Romanian DL'],
+  lo1lc:['Nordic Curl','Leg Curl Assis','Good Morning','Glute Ham Raise','Banded Leg Curl'],
+  lo2nc:['Leg Curl Couche','Glute Ham Raise','Slider Curl','Banded Leg Curl','Romanian DL'],
+
+  // ── FESSIERS ──
+  lo1hip:['Hip Thrust DB','Cable Kickback','Donkey Kick Leste','Single Leg Hip Thrust','Glute Bridge Barre'],
+  l1hip:['Cable Kickback','Donkey Kick','Single Leg Hip Thrust','Banded Hip Thrust','DB Romanian DL'],
+
+  // ── MOLLETS ──
+  l1cal:['Leg Press Calf Raise','Smith Machine Calf','Donkey Calf Raise','Seated Calf Raise','Single Leg Calf'],
+
+  // ── CORE ──
+  c1plk:['Dead Bug','Ab Wheel Rollout','Hollow Hold','L-Sit','RKC Planche'],
+  lo1hl:['Toes to Bar','Dragon Flag','Ab Wheel','L-Sit Hanging','Windshield Wiper'],
+  lo1ab:['Ab Wheel Rollout','Dragon Flag','Pallof Press','Cable Crunch','Dead Bug'],
+  lo3dlf:['Ab Wheel','L-Sit','Toes to Bar','Hollow Rock','Planche Lean'],
+
+  // ── GRIP & AVANT-BRAS ──
+  grip1:['Plate Hold Standing','Fat Bar Deadlift','Farmer Carry','Dead Hang','Towel Pull-up','Wrist Roller'],
+  grip2:['Wrist Curl','Reverse Wrist Curl','Rice Bucket','Captains of Crush','Pinch Grip Hold','Hammer Curl'],
+  fore1:['Wrist Roller','Reverse Curl','Behind Back Wrist Curl','Zottman Curl','Finger Extension Band'],
+  fore2:['Plate Pinch','Dead Hang','Fat Grip DB Curl','Towel Row','Wrist Curl Barre'],
+
+  // ── CONDITIONING ──
+  c1wb:['Box Jump','Vertical Jump','Assault Bike','Row Machine','Med Ball Slam','Burpees'],
+  c1sld:['Battle Rope','Farmers Carry','Tire Flip','Assault Bike','Sandbag Carry'],
+  c2kb:['DB Snatch','Sandbag Clean','Med Ball Slam','Cable Rotation','Landmine Rotation']
 };
 
 // Exercise name overrides (substitutions chosen by user)
