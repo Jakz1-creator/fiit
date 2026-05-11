@@ -3491,7 +3491,21 @@ function buildHome(){
   Object.assign(rSpan.style,{fontFamily:'-apple-system,system-ui',fontSize:'52px',fontWeight:'700',color:ph.color,letterSpacing:'-2px',lineHeight:'0.9',textShadow:'0 0 30px '+ph.color+'50'});
   logoWrap.appendChild(trnSpan);
   logoWrap.appendChild(rSpan);
-  hero.appendChild(logoWrap);
+  // Header row — logo left, greeting right
+  var headerRow=div({display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:'4px',position:'relative',zIndex:'1'});
+  headerRow.appendChild(logoWrap);
+
+  // Greeting right side
+  var prenom=localStorage.getItem('jz_user_prenom')||'';
+  var hour=new Date().getHours();
+  var greet=hour>=5&&hour<12?'Bonjour':hour>=12&&hour<18?'Bon après-midi':hour>=18&&hour<22?'Bonsoir':'Bonne nuit';
+  if(prenom){
+    var greetDiv=div({display:'flex',flexDirection:'column',alignItems:'flex-end',paddingBottom:'6px'});
+    greetDiv.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'10px',fontWeight:'300',color:'rgba(255,255,255,0.3)',letterSpacing:'0.2px',lineHeight:'1.3'},greet));
+    greetDiv.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'16px',fontWeight:'600',color:'#fff',letterSpacing:'-0.3px',lineHeight:'1.2'},prenom));
+    headerRow.appendChild(greetDiv);
+  }
+  hero.appendChild(headerRow);
   hero.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'10px',fontWeight:'300',color:'rgba(255,255,255,0.2)',letterSpacing:'4px',marginTop:'4px',position:'relative',zIndex:'1'},'Hybrid Training'));
   var badge=div({display:'flex',alignItems:'center',gap:'10px',background:ph.dim,border:'1px solid '+ph.color+'40',borderRadius:'12px',padding:'11px 14px',marginTop:'14px'});
   badge.appendChild(div({width:'8px',height:'8px',borderRadius:'50%',background:ph.color,boxShadow:'0 0 10px '+ph.color,flexShrink:'0'}));
@@ -4319,7 +4333,7 @@ function buildAgenda(){
 // ONBOARDING
 function buildOnboarding(){
   var step=0;
-  var data={poids:80,bench:100,squat:125,deadlift:145,ohp:65,curl:50};
+  var data={prenom:'',poids:80,bench:100,squat:125,deadlift:145,ohp:65,curl:50};
   var ph=getPhase(1);
 
   function render(){
@@ -4331,18 +4345,41 @@ function buildOnboarding(){
 
     // Header
     var hd=div({textAlign:'center',marginBottom:'32px'});
-    hd.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'42px',letterSpacing:'6px',color:ph.color,lineHeight:'1'},'TRNR'));
-    hd.appendChild(div({fontSize:'11px',color:'#555',letterSpacing:'3px',marginTop:'6px'},'CONFIGURATION · '+(step+1)+' / 3'));
-    // Progress bar
+    var logoR=document.createElement('div');
+    logoR.style.cssText='display:flex;align-items:baseline;justify-content:center;margin-bottom:4px';
+    var s1=document.createElement('span');s1.textContent='TRN';
+    Object.assign(s1.style,{fontFamily:'-apple-system,system-ui',fontSize:'42px',fontWeight:'300',color:'#fff',letterSpacing:'-1px'});
+    var s2=document.createElement('span');s2.textContent='R';
+    Object.assign(s2.style,{fontFamily:'-apple-system,system-ui',fontSize:'42px',fontWeight:'700',color:ph.color,letterSpacing:'-1px'});
+    logoR.appendChild(s1);logoR.appendChild(s2);
+    hd.appendChild(logoR);
+    hd.appendChild(div({fontSize:'11px',color:'#555',letterSpacing:'3px',marginTop:'6px'},'CONFIGURATION · '+(step+1)+' / 4'));
     var pb=div({height:'2px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',marginTop:'16px',overflow:'hidden'});
-    pb.appendChild(div({height:'100%',width:(((step+1)/3)*100)+'%',background:ph.color,borderRadius:'2px',transition:'width .4s cubic-bezier(.25,.46,.45,.94)'}));
+    pb.appendChild(div({height:'100%',width:(((step+1)/4)*100)+'%',background:ph.color,borderRadius:'2px',transition:'width .4s cubic-bezier(.25,.46,.45,.94)'}));
     hd.appendChild(pb);
     ov.appendChild(hd);
 
     var card=div({background:'rgba(255,255,255,0.05)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.18)',borderRadius:'24px',padding:'28px 24px',width:'100%',maxWidth:'340px',boxSizing:'border-box'});
 
     if(step===0){
-      // Step 1: poids
+      // Step 0: Prénom
+      card.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'24px',fontWeight:'600',color:'#fff',letterSpacing:'-0.5px',marginBottom:'4px'},'Ton prénom'));
+      card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'24px'},'Pour personnaliser ton expérience'));
+      var prenomInput=document.createElement('input');
+      prenomInput.type='text';
+      prenomInput.placeholder='Ex: Thomas';
+      prenomInput.value=data.prenom;
+      Object.assign(prenomInput.style,{
+        width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',
+        borderRadius:'14px',padding:'16px 18px',color:'#fff',fontSize:'18px',
+        fontFamily:'-apple-system,system-ui',fontWeight:'500',boxSizing:'border-box',
+        outline:'none',letterSpacing:'-0.3px'
+      });
+      prenomInput.addEventListener('input',function(){data.prenom=prenomInput.value.trim();});
+      card.appendChild(prenomInput);
+      setTimeout(function(){prenomInput.focus();},200);
+
+    }else if(step===1){
       card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Ton poids'));
       card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'24px'},'Pour calibrer les charges recommandees'));
       var numDisplay=div({textAlign:'center',marginBottom:'20px'});
@@ -4359,8 +4396,8 @@ function buildOnboarding(){
       marks.appendChild(div({},'50kg'));marks.appendChild(div({},'100kg'));marks.appendChild(div({},'150kg'));
       card.appendChild(marks);
 
-    }else if(step===1){
-      // Step 2: lifts
+    }else if(step===2){
+      // Step 3: lifts
       card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Tes lifts actuels'));
       card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'20px'},'Estimation 1RM ou meilleure serie'));
       var grid=div({display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'});
@@ -4384,8 +4421,8 @@ function buildOnboarding(){
       });
       card.appendChild(grid);
 
-    }else{
-      // Step 3: programme
+    }else if(step===3){
+      // Step 4: programme
       card.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:'#fff',letterSpacing:'2px',marginBottom:'4px'},'Ton programme'));
       card.appendChild(div({fontSize:'12px',color:'#555',marginBottom:'20px'},'Tu pourras en changer depuis l\'accueil'));
       var progs=[{k:'THOR',l:'THOR x ANATOLY',desc:'Force + Hypertrophie · 16 semaines'},{k:'STREET',l:'STREET WORKOUT',desc:'Calisthenics · Progressif'},{k:'RFT',l:'RFT DA RULK',desc:'Conditioning · 3 niveaux'}];
@@ -4417,12 +4454,13 @@ function buildOnboarding(){
       var backB=btn({flex:'1',padding:'14px',borderRadius:'14px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',color:'#777',fontSize:'13px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive'},'RETOUR',function(){step--;render();});
       btnsRow.appendChild(backB);
     }
-    var nextLabel=step===2?'COMMENCER':'SUIVANT';
+    var nextLabel=step===3?'COMMENCER':'SUIVANT';
     var nextB=btn({flex:'2',padding:'14px',borderRadius:'14px',background:ph.color,border:'none',color:'#000',fontSize:'14px',letterSpacing:'3px',fontFamily:'Bebas Neue,cursive'},nextLabel,function(){
-      if(step<2){step++;render();}
+      if(step<3){step++;render();}
       else{
         // Save and close
         localStorage.setItem('jz_onboarded','1');
+        localStorage.setItem('jz_user_prenom',data.prenom||'');
         localStorage.setItem('jz_user_poids',String(data.poids));
         localStorage.setItem('jz_user_bench',String(data.bench));
         localStorage.setItem('jz_user_squat',String(data.squat));
