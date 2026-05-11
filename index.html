@@ -1203,36 +1203,155 @@ var SUBS={
 // SESSION SHARE
 function shareSessionImage(sessName,doneSets,elapsed,prCount,phColor){
   try{
-    var canvas=document.createElement('canvas');canvas.width=800;canvas.height=800;
-    var ctx=canvas.getContext('2d');
-    ctx.fillStyle='#080808';ctx.fillRect(0,0,800,800);
-    ctx.strokeStyle=phColor;ctx.lineWidth=4;ctx.strokeRect(16,16,768,768);
-    ctx.strokeStyle=phColor+'40';ctx.lineWidth=1;ctx.strokeRect(28,28,744,744);
-    ctx.fillStyle=phColor;ctx.font='bold 26px Georgia,serif';ctx.textAlign='center';
-    ctx.fillText('JACOBZ - SEANCE COMPLETE',400,75);
-    ctx.fillStyle='#fff';ctx.font='bold 68px Georgia,serif';
-    ctx.fillText(sessName.toUpperCase(),400,170);
-    ctx.strokeStyle=phColor+'60';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(80,200);ctx.lineTo(720,200);ctx.stroke();
-    [{l:'SERIES',v:String(doneSets)},{l:'DUREE',v:elapsed},{l:'RECORDS',v:String(prCount)}].forEach(function(st,i){
-      var x=155+i*245;
-      ctx.fillStyle=phColor;ctx.font='bold 56px Georgia,serif';ctx.textAlign='center';ctx.fillText(st.v,x,300);
-      ctx.fillStyle='#666';ctx.font='18px Georgia,serif';ctx.fillText(st.l,x,332);
+    // 3x resolution for crisp rings and text on retina
+    var S=3,W=900,H=900;
+    var canvas=document.createElement('canvas');
+    canvas.width=W*S;canvas.height=H*S;
+    canvas.style.width=W+'px';canvas.style.height=H+'px';
+    var c=canvas.getContext('2d');
+    c.scale(S,S);
+    var ph=getPhase(ST.week);
+    var col=ph.color;
+
+    function rr(x,y,w,h,r){
+      c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);
+      c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);
+      c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);
+      c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);
+      c.quadraticCurveTo(x,y,x+r,y);c.closePath();
+    }
+
+    // BG
+    c.fillStyle='#000';c.fillRect(0,0,W,H);
+    var bg=c.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'rgba(28,18,4,0.95)');bg.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=bg;c.fillRect(0,0,W,H);
+
+    // App name
+    c.fillStyle='rgba(200,164,90,0.65)';
+    c.font='600 22px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='left';c.fillText('JACOBZ',54,72);
+
+    // Date
+    c.fillStyle='rgba(255,255,255,0.25)';
+    c.font='300 17px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='right';c.fillText(new Date().toLocaleDateString('fr-FR'),W-54,72);
+
+    // Session name
+    c.fillStyle='#fff';c.font='800 104px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='left';c.fillText(sessName.toUpperCase(),54,208);
+
+    // Sub
+    var sesObj=SESS;
+    var subTxt=sesObj&&sesObj.sub?sesObj.sub:'Phase '+ph.id;
+    c.fillStyle=col;c.font='300 21px -apple-system,Helvetica Neue,Arial';
+    c.fillText(subTxt,54,248);
+
+    // Separator
+    c.strokeStyle='rgba(255,255,255,0.08)';c.lineWidth=0.5;
+    c.beginPath();c.moveTo(54,276);c.lineTo(W-54,276);c.stroke();
+
+    // 3 Stats
+    var statsData=[
+      {v:elapsed,u:'',l:'Duree'},
+      {v:String(doneSets),u:'series',l:'Volume'},
+      {v:String(prCount),u:'PRs',l:'Records'}
+    ];
+    statsData.forEach(function(s,i){
+      var x=54+i*268;
+      c.fillStyle='#fff';c.font='700 68px -apple-system,Helvetica Neue,Arial';
+      c.textAlign='left';c.fillText(s.v,x,376);
+      if(s.u){
+        var nw=c.measureText(s.v).width;
+        c.fillStyle='rgba(255,255,255,0.3)';
+        c.font='300 17px -apple-system,Helvetica Neue,Arial';
+        c.fillText(' '+s.u,x+nw,368);
+      }
+      c.fillStyle='rgba(255,255,255,0.35)';c.font='400 14px -apple-system,Helvetica Neue,Arial';
+      c.fillText(s.l,x,402);
+      if(i<2){
+        c.strokeStyle='rgba(255,255,255,0.06)';c.lineWidth=0.5;
+        c.beginPath();c.moveTo(x+246,296);c.lineTo(x+246,406);c.stroke();
+      }
     });
-    ctx.beginPath();ctx.moveTo(80,365);ctx.lineTo(720,365);ctx.stroke();
-    ctx.fillStyle=phColor+'80';ctx.font='20px Georgia,serif';ctx.textAlign='center';
-    ctx.fillText('THOR x ANATOLY  -  '+new Date().toLocaleDateString('fr-FR'),400,740);
+
+    // Rings — smooth arcs
+    var rx=W-148,ry=490;
+    var seancesPct=Math.min(1,doneSets/Math.max(1,20));
+    var prPct=Math.min(1,prCount/5);
+    var strkPct=Math.min(1,calcStreak()/7);
+    [
+      {pct:seancesPct,color:col,r:84},
+      {pct:prPct,color:'#e07c2a',r:56},
+      {pct:strkPct,color:'#e85e1a',r:28}
+    ].forEach(function(ring){
+      // Track
+      c.beginPath();c.arc(rx,ry,ring.r,0,Math.PI*2);
+      c.strokeStyle='rgba(255,255,255,0.08)';c.lineWidth=11;c.lineCap='round';c.stroke();
+      // Progress
+      if(ring.pct>0){
+        c.beginPath();
+        c.arc(rx,ry,ring.r,-Math.PI/2,-Math.PI/2+ring.pct*Math.PI*2);
+        c.strokeStyle=ring.color;c.lineWidth=11;c.lineCap='round';c.stroke();
+      }
+    });
+    c.fillStyle='rgba(255,255,255,0.22)';
+    c.font='300 11px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='center';c.fillText('Series · PRs · Streak',rx,ry+110);
+
+    // Best PR
+    var bestPR=null,bestKg=0;
+    Object.keys(ST.prs).forEach(function(k){
+      var p=ST.prs[k];if(p&&p.kg>bestKg){bestKg=p.kg;bestPR={id:k,data:p};}
+    });
+    c.fillStyle='rgba(255,255,255,0.04)';
+    rr(54,556,572,100,18);c.fill();
+    c.strokeStyle='rgba(200,164,90,0.15)';c.lineWidth=0.5;c.stroke();
+    if(bestPR){
+      var exPR=findExById(bestPR.id);
+      c.fillStyle='rgba(255,255,255,0.75)';
+      c.font='600 15px -apple-system,Helvetica Neue,Arial';c.textAlign='left';
+      c.fillText(exPR?exPR.name.toUpperCase():'RECORD PERSONNEL',80,600);
+      c.fillStyle=col;c.font='700 24px -apple-system,Helvetica Neue,Arial';
+      c.fillText(bestPR.data.kg+'kg x '+bestPR.data.reps+' reps',80,630);
+      c.fillStyle='rgba(255,255,255,0.28)';c.font='300 13px -apple-system,Helvetica Neue,Arial';
+      c.fillText('Record personnel',80,652);
+    }else{
+      c.fillStyle='rgba(255,255,255,0.4)';
+      c.font='400 15px -apple-system,Helvetica Neue,Arial';c.textAlign='center';
+      c.fillText('Continue pour battre des records !',54+286,610);
+    }
+
+    // Progress bar
+    var prog=Math.min(1,(ST.week-1)/16);
+    c.fillStyle='rgba(255,255,255,0.22)';
+    c.font='400 14px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='left';c.fillText('Programme',54,716);
+    c.textAlign='right';c.fillText('Semaine '+ST.week+' / 16',W-54,716);
+    c.fillStyle='rgba(255,255,255,0.09)';rr(54,728,W-108,8,4);c.fill();
+    c.fillStyle=col;rr(54,728,Math.max(8,(W-108)*prog),8,4);c.fill();
+
+    // Badges
+    c.fillStyle='rgba(200,164,90,0.1)';rr(54,772,290,40,20);c.fill();
+    c.strokeStyle='rgba(200,164,90,0.22)';c.lineWidth=0.5;c.stroke();
+    c.fillStyle=col;c.font='600 12px -apple-system,Helvetica Neue,Arial';
+    c.textAlign='center';c.fillText('THOR x ANATOLY',199,797);
+    c.fillStyle='rgba(255,255,255,0.05)';rr(360,772,200,40,20);c.fill();
+    c.fillStyle='rgba(255,255,255,0.35)';c.font='600 12px -apple-system,Helvetica Neue,Arial';
+    c.fillText(ph.name,460,797);
+
+    // Share
     if(navigator.share){
       canvas.toBlob(function(blob){
-        var file=new File([blob],'jacobz.png',{type:'image/png'});
-        navigator.share({title:'JACOBZ - '+sessName,files:[file]}).catch(function(){
+        var file=new File([blob],'jacobz-'+sessName+'.png',{type:'image/png'});
+        navigator.share({title:'JACOBZ · '+sessName,text:'Seance terminee',files:[file]}).catch(function(){
           var a=document.createElement('a');a.download='jacobz-'+sessName+'.png';a.href=canvas.toDataURL();a.click();
         });
-      });
+      },'image/png');
     }else{
       var a=document.createElement('a');a.download='jacobz-'+sessName+'.png';a.href=canvas.toDataURL();a.click();
     }
-  }catch(e){alert('Partage non disponible sur ce navigateur');}
+  }catch(e){console.error('Share error',e);}
 }
 
 // VISUAL EFFECTS
