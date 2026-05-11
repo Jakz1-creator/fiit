@@ -305,12 +305,44 @@ body.session-active #nav{display:none}
   </button>
 </div>
 <script>
-// AUDIO
-var _ac=null;
-function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();return _ac;}
-function beep(f,d,v,t){try{var c=getAC(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+d);o.start(c.currentTime);o.stop(c.currentTime+d);}catch(e){}}
-function playAlert(){beep(660,.15,.4);setTimeout(function(){beep(880,.15,.4);},180);setTimeout(function(){beep(1100,.25,.5);},360);}
-function playDone(){beep(440,.2,.3);setTimeout(function(){beep(554,.2,.3);},220);setTimeout(function(){beep(660,.4,.35);},440);}
+// AUDIO ENGINE
+var _ac=null,_acUnlocked=false;
+function getAC(){
+  if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();
+  if(_ac.state==='suspended')_ac.resume();
+  return _ac;
+}
+function unlockAC(){
+  if(_acUnlocked)return;
+  try{
+    var ac=getAC();
+    var buf=ac.createBuffer(1,1,22050);
+    var src=ac.createBufferSource();
+    src.buffer=buf;src.connect(ac.destination);src.start(0);
+    _acUnlocked=true;
+  }catch(e){}
+}
+document.addEventListener('touchstart',unlockAC,{once:true,passive:true});
+
+function beep(f,d,v,t){
+  try{
+    var c=getAC();
+    if(c.state==='suspended'){c.resume().then(function(){beep(f,d,v,t);});return;}
+    var o=c.createOscillator(),g=c.createGain(),comp=c.createDynamicsCompressor();
+    comp.threshold.value=-6;comp.knee.value=3;comp.ratio.value=4;
+    o.connect(g);g.connect(comp);comp.connect(c.destination);
+    o.type=t||'sine';o.frequency.value=f;
+    g.gain.setValueAtTime(0,c.currentTime);
+    g.gain.linearRampToValueAtTime(v,c.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+d);
+    o.start(c.currentTime);o.stop(c.currentTime+d+0.05);
+  }catch(e){}
+}
+function playTimerStart(){beep(523,0.1,0.5);setTimeout(function(){beep(659,0.18,0.6);},130);}
+function playAlert(){beep(660,0.1,0.6);setTimeout(function(){beep(880,0.1,0.6);},130);setTimeout(function(){beep(1046,0.25,0.7);},260);}
+function playDone(){beep(523,0.12,0.6);setTimeout(function(){beep(659,0.12,0.6);},170);setTimeout(function(){beep(784,0.35,0.7);},340);}
+function playValidate(){beep(880,0.08,0.5);setTimeout(function(){beep(1108,0.15,0.5);},90);}
+function playPR(){beep(523,0.08,0.5);setTimeout(function(){beep(659,0.08,0.5);},90);setTimeout(function(){beep(784,0.08,0.5);},180);setTimeout(function(){beep(1046,0.35,0.7);},270);}
 function vib(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
 
 // NOTIFICATIONS
@@ -1721,6 +1753,7 @@ function buildTimer(){
 function startTimer(secs,label,next){
   if(TMR)clearInterval(TMR.iv);
   TNEXT=next||null;TALERTED=false;
+  playTimerStart();
   TMR={secs:secs,rem:secs,label:label,paused:false,iv:null};
   // Schedule notification for when timer ends
   var notifBody=next?('Prochain : '+next):"C'est parti !";
@@ -1784,13 +1817,13 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName){
         var pr=ST.prs[ex.id];
         if(!pr||ne.kg>pr.kg||(ne.kg===pr.kg&&ne.reps>pr.reps)){
           np[ex.id]={kg:ne.kg,reps:ne.reps,date:new Date().toLocaleDateString('fr-FR')};
-          launchConfetti(ph.color);vib([100,50,100,50,200]);
+          launchConfetti(ph.color);playPR();vib([100,50,100,50,200]);
         }
       }else{
         var pr2=ST.prs[ex.id];
         if(!pr2||ne.reps>pr2.reps){
           np[ex.id]={kg:0,reps:ne.reps,date:new Date().toLocaleDateString('fr-FR')};
-          launchConfetti(ph.color);vib([100,50,100,50,200]);
+          launchConfetti(ph.color);playPR();vib([100,50,100,50,200]);
         }
       }
       if(!log||!log.done)if(ex.rest>0)startTimer(ex.rest,ex.name,nextName);
@@ -1809,7 +1842,7 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName){
   var checkSVG=entry.done?'<svg class="check-svg" width="18" height="18" viewBox="0 0 18 18"><polyline class="check-path" points="3,9 7,13 15,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'&#10003;';
   doneBtn.innerHTML=entry.done?checkSVG+' VALIDE':'&#10003;';
   Object.assign(doneBtn.style,{padding:'5px 16px',borderRadius:'8px',cursor:'pointer',flexShrink:'0',background:entry.done?ac:'transparent',border:'1.5px solid '+(entry.done?ac:ac+'50'),color:entry.done?'#000':ac,fontSize:entry.done?'10px':'14px',fontWeight:'700',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px',touchAction:'manipulation'});
-  doneBtn.addEventListener('click',function(){vib([20]);save(Object.assign({},entry,{done:!entry.done}));});
+  doneBtn.addEventListener('click',function(){vib([20]);if(!entry.done)playValidate();save(Object.assign({},entry,{done:!entry.done}));});
   line1.appendChild(doneBtn);
   row.appendChild(line1);
   if(!entry.done){
