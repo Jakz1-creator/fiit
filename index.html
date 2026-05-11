@@ -1668,8 +1668,10 @@ function safeR(){
   setTimeout(function(){
     R();
     if(SHEET_STATE&&SUBVIEW==='session'){
-      // Update sheet in-place without slide animation
-      openBottomSheet(SHEET_STATE.ex,SHEET_STATE.sKey,SHEET_STATE.ph,SHEET_STATE.wip,SHEET_STATE.nextName,true);
+      // noAnim=true for in-place updates, false for SS exercise switches
+      var noAnim=(SHEET_STATE._ssSwitch!==true);
+      if(SHEET_STATE._ssSwitch)delete SHEET_STATE._ssSwitch;
+      openBottomSheet(SHEET_STATE.ex,SHEET_STATE.sKey,SHEET_STATE.ph,SHEET_STATE.wip,SHEET_STATE.nextName,noAnim);
     }
   },0);
 }
@@ -1884,15 +1886,16 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
       ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);
 
       if(nextEx&&nextEx.ss===ex.ss){
-        // SS — jump to next exercise immediately after THIS set
+        // SS — update SHEET_STATE to next exercise, safeR will open it with animation
+        SHEET_STATE={ex:nextEx,sKey:sKey,ph:ph,wip:wip,nextName:nextName,_nextEx:null,_ssSwitch:true};
         vib([20,40,20]);
-        setTimeout(function(){
-          openBottomSheet(nextEx,sKey,ph,wip,nextEx.name,false);
-        },250);
-      }else if(!log||!log.done){
-        if(ex.rest>0)startTimer(ex.rest,ex.name,nextName);
+        safeR();
+      }else{
+        if(!log||!log.done){
+          if(ex.rest>0)startTimer(ex.rest,ex.name,nextName);
+        }
+        safeR();
       }
-      safeR();
     }else{
       ST=Object.assign({},ST,{logs:nl,prs:np});saveS(ST);safeR();
     }
