@@ -2366,9 +2366,9 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     if(_dy>80){
       dismissSheet();
     }else{
-      sheet.style.transition='transform .32s ease';
+      sheet.style.transition='transform .4s cubic-bezier(.34,1.4,.64,1)';
       sheet.style.transform='translateY(0)';
-      overlay.style.transition='opacity .2s';
+      overlay.style.transition='opacity .25s';
       overlay.style.opacity='0.5';
       _dy=0;
     }
