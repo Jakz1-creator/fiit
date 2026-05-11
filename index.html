@@ -198,9 +198,10 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 /* BOTTOM SHEET */
 @keyframes sheetBounce{
   0%{transform:translateY(var(--dy))}
-  55%{transform:translateY(-8px)}
-  75%{transform:translateY(3px)}
-  90%{transform:translateY(-2px)}
+  45%{transform:translateY(-12px)}
+  65%{transform:translateY(5px)}
+  80%{transform:translateY(-3px)}
+  92%{transform:translateY(1px)}
   100%{transform:translateY(0)}
 }
   0%{transform:translateY(100%)}
@@ -2331,36 +2332,45 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
   buildSheetBody(ex,sKey,ph,wip,nextName,bsContent);
   sheet.appendChild(bsContent);
 
-  // DISMISS
   function dismissSheet(){
     SHEET_STATE=null;OPEN=null;
-    sheet.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
-    sheet.style.transform='translateY(106%)';
-    overlay.style.transition='opacity .28s ease';
+    sheet.style.transition='transform .38s cubic-bezier(.32,.72,0,1)';
+    sheet.style.transform='translateY(110%)';
+    overlay.style.transition='opacity .32s ease';
     overlay.style.opacity='0';
-    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},320);
+    setTimeout(function(){if(overlay.parentNode)overlay.parentNode.removeChild(overlay);},400);
   }
 
-  // DRAG — on full sheet, only when content is scrolled to top
-  var _y0=0,_dy=0,_active=false,_raf=null;
+  // DRAG — iOS 26 elastic feel
+  var _y0=0,_dy=0,_active=false,_raf=null,_velY=0,_lastY=0,_lastT=0;
+
+  // Rubber band formula — resistance increases with distance
+  function rubberBand(dy){
+    var dim=window.innerHeight;
+    return (1-(1/(dy*0.55/dim+1)))*dim;
+  }
 
   sheet.addEventListener('touchstart',function(e){
-    _y0=e.touches[0].clientY;_dy=0;_active=false;
+    _y0=e.touches[0].clientY;
+    _lastY=_y0;_lastT=Date.now();
+    _dy=0;_velY=0;_active=false;
   },{passive:true});
 
   sheet.addEventListener('touchmove',function(e){
-    var dy=e.touches[0].clientY-_y0;
-    // Only drag if swiping down AND content is at top
-    if(dy>0&&bsContent.scrollTop<=0){
-      if(!_active){
-        _active=true;
-        sheet.style.transition='none';
-      }
-      _dy=dy;
+    var clientY=e.touches[0].clientY;
+    var raw=clientY-_y0;
+    if(raw>0&&bsContent.scrollTop<=0){
+      if(!_active){_active=true;sheet.style.transition='none';}
+      // Track velocity
+      var now=Date.now();
+      _velY=(clientY-_lastY)/(now-_lastT||1)*16;
+      _lastY=clientY;_lastT=now;
+      // Apply rubber band resistance
+      _dy=rubberBand(raw);
       if(_raf)cancelAnimationFrame(_raf);
       _raf=requestAnimationFrame(function(){
         sheet.style.transform='translateY('+_dy+'px)';
-        overlay.style.opacity=String(Math.max(0,0.5-_dy/350));
+        overlay.style.opacity=String(Math.max(0,0.5-_dy/400));
       });
     }
   },{passive:true});
@@ -2369,19 +2379,31 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     if(!_active){_dy=0;return;}
     _active=false;
     if(_raf){cancelAnimationFrame(_raf);_raf=null;}
-    if(_dy>80){
+    // Dismiss if far enough OR fast flick down
+    if(_dy>120||_velY>12){
       dismissSheet();
     }else{
-      // Spring bounce back
-      sheet.style.setProperty('--dy', _dy+'px');
-      sheet.style.transition='none';
-      sheet.style.transform='';
-      sheet.style.animation='sheetBounce .5s cubic-bezier(.25,.46,.45,.94) forwards';
-      overlay.style.transition='opacity .25s';
-      overlay.style.opacity='0.5';
-      setTimeout(function(){sheet.style.animation='';},520);
+      // Spring bounce back with overshoot
+      sheet.style.setProperty('--dy',Math.round(_dy)+'px');
+      sheet.style.animation='none';
+      sheet.style.transform='translateY('+_dy+'px)';
+      requestAnimationFrame(function(){
+        sheet.style.transition='none';
+        requestAnimationFrame(function(){
+          sheet.style.animation='sheetBounce .55s cubic-bezier(.25,.46,.45,.94) forwards';
+          overlay.style.transition='opacity .3s';
+          overlay.style.opacity='0.5';
+        });
+      });
+      setTimeout(function(){sheet.style.animation='';sheet.style.transform='translateY(0)';},580);
       _dy=0;
     }
+  },{passive:true});
+
+  sheet.addEventListener('touchcancel',function(){
+    _active=false;_dy=0;_velY=0;
+    sheet.style.animation='sheetBounce .4s cubic-bezier(.25,.46,.45,.94) forwards';
+    setTimeout(function(){sheet.style.animation='';sheet.style.transform='translateY(0)';},420);
   },{passive:true});
 
   sheet.addEventListener('touchcancel',function(){
