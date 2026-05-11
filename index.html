@@ -1127,8 +1127,11 @@ var VIDS={
   s3cb:'da+rulk+rft+conditioning+burnout'
 };
 function vidUrl(id,name){
-  var q=VIDS[id]||(name.toLowerCase().replace(/ /g,'+')+'+technique');
-  return 'https://www.youtube.com/results?search_query='+q;
+  // If exercise has been substituted, use the substituted name directly
+  var displayName=OVERRIDES[id]||name;
+  // Use VIDS map for original exercises, otherwise build from display name
+  var q=(!OVERRIDES[id]&&VIDS[id])||(displayName.toLowerCase().replace(/\s+/g,'+').replace(/['']/g,'')+'+exercice+technique');
+  return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q);
 }
 
 // RFT LEVEL - independent from THOR/ANATOLY phases
@@ -2752,9 +2755,9 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
     container.appendChild(subSec);
   }
 
-  // Video button
   var vidSec=div({padding:'0 16px 16px'});
-  vidSec.appendChild(btn({display:'block',width:'100%',padding:'12px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.7)',fontSize:'12px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},'&#9654;  VOIR LA TECHNIQUE',function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
+  var vidLabel=OVERRIDES[ex.id]?'&#9654;  TECHNIQUE : '+OVERRIDES[ex.id].toUpperCase():'&#9654;  VOIR LA TECHNIQUE';
+  vidSec.appendChild(btn({display:'block',width:'100%',padding:'12px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.7)',fontSize:'11px',letterSpacing:'1px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},vidLabel,function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
   container.appendChild(vidSec);
 }
 
