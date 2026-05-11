@@ -2163,16 +2163,16 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
   }
   var rowBg=entry.done?(isCond?'rgba(100,180,255,.09)':isBW?'rgba(154,238,187,.09)':'rgba(200,164,90,0.1)'):'rgba(255,255,255,0.04)';
   var borderC=entry.done?(isCond?'rgba(100,180,255,.35)':isBW?'rgba(154,238,187,.35)':ph.color+'55'):'rgba(255,255,255,0.09)';
-  var row=div({padding:'10px 12px',background:rowBg,backdropFilter:'blur(16px)',WebkitBackdropFilter:'blur(16px)',borderRadius:'10px',border:'1px solid '+borderC,boxShadow:'inset 0 1px 0 rgba(255,255,255,0.1)',position:'relative',overflow:'hidden'});
+  var row=div({padding:'12px 14px',background:rowBg,backdropFilter:'blur(28px) saturate(180%)',WebkitBackdropFilter:'blur(28px) saturate(180%)',borderRadius:'16px',border:'0.5px solid '+borderC,boxShadow:'inset 0 1.5px 0 rgba(255,255,255,0.12)',position:'relative',overflow:'hidden',marginBottom:'2px'});
   // LINE 1: number + done btn
   var line1=div({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:entry.done?'0':'8px'});
-  var numEl=div({width:'24px',height:'24px',borderRadius:'50%',flexShrink:'0',background:entry.done?ac:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',color:entry.done?'#000':'#555',fontFamily:'Bebas Neue,cursive'},entry.done?'v':String(idx+1));
+  var numEl=div({width:'26px',height:'26px',borderRadius:'50%',flexShrink:'0',background:entry.done?ac:'rgba(255,255,255,0.06)',border:'0.5px solid '+(entry.done?ac:'rgba(255,255,255,0.1)'),display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:'600',color:entry.done?'#000':'#555',fontFamily:'-apple-system,system-ui'},entry.done?'✓':String(idx+1));
   line1.appendChild(numEl);
   var doneBtn=document.createElement('button');
   // Animated checkmark SVG
   var checkSVG=entry.done?'<svg class="check-svg" width="18" height="18" viewBox="0 0 18 18"><polyline class="check-path" points="3,9 7,13 15,5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>':'&#10003;';
   doneBtn.innerHTML=entry.done?checkSVG+' VALIDE':'&#10003;';
-  Object.assign(doneBtn.style,{padding:'5px 16px',borderRadius:'8px',cursor:'pointer',flexShrink:'0',background:entry.done?ac:'transparent',border:'1.5px solid '+(entry.done?ac:ac+'50'),color:entry.done?'#000':ac,fontSize:entry.done?'10px':'14px',fontWeight:'700',fontFamily:'Bebas Neue,cursive',letterSpacing:'1px',touchAction:'manipulation'});
+  Object.assign(doneBtn.style,{padding:'6px 18px',borderRadius:'10px',cursor:'pointer',flexShrink:'0',background:entry.done?ac:'transparent',border:'1.5px solid '+(entry.done?ac:ac+'40'),color:entry.done?'#000':ac,fontSize:'11px',fontWeight:'600',fontFamily:'-apple-system,system-ui',letterSpacing:'0.3px',touchAction:'manipulation'});
   doneBtn.addEventListener('click',function(){
     vib([20]);
     if(!entry.done){
@@ -2198,7 +2198,7 @@ function buildSetRow(idx,ex,log,sKey,ph,wip,nextName,nextEx){
     if(isBW||isCond||isTimed){
       var color=isCond?'#64b4ff':isTimed?'#a78bfa':'#9aeebb';
       var ctrl=div({display:'flex',alignItems:'center',gap:'12px',flex:'1',justifyContent:'center',background:'rgba(0,0,0,0.25)',borderRadius:'8px',padding:'7px 16px'});
-      ctrl.appendChild(div({fontSize:'9px',color:color+'70',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',flexShrink:'0'},isTimed?'SEC':'REPS'));
+      ctrl.appendChild(div({fontSize:'8px',color:'rgba(255,255,255,0.25)',letterSpacing:'1px',fontFamily:'-apple-system,system-ui',fontWeight:'400',flexShrink:'0'},isTimed?'SEC':'REPS'));
       ctrl.appendChild(smBtn('-',function(){save(Object.assign({},entry,{reps:Math.max(10,entry.reps-(isTimed?5:1))}));}));
       ctrl.appendChild(div({width:'52px',textAlign:'center',fontFamily:'Bebas Neue,cursive',fontSize:'28px',color:color,lineHeight:'1'},String(entry.reps)));
       ctrl.appendChild(smBtn('+',function(){save(Object.assign({},entry,{reps:entry.reps+(isTimed?5:1)}));}));
@@ -2962,12 +2962,12 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
   var ac=ex.bwOnly?'#9aeebb':ex.bw?ph.color:ex.cond?'#64b4ff':ph.color;
   var shHeader=div({padding:'0 20px 8px'});
   if(ex.mus)shHeader.appendChild(div({display:'inline-block',background:musCol+'18',border:'1px solid '+musCol+'40',borderRadius:'12px',padding:'3px 10px',fontSize:'9px',color:musCol,letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',marginBottom:'8px'},ex.mus.toUpperCase()));
-  shHeader.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'32px',color:ph.color,letterSpacing:'2px',lineHeight:'1',marginBottom:'4px'},ex.name));
+  var exNameDiv=document.createElement('div');exNameDiv.textContent=ex.name;Object.assign(exNameDiv.style,{fontFamily:'-apple-system,system-ui',fontSize:'28px',fontWeight:'700',color:'#fff',letterSpacing:'-0.8px',lineHeight:'1',marginBottom:'4px'});shHeader.appendChild(exNameDiv);
   var sugKg=(!ex.bwOnly&&ex.baseKg)?calcKg(ex.baseKg,ph.id,wip,ex.incr):0;
   var wt=ex.bwOnly||ex.cond?(sugKg>0?'~'+sugKg+'kg':'Corps'):ex.bw?'BW+'+sugKg+'kg':'~'+sugKg+'kg';
   var repsDisp=ex.timed?ex.reps+'s':ex.reps+' reps';
-  shHeader.appendChild(div({fontSize:'12px',color:'rgba(255,255,255,0.35)',letterSpacing:'1px'},ex.sets+'x'+repsDisp+' - '+wt+' - Repos '+ex.rest+'s'));
-  if(ex.notes)shHeader.appendChild(div({marginTop:'10px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'10px 14px',fontSize:'12px',color:'rgba(255,255,255,0.6)',lineHeight:'1.5'},ex.notes));
+  shHeader.appendChild(div({fontSize:'12px',fontWeight:'300',color:'rgba(255,255,255,0.3)',letterSpacing:'0.2px'},ex.sets+' × '+repsDisp+' · '+wt+' · Repos '+ex.rest+'s'));
+  if(ex.notes)shHeader.appendChild(div({marginTop:'10px',background:'rgba(255,255,255,0.04)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'0.5px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.08)',borderRadius:'14px',padding:'10px 14px',fontSize:'12px',fontWeight:'300',color:'rgba(255,255,255,0.55)',lineHeight:'1.6'},ex.notes));
   if(ex.tempo){
     var tRow=div({display:'flex',gap:'8px',marginTop:'10px'});
     [{l:'DESCENTE',v:ex.tempo[0]+'s'},{l:'PAUSE',v:ex.tempo[1]+'s'},{l:'MONTEE',v:ex.tempo[2]+'s'}].forEach(function(tp){
@@ -2983,7 +2983,7 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
 
   // Sets controls
   var setsCtrl=div({display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 16px 6px'});
-  setsCtrl.appendChild(div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px'},'SERIES'));
+  setsCtrl.appendChild(div({fontFamily:'-apple-system,system-ui',fontSize:'11px',fontWeight:'400',color:'#555',letterSpacing:'1px'},'Séries'));
   var setsRight=div({display:'flex',alignItems:'center',gap:'8px'});
   var setsCount=div({fontFamily:'Bebas Neue,cursive',fontSize:'18px',color:ph.color,minWidth:'20px',textAlign:'center'},String(ex.sets));
   var minusSetBtn=document.createElement('button');
@@ -3016,7 +3016,7 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
     // Header row
     var subHead=div({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'});
     var subTitle=div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px'});
-    subTitle.textContent=OVERRIDES[ex.id]?'SUBSTITUTION ACTIVE':'CHANGER L\'EXERCICE';
+    subTitle.textContent=OVERRIDES[ex.id]?'Substitution active':'Changer l\'exercice';
     subHead.appendChild(subTitle);
     // Reset button inline if active
     if(OVERRIDES[ex.id]){
@@ -3076,8 +3076,8 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
   }
 
   var vidSec=div({padding:'0 16px 16px'});
-  var vidLabel=OVERRIDES[ex.id]?'&#9654;  TECHNIQUE : '+OVERRIDES[ex.id].toUpperCase():'&#9654;  VOIR LA TECHNIQUE';
-  vidSec.appendChild(btn({display:'block',width:'100%',padding:'12px',borderRadius:'14px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.15)',color:'rgba(255,255,255,0.7)',fontSize:'11px',letterSpacing:'1px',fontFamily:'Bebas Neue,cursive',cursor:'pointer'},vidLabel,function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
+  var vidLabel=OVERRIDES[ex.id]?'▶  Technique · '+OVERRIDES[ex.id]:'▶  Voir la technique';
+  vidSec.appendChild(btn({display:'block',width:'100%',padding:'13px',borderRadius:'14px',background:'rgba(255,255,255,0.04)',backdropFilter:'blur(20px)',WebkitBackdropFilter:'blur(20px)',border:'0.5px solid rgba(255,255,255,0.1)',boxShadow:'inset 0 1px 0 rgba(255,255,255,0.1)',color:'rgba(255,255,255,0.45)',fontSize:'12px',fontWeight:'400',letterSpacing:'0.3px',fontFamily:'-apple-system,system-ui',cursor:'pointer'},vidLabel,function(){window.open(vidUrl(ex.id,ex.name),'_blank');}));
   container.appendChild(vidSec);
 }
 
