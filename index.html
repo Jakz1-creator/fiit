@@ -2535,8 +2535,9 @@ function stopLiveActivity(){
 }
 
 // BOTTOM SHEET for exercise details
-function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
-  SHEET_STATE={ex:ex,sKey:sKey,ph:ph,wip:wip,nextName:nextName};
+function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim,nextEx){
+  var prevNextEx=SHEET_STATE&&SHEET_STATE._nextEx;
+  SHEET_STATE={ex:ex,sKey:sKey,ph:ph,wip:wip,nextName:nextName,_nextEx:nextEx||prevNextEx||null};
 
   // If sheet already exists, just update content in-place (no animation, no drag reset)
   var existingOverlay=document.getElementById('bs-overlay');
@@ -2702,8 +2703,9 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
   for(var i=0;i<ex.sets;i++)logs[i]=ST.logs[sKey+'_'+ex.id+'_'+i];
   function rebuildSets(){
     setsWrap.innerHTML='';
+    var nex=SHEET_STATE&&SHEET_STATE._nextEx;
     for(var j=0;j<ex.sets;j++){
-      setsWrap.appendChild(buildSetRow(j,ex,ST.logs[sKey+'_'+ex.id+'_'+j],sKey,ph,wip,nextName,ex.ss?SHEET_STATE&&SHEET_STATE._nextEx:null));
+      setsWrap.appendChild(buildSetRow(j,ex,ST.logs[sKey+'_'+ex.id+'_'+j],sKey,ph,wip,nextName,nex));
     }
   }
   rebuildSets();
@@ -2716,42 +2718,66 @@ function buildSheetBody(ex,sKey,ph,wip,nextName,container){
 
   // Substitutions
   if(SUBS[ex.id]){
-    var subSec=div({padding:'12px 16px'});
-    var subLabel=div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px',marginBottom:'8px'});
-    subLabel.textContent=OVERRIDES[ex.id]?'SUBSTITUTION ACTIVE':'SUBSTITUTIONS';
-    subSec.appendChild(subLabel);
-
-    // Show reset if override active
+    var subSec=div({padding:'10px 16px 12px'});
+    // Header row
+    var subHead=div({display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'10px'});
+    var subTitle=div({fontFamily:'Bebas Neue,cursive',fontSize:'9px',color:'#555',letterSpacing:'4px'});
+    subTitle.textContent=OVERRIDES[ex.id]?'SUBSTITUTION ACTIVE':'CHANGER L\'EXERCICE';
+    subHead.appendChild(subTitle);
+    // Reset button inline if active
     if(OVERRIDES[ex.id]){
       var resetBtn=document.createElement('button');
-      Object.assign(resetBtn.style,{display:'block',width:'100%',padding:'8px 12px',marginBottom:'8px',borderRadius:'8px',background:'rgba(232,94,26,0.1)',border:'1px solid rgba(232,94,26,0.3)',color:'#e85e1a',fontSize:'11px',letterSpacing:'2px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',touchAction:'manipulation',textAlign:'left'});
-      resetBtn.textContent='↩ RETABLIR '+ex.name.toUpperCase();
+      Object.assign(resetBtn.style,{padding:'4px 10px',borderRadius:'12px',background:'rgba(232,94,26,0.1)',border:'0.5px solid rgba(232,94,26,0.3)',color:'#e85e1a',fontSize:'10px',letterSpacing:'1px',fontFamily:'Bebas Neue,cursive',cursor:'pointer',touchAction:'manipulation'});
+      resetBtn.textContent='↩ RETABLIR';
       resetBtn.addEventListener('click',function(){
+        var origName=ex._origName||ex.name;
         delete OVERRIDES[ex.id];saveOverrides();
-        ex.name=ex._origName||ex.name;
+        ex.name=origName;
         SHEET_STATE.ex=ex;
         openBottomSheet(ex,sKey,ph,wip,nextName,true);
-        safeR();
+        safeR();vib([15]);
       });
-      subSec.appendChild(resetBtn);
+      subHead.appendChild(resetBtn);
+    }
+    subSec.appendChild(subHead);
+
+    // Horizontal scroll row — Option B cards
+    var scroll=div({display:'flex',gap:'8px',overflowX:'auto',paddingBottom:'4px',WebkitOverflowScrolling:'touch'});
+    scroll.style.cssText+=';scrollbar-width:none;-ms-overflow-style:none';
+
+    // "Original" card first if override active
+    if(OVERRIDES[ex.id]){
+      var origCard=document.createElement('button');
+      Object.assign(origCard.style,{flexShrink:'0',width:'100px',padding:'10px 8px',borderRadius:'12px',background:'rgba(255,255,255,0.04)',border:'0.5px solid rgba(255,255,255,0.08)',cursor:'pointer',touchAction:'manipulation',textAlign:'center',display:'block'});
+      origCard.innerHTML='<div style="font-size:8px;color:#444;letter-spacing:2px;font-family:Bebas Neue,cursive;margin-bottom:5px">ORIGINAL</div><div style="font-size:11px;font-weight:600;color:#666;font-family:DM Sans,system-ui;line-height:1.3">'+(ex._origName||ex.name)+'</div>';
+      origCard.addEventListener('click',function(){
+        var origName=ex._origName||ex.name;
+        delete OVERRIDES[ex.id];saveOverrides();
+        ex.name=origName;
+        SHEET_STATE.ex=ex;
+        openBottomSheet(ex,sKey,ph,wip,nextName,true);
+        safeR();vib([15]);
+      });
+      scroll.appendChild(origCard);
     }
 
     SUBS[ex.id].forEach(function(sub){
       var isActive=OVERRIDES[ex.id]===sub;
-      var si=document.createElement('button');
-      Object.assign(si.style,{display:'flex',width:'100%',alignItems:'center',gap:'10px',padding:'10px 12px',background:isActive?'rgba(200,164,90,0.12)':'rgba(255,255,255,0.04)',border:'1px solid '+(isActive?ph.color+'50':'rgba(255,255,255,0.07)'),borderRadius:'10px',marginBottom:'6px',fontSize:'13px',color:isActive?ph.color:'rgba(255,255,255,0.6)',cursor:'pointer',touchAction:'manipulation',textAlign:'left',fontFamily:'DM Sans,system-ui'});
-      si.innerHTML='<span style="color:'+ph.color+';font-size:15px;flex-shrink:0">'+(isActive?'✓':'→')+'</span><span>'+sub+'</span>';
-      si.addEventListener('click',function(){
+      var card=document.createElement('button');
+      Object.assign(card.style,{flexShrink:'0',width:'110px',padding:'10px 8px',borderRadius:'12px',background:isActive?'rgba(200,164,90,0.12)':'rgba(255,255,255,0.04)',border:(isActive?'1.5px solid '+ph.color:'0.5px solid rgba(255,255,255,0.07)'),cursor:'pointer',touchAction:'manipulation',textAlign:'center',display:'block',position:'relative'});
+      var activeLabel=isActive?'<div style="font-size:8px;color:'+ph.color+';letter-spacing:2px;font-family:Bebas Neue,cursive;margin-bottom:5px">ACTIF ✓</div>':'<div style="font-size:8px;color:#444;letter-spacing:2px;font-family:Bebas Neue,cursive;margin-bottom:5px">SWITCH</div>';
+      card.innerHTML=activeLabel+'<div style="font-size:11px;font-weight:600;color:'+(isActive?ph.color:'#888')+';font-family:DM Sans,system-ui;line-height:1.3">'+sub+'</div>';
+      card.addEventListener('click',function(){
         if(!ex._origName)ex._origName=ex.name;
         OVERRIDES[ex.id]=sub;saveOverrides();
         ex.name=sub;
         SHEET_STATE.ex=ex;
         openBottomSheet(ex,sKey,ph,wip,nextName,true);
-        safeR();
-        vib([20,50,20]);
+        safeR();vib([20,50,20]);
       });
-      subSec.appendChild(si);
+      scroll.appendChild(card);
     });
+    subSec.appendChild(scroll);
     container.appendChild(subSec);
   }
 
@@ -2898,8 +2924,8 @@ function buildSession(){
           exHead.appendChild(rb2);
           // Click opens bottom sheet
           (function(e,sk,n,nex){
-            playBtn2.addEventListener('click',function(ev){ev.stopPropagation();SHEET_STATE={ex:e,sKey:sk,ph:ph,wip:wip,nextName:n,_nextEx:nex};openBottomSheet(e,sk,ph,wip,n);});
-            exHead.addEventListener('click',function(){SHEET_STATE={ex:e,sKey:sk,ph:ph,wip:wip,nextName:n,_nextEx:nex};openBottomSheet(e,sk,ph,wip,n);});
+            playBtn2.addEventListener('click',function(ev){ev.stopPropagation();openBottomSheet(e,sk,ph,wip,n,false,nex);});
+            exHead.addEventListener('click',function(){openBottomSheet(e,sk,ph,wip,n,false,nex);});
           })(ssEx,sKey,ssNextName,ssGroup[idx+1]||null);
           innerCard.appendChild(exHead);
 
