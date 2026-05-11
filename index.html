@@ -196,7 +196,13 @@ body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   60%{opacity:1;transform:scale(1.04)}
   100%{opacity:1;transform:scale(1)}}
 /* BOTTOM SHEET */
-@keyframes sheetSlideUp{
+@keyframes sheetBounce{
+  0%{transform:translateY(var(--dy))}
+  55%{transform:translateY(-8px)}
+  75%{transform:translateY(3px)}
+  90%{transform:translateY(-2px)}
+  100%{transform:translateY(0)}
+}
   0%{transform:translateY(100%)}
   100%{transform:translateY(0)}}
 @keyframes sheetFadeIn{from{opacity:0}to{opacity:1}}
@@ -2366,10 +2372,14 @@ function openBottomSheet(ex,sKey,ph,wip,nextName,noAnim){
     if(_dy>80){
       dismissSheet();
     }else{
-      sheet.style.transition='transform .4s cubic-bezier(.34,1.4,.64,1)';
-      sheet.style.transform='translateY(0)';
+      // Spring bounce back
+      sheet.style.setProperty('--dy', _dy+'px');
+      sheet.style.transition='none';
+      sheet.style.transform='';
+      sheet.style.animation='sheetBounce .5s cubic-bezier(.25,.46,.45,.94) forwards';
       overlay.style.transition='opacity .25s';
       overlay.style.opacity='0.5';
+      setTimeout(function(){sheet.style.animation='';},520);
       _dy=0;
     }
   },{passive:true});
