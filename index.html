@@ -2779,6 +2779,11 @@ function buildSmartNotifBanner(){
 }
 
 
+function buildCopyright(){
+  var c=div({textAlign:'center',padding:'24px 16px 8px'});
+  c.innerHTML='<span style="font-size:10px;color:#2a2a2a;letter-spacing:2px;font-family:DM Sans,system-ui">&copy; 2026 JACOBZ. Tous droits reserves.</span>';
+  return c;
+}
 function buildHome(){
   var ph=getPhase(ST.week),wip=getWIP(ST.week);
   var completed=SESSIONS.filter(function(s){var st=sesStats(s);return st.done===st.total&&st.total>0;}).length;
@@ -3302,6 +3307,7 @@ function buildStats(){
   backupBox.appendChild(impWrap);
   content.appendChild(backupBox);
 
+  content.appendChild(buildCopyright());
   root.appendChild(content);
   return root;
 }
@@ -3389,6 +3395,7 @@ function buildContact(){
   donBox.appendChild(donLink);
   content.appendChild(donBox);
 
+  content.appendChild(buildCopyright());
   root.appendChild(content);
   return root;
 }
@@ -3562,6 +3569,7 @@ function buildAnalyse(){
   ringsBox.appendChild(legend);
   content.appendChild(ringsBox);
 
+  content.appendChild(buildCopyright());
   root.appendChild(content);
   return root;
 }
