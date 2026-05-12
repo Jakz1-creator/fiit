@@ -4495,12 +4495,10 @@ buildSmartNotifBanner();
 // Show onboarding on first launch
 if(!localStorage.getItem('jz_onboarded'))buildOnboarding();
 // Service Worker for offline mode
+// Unregister any existing service workers
 if('serviceWorker' in navigator){
-  // Unregister ALL service workers to force fresh load
   navigator.serviceWorker.getRegistrations().then(function(regs){
     regs.forEach(function(reg){reg.unregister();});
-    // Re-register after clearing
-    navigator.serviceWorker.register('sw.js?v=5').catch(function(){});
   });
 }
 if(!sessionStorage.getItem('jacobz_intro')){
