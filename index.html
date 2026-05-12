@@ -4495,10 +4495,19 @@ buildSmartNotifBanner();
 // Show onboarding on first launch
 if(!localStorage.getItem('jz_onboarded'))buildOnboarding();
 // Service Worker for offline mode
-// Unregister any existing service workers
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(reg){reg.unregister();});
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    reg.update();
+    if(reg.waiting)reg.waiting.postMessage('skipWaiting');
+    reg.addEventListener('updatefound',function(){
+      var nw=reg.installing;
+      nw.addEventListener('statechange',function(){
+        if(nw.state==='installed')nw.postMessage('skipWaiting');
+      });
+    });
+  }).catch(function(){});
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    window.location.reload();
   });
 }
 if(!sessionStorage.getItem('jacobz_intro')){
